@@ -61,6 +61,7 @@
         ul {
             list-style: none;
             padding: 0;
+            text-align: center;
         }
         li {
             padding: 12px 0;
@@ -103,16 +104,30 @@
         footer a:hover {
             color: #0088cc;
         }
+        .circle-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>Sew Yee Ying</h1>
         <p>Student ID: 2265221</p>
-        <p>Course: Integrated Business Management (IBM)</p>
     </header>
     
     <div class="container">
+        <div class="section global-section">
+            <img src="https://via.placeholder.com/500x300" alt="Global Operations" class="global-img">
+            <div class="global-text">
+                <h2>Global Operation and Logistics</h2>
+                <p>Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.</p>
+            </div>
+        </div>
+
         <div class="section">
             <h2>Assignments</h2>
             <ul>
@@ -122,30 +137,38 @@
             </ul>
             <div class="upload-box">
                 <p>Upload your assignments:</p>
-                <input type="file" disabled> (Static site, upload not functional)
+                <form action="your-backend-upload-endpoint" method="POST" enctype="multipart/form-data">
+                    <input type="file" name="assignment" required>
+                    <button type="submit">Upload</button>
+                </form>
             </div>
         </div>
         
         <div class="section">
             <h2>Social</h2>
-            <p><strong>MACEOS Industry Workshop</strong> - Gained insights into event bidding and risk management.</p>
-            <p><strong>AFECA Asia MICE Youth Challenge</strong> - Observed international teams competing in event bidding.</p>
+            <div style="display: flex; align-items: center;">
+                <img src="https://via.placeholder.com/100" alt="MACEOS" class="circle-img">
+                <p><strong>MACEOS Industry Workshop</strong> - Gained insights into event bidding and risk management.</p>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <img src="https://via.placeholder.com/100" alt="AFECA" class="circle-img">
+                <p><strong>AFECA Asia MICE Youth Challenge</strong> - Observed international teams competing in event bidding.</p>
+            </div>
         </div>
         
         <div class="section">
             <h2>My Interests</h2>
-            <ul>
-                <li><strong>Dancing:</strong> Expressing creativity through movement.</li>
-                <li><strong>Travelling:</strong> Exploring new cultures and experiences.</li>
-                <li><strong>Video Editing:</strong> Crafting visual stories and engaging content.</li>
-            </ul>
-        </div>
-
-        <div class="section global-section">
-            <img src="https://via.placeholder.com/500x300" alt="Global Operations" class="global-img">
-            <div class="global-text">
-                <h2>Global Operation and Logistics</h2>
-                <p>Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.</p>
+            <div style="display: flex; align-items: center;">
+                <img src="https://via.placeholder.com/100" alt="Dancing" class="circle-img">
+                <p><strong>Dancing:</strong> Expressing creativity through movement.</p>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <img src="https://via.placeholder.com/100" alt="Travelling" class="circle-img">
+                <p><strong>Travelling:</strong> Exploring new cultures and experiences.</p>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <img src="https://via.placeholder.com/100" alt="Video Editing" class="circle-img">
+                <p><strong>Video Editing:</strong> Crafting visual stories and engaging content.</p>
             </div>
         </div>
     </div>
