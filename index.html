@@ -3,95 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sew Yee Ying - Landing Page</title>
+    <title>Sew Yee Ying - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to right, #3b82f6, #6366f1);
+            background: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: linear-gradient(135deg, #004466, #0088cc);
             color: white;
+            padding: 30px;
             text-align: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            border-bottom: 5px solid #0088cc;
+        }
+        header p {
+            font-size: 1.2em;
+            margin: 5px 0;
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px;
+            width: 85%;
+            margin: auto;
+            overflow: hidden;
         }
-        h1 {
-            font-size: 40px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .section {
+            background: white;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            font-size: 1.1em;
+        }
+        .section:hover {
+            transform: translateY(-10px);
         }
         h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
+            color: #004466;
+            font-size: 2em;
+            border-bottom: 3px solid #0088cc;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
-        h3 {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .upload-box {
+            background: #e3f2fd;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-top: 20px;
         }
-        .card {
-            background: white;
-            color: black;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 10px;
-            max-width: 400px;
+        ul {
+            list-style: none;
+            padding: 0;
         }
-        .card-container {
+        li {
+            padding: 12px 0;
+            font-size: 1.1em;
+        }
+        a {
+            text-decoration: none;
+            color: #0088cc;
+            font-weight: 600;
+        }
+        a:hover {
+            color: #004466;
+        }
+        .global-section {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+            align-items: center;
+            gap: 30px;
         }
-        .button {
-            background: #facc15;
-            color: black;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s;
+        .global-img {
+            max-width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .button:hover {
-            background: #fbbf24;
+        .global-text {
+            flex: 1;
+            font-size: 1.1em;
+        }
+        footer {
+            background: #004466;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        footer a:hover {
+            color: #0088cc;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <header>
         <h1>Sew Yee Ying</h1>
-        <h2 id="changing-text">University Student</h2>
-        <h3>Student ID: 2265221</h3>
-        <div class="card-container">
-            <div class="card">
-                <h3>Sunway University</h3>
-                <p>Currently studying at Sunway University, passionate about global education and logistics.</p>
-            </div>
-            <div class="card">
-                <h3>Exchange at Dong-A University</h3>
-                <p>Exploring new cultures and learning beyond borders.</p>
+        <p>Student ID: 2265221</p>
+        <p>Course: Integrated Business Management (IBM)</p>
+    </header>
+    
+    <div class="container">
+        <div class="section">
+            <h2>Assignments</h2>
+            <ul>
+                <li><a href="#">Assignment 1</a></li>
+                <li><a href="#">Assignment 2</a></li>
+                <li><a href="#">Assignment 3</a></li>
+            </ul>
+            <div class="upload-box">
+                <p>Upload your assignments:</p>
+                <input type="file" disabled> (Static site, upload not functional)
             </div>
         </div>
-        <button class="button">Connect with Me</button>
+        
+        <div class="section">
+            <h2>Social</h2>
+            <p><strong>MACEOS Industry Workshop</strong> - Gained insights into event bidding and risk management.</p>
+            <p><strong>AFECA Asia MICE Youth Challenge</strong> - Observed international teams competing in event bidding.</p>
+        </div>
+        
+        <div class="section">
+            <h2>My Interests</h2>
+            <ul>
+                <li><strong>Dancing:</strong> Expressing creativity through movement.</li>
+                <li><strong>Travelling:</strong> Exploring new cultures and experiences.</li>
+                <li><strong>Video Editing:</strong> Crafting visual stories and engaging content.</li>
+            </ul>
+        </div>
+
+        <div class="section global-section">
+            <img src="https://via.placeholder.com/500x300" alt="Global Operations" class="global-img">
+            <div class="global-text">
+                <h2>Global Operation and Logistics</h2>
+                <p>Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.</p>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const phrases = ["University Student", "Explorer at Dong-A University", "Sunway University Representative", "Diving into Global Logistics"];
-        let index = 0;
-        setInterval(() => {
-            document.getElementById("changing-text").innerText = phrases[index];
-            index = (index + 1) % phrases.length;
-        }, 2000);
-    </script>
+    <footer>
+        <p>Contact me at: <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a></p>
+    </footer>
 </body>
 </html>
