@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,13 +15,13 @@
             color: #333;
         }
         header {
-            background: linear-gradient(135deg, #004466, #0088cc);
+            background: linear-gradient(135deg, #072E33, #0A3E44);
             color: white;
             padding: 30px;
             text-align: center;
             font-size: 1.5em;
             font-weight: 600;
-            border-bottom: 5px solid #0088cc;
+            border-bottom: 5px solid #072E33;
         }
         .container {
             width: 85%;
@@ -35,9 +36,9 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         h2 {
-            color: #004466;
+            color: #072E33;
             font-size: 2em;
-            border-bottom: 3px solid #0088cc;
+            border-bottom: 3px solid #072E33;
             padding-bottom: 10px;
             margin-bottom: 15px;
             text-align: center;
@@ -56,34 +57,42 @@
         .content-row .text {
             width: 50%;
         }
-        .social-container, .interests-container {
+        .assignments-container {
             display: flex;
             justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
             text-align: center;
+            flex-wrap: wrap;
         }
-        .circle-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .assignment-box {
             width: 30%;
+            padding: 15px;
+            background: #072E33;
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .assignment-box img {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .assignment-box a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .assignment-box a:hover {
+            text-decoration: underline;
         }
         .circle-img {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .description {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #555;
-            text-align: center;
-        }
-        footer {
-            background: #004466;
+        .footer {
+            background: #072E33;
             color: white;
             padding: 20px;
             text-align: center;
@@ -95,7 +104,7 @@
             font-weight: 600;
         }
         footer a:hover {
-            color: #0088cc;
+            color: #0A3E44;
         }
     </style>
 </head>
@@ -118,59 +127,33 @@
 
         <div class="section">
             <h2>Assignments</h2>
-            <ul>
-                <li><a href="#">Assignment 1</a></li>
-                <li><a href="#">Assignment 2</a></li>
-                <li><a href="#">Assignment 3</a></li>
-            </ul>
-            <div class="upload-box">
-                <p>Upload your assignments:</p>
-                <form action="your-backend-upload-endpoint" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="assignment" required>
-                    <button type="submit">Upload</button>
-                </form>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Social</h2>
-            <div class="social-container">
-                <div class="circle-container">
-                    <img src="https://static.wixstatic.com/media/84f4c0_23a5341d05bd4fc784b1325e348b040f~mv2.jpg/v1/fill/w_626,h_670,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/84f4c0_23a5341d05bd4fc784b1325e348b040f~mv2.jpg" alt="MACEOS Workshop" class="circle-img">
-                    <p><strong>MACEOS Workshop</strong></p>
-                    <p class="description">A platform to gain insights into Malaysia’s business events industry and network with professionals.</p>
+            <div class="assignments-container">
+                <div class="assignment-box">
+                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 1">
+                    <a href="#">Assignment 1</a>
                 </div>
-                <div class="circle-container">
-                    <img src="https://static.wixstatic.com/media/84f4c0_18f703228fc340749717c61420e76ebd~mv2.png/v1/fill/w_953,h_815,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/84f4c0_18f703228fc340749717c61420e76ebd~mv2.png" alt="AFECA Asia" class="circle-img">
-                    <p><strong>AFECA Asia</strong></p>
-                    <p class="description">A premier industry event focusing on Asian exhibition and convention development.</p>
+                <div class="assignment-box">
+                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 2">
+                    <a href="#">Assignment 2</a>
+                </div>
+                <div class="assignment-box">
+                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 3">
+                    <a href="#">Assignment 3</a>
                 </div>
             </div>
         </div>
         
         <div class="section">
             <h2>My Interests</h2>
-            <div class="interests-container">
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/6003070/pexels-photo-6003070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Dancing" class="circle-img">
-                    <p><strong>Dancing</strong></p>
-                    <p class="description">A form of self-expression and a way to stay active while enjoying music.</p>
-                </div>
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Travelling" class="circle-img">
-                    <p><strong>Travelling</strong></p>
-                    <p class="description">Exploring new cultures, tasting different cuisines, and capturing beautiful moments.</p>
-                </div>
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/56759/pexels-photo-56759.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Video Editing" class="circle-img">
-                    <p><strong>Video Editing</strong></p>
-                    <p class="description">Turning raw footage into creative and engaging stories through digital tools.</p>
-                </div>
+            <div class="content-row">
+                <img src="https://images.pexels.com/photos/6003070/pexels-photo-6003070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Dancing" class="circle-img">
+                <img src="https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Travelling" class="circle-img">
+                <img src="https://images.pexels.com/photos/56759/pexels-photo-56759.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Video Editing" class="circle-img">
             </div>
         </div>
     </div>
 
-    <footer>
+    <footer class="footer">
         <p>Contact me at: <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a></p>
     </footer>
 </body>
