@@ -33,7 +33,6 @@
             margin: 30px 0;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
         h2 {
             color: #004466;
@@ -41,6 +40,21 @@
             border-bottom: 3px solid #0088cc;
             padding-bottom: 10px;
             margin-bottom: 15px;
+            text-align: center;
+        }
+        .content-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .content-row img {
+            width: 45%;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .content-row .text {
+            width: 50%;
         }
         .social-container, .interests-container {
             display: flex;
@@ -53,7 +67,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 15px;
+            width: 30%;
         }
         .circle-img {
             width: 120px;
@@ -61,6 +75,12 @@
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .description {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
         }
         footer {
             background: #004466;
@@ -88,8 +108,12 @@
     <div class="container">
         <div class="section">
             <h2>Global Operation and Logistics</h2>
-            <img src="https://images.pexels.com/photos/13766338/pexels-photo-13766338.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Global Operations" class="circle-img">
-            <p>Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.</p>
+            <div class="content-row">
+                <img src="https://images.pexels.com/photos/13766338/pexels-photo-13766338.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Global Operations">
+                <div class="text">
+                    <p>Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.</p>
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -114,10 +138,12 @@
                 <div class="circle-container">
                     <img src="https://static.wixstatic.com/media/84f4c0_23a5341d05bd4fc784b1325e348b040f~mv2.jpg/v1/fill/w_626,h_670,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/84f4c0_23a5341d05bd4fc784b1325e348b040f~mv2.jpg" alt="MACEOS Workshop" class="circle-img">
                     <p><strong>MACEOS Workshop</strong></p>
+                    <p class="description">A platform to gain insights into Malaysia’s business events industry and network with professionals.</p>
                 </div>
                 <div class="circle-container">
                     <img src="https://static.wixstatic.com/media/84f4c0_18f703228fc340749717c61420e76ebd~mv2.png/v1/fill/w_953,h_815,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/84f4c0_18f703228fc340749717c61420e76ebd~mv2.png" alt="AFECA Asia" class="circle-img">
                     <p><strong>AFECA Asia</strong></p>
+                    <p class="description">A premier industry event focusing on Asian exhibition and convention development.</p>
                 </div>
             </div>
         </div>
@@ -128,14 +154,17 @@
                 <div class="circle-container">
                     <img src="https://images.pexels.com/photos/6003070/pexels-photo-6003070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Dancing" class="circle-img">
                     <p><strong>Dancing</strong></p>
+                    <p class="description">A form of self-expression and a way to stay active while enjoying music.</p>
                 </div>
                 <div class="circle-container">
                     <img src="https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Travelling" class="circle-img">
                     <p><strong>Travelling</strong></p>
+                    <p class="description">Exploring new cultures, tasting different cuisines, and capturing beautiful moments.</p>
                 </div>
                 <div class="circle-container">
                     <img src="https://images.pexels.com/photos/56759/pexels-photo-56759.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Video Editing" class="circle-img">
                     <p><strong>Video Editing</strong></p>
+                    <p class="description">Turning raw footage into creative and engaging stories through digital tools.</p>
                 </div>
             </div>
         </div>
