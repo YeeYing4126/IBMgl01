@@ -3,60 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sew Yee Ying - Student Profile</title>
+    <title>Sew Yee Ying - Landing Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             background: linear-gradient(to right, #3b82f6, #6366f1);
             color: white;
             text-align: center;
-            margin: 0;
-            padding: 0;
+        }
+        .container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-        }
-        .container {
-            max-width: 600px;
             padding: 20px;
         }
         h1 {
-            font-size: 36px;
+            font-size: 40px;
             font-weight: bold;
             margin-bottom: 10px;
         }
         h2 {
             font-size: 24px;
             margin-bottom: 20px;
-            animation: fade 3s infinite alternate;
         }
-        p {
-            font-size: 18px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
+        h3 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            color: black;
+            padding: 20px;
             border-radius: 10px;
-            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+            max-width: 400px;
         }
-        @keyframes fade {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .button {
+            background: #facc15;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #fbbf24;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Sew Yee Ying</h1>
-        <h2 id="changingText">University Student</h2>
-        <p>Student ID: 2265221</p>
-        <p>Sunway University | Exchange at Dong-A University | Global Logistics</p>
+        <h2 id="changing-text">University Student</h2>
+        <h3>Student ID: 2265221</h3>
+        <div class="card-container">
+            <div class="card">
+                <h3>Sunway University</h3>
+                <p>Currently studying at Sunway University, passionate about global education and logistics.</p>
+            </div>
+            <div class="card">
+                <h3>Exchange at Dong-A University</h3>
+                <p>Exploring new cultures and learning beyond borders.</p>
+            </div>
+        </div>
+        <button class="button">Connect with Me</button>
     </div>
+
     <script>
         const phrases = ["University Student", "Explorer at Dong-A University", "Sunway University Representative", "Diving into Global Logistics"];
         let index = 0;
         setInterval(() => {
-            document.getElementById("changingText").textContent = phrases[index];
+            document.getElementById("changing-text").innerText = phrases[index];
             index = (index + 1) % phrases.length;
         }, 2000);
     </script>
