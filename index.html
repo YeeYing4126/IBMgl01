@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +20,7 @@
             text-align: center;
             font-size: 1.5em;
             font-weight: 600;
-            border-bottom: 5px solid #072E33;
+            border-bottom: 5px solid #0A3E44;
         }
         .container {
             width: 85%;
@@ -38,7 +37,7 @@
         h2 {
             color: #072E33;
             font-size: 2em;
-            border-bottom: 3px solid #072E33;
+            border-bottom: 3px solid #0A3E44;
             padding-bottom: 10px;
             margin-bottom: 15px;
             text-align: center;
@@ -57,32 +56,11 @@
         .content-row .text {
             width: 50%;
         }
-        .assignments-container {
+        .circle-container {
             display: flex;
-            justify-content: space-around;
-            text-align: center;
-            flex-wrap: wrap;
-        }
-        .assignment-box {
+            flex-direction: column;
+            align-items: center;
             width: 30%;
-            padding: 15px;
-            background: #072E33;
-            color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .assignment-box img {
-            width: 100%;
-            border-radius: 12px;
-            margin-bottom: 10px;
-        }
-        .assignment-box a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .assignment-box a:hover {
-            text-decoration: underline;
         }
         .circle-img {
             width: 140px;
@@ -91,7 +69,20 @@
             object-fit: cover;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .footer {
+        .assignment-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+        .description {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
+        }
+        footer {
             background: #072E33;
             color: white;
             padding: 20px;
@@ -127,34 +118,58 @@
 
         <div class="section">
             <h2>Assignments</h2>
-            <div class="assignments-container">
-                <div class="assignment-box">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 1">
-                    <a href="#">Assignment 1</a>
+            <div class="assignment-container">
+                <div class="circle-container">
+                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 1" class="circle-img">
+                    <p><strong><a href="#">Assignment 1</a></strong></p>
                 </div>
-                <div class="assignment-box">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 2">
-                    <a href="#">Assignment 2</a>
+                <div class="circle-container">
+                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 2" class="circle-img">
+                    <p><strong><a href="#">Assignment 2</a></strong></p>
                 </div>
-                <div class="assignment-box">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 3">
-                    <a href="#">Assignment 3</a>
+                <div class="circle-container">
+                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 3" class="circle-img">
+                    <p><strong><a href="#">Assignment 3</a></strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Social</h2>
+            <div class="assignment-container">
+                <div class="circle-container">
+                    <img src="https://static.wixstatic.com/media/84f4c0_23a5341d05bd4fc784b1325e348b040f~mv2.jpg/v1/fill/w_626,h_670,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/84f4c0_23a5341d05bd4fc784b1325e348b040f~mv2.jpg" alt="MACEOS Workshop" class="circle-img">
+                    <p><strong>MACEOS Workshop</strong></p>
+                </div>
+                <div class="circle-container">
+                    <img src="https://static.wixstatic.com/media/84f4c0_18f703228fc340749717c61420e76ebd~mv2.png/v1/fill/w_953,h_815,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/84f4c0_18f703228fc340749717c61420e76ebd~mv2.png" alt="AFECA Asia" class="circle-img">
+                    <p><strong>AFECA Asia</strong></p>
                 </div>
             </div>
         </div>
         
         <div class="section">
             <h2>My Interests</h2>
-            <div class="content-row">
-                <img src="https://images.pexels.com/photos/6003070/pexels-photo-6003070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Dancing" class="circle-img">
-                <img src="https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Travelling" class="circle-img">
-                <img src="https://images.pexels.com/photos/56759/pexels-photo-56759.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Video Editing" class="circle-img">
+            <div class="assignment-container">
+                <div class="circle-container">
+                    <img src="https://images.pexels.com/photos/6003070/pexels-photo-6003070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Dancing" class="circle-img">
+                    <p><strong>Dancing</strong></p>
+                </div>
+                <div class="circle-container">
+                    <img src="https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Travelling" class="circle-img">
+                    <p><strong>Travelling</strong></p>
+                </div>
+                <div class="circle-container">
+                    <img src="https://images.pexels.com/photos/56759/pexels-photo-56759.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Video Editing" class="circle-img">
+                    <p><strong>Video Editing</strong></p>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer class="footer">
+    <footer>
         <p>Contact me at: <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a></p>
     </footer>
 </body>
 </html>
+
