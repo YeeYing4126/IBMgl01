@@ -122,6 +122,14 @@
         footer a:hover {
             color: #0A3E44;
         }
+         <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FedEx Delivery Process</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+        
     </style>
 </head>
 <body>
@@ -198,14 +206,15 @@
             <p style="text-align: center; font-size: 1.2em; color: #555;">Dancing | Travelling | Video Editing</p>
         </div>
     </div>
-        <!-- FedEx Delivery Process -->
-        <div class="section">
-            <h2>FedEx Delivery Process</h2>
-                <img src="images/FedEx1.png" alt="FedEx Delivery Process" width="600">
-                <img src="images/FedEx 2 detailed process flow.png" alt="FedEx Delivery Process" width="600">
-                <img src="images/supporting logistics and enhancement.png" alt="FedEx Delivery Process" width="600">
-                <img src="images/Untitled-2025-03-11-2250.png" alt="FedEx Delivery Process" width="600">
-                <img src="images/Untitled-2025-03-11-2250.excalidraw.png" alt="FedEx Delivery Process" width="600">
+        <h2>FedEx Delivery Process</h2>
+    <div class="mermaid">
+        graph TD;
+            A[Package Drop-off] --> B[Sorting Facility];
+            B --> C[Transportation];
+            C --> D[Local Facility];
+            D -->|Out for delivery| E[Delivery Attempt];
+            E -->|Successful| F[Package Delivered];
+            E -->|Unsuccessful| G[Return to Sender];
 
     </div>
     
