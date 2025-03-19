@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sew Yee Ying - Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Logistics Flowchart Builder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -221,7 +221,7 @@
         <button onclick="addNode('Supplier')">Add Supplier</button>
         <button onclick="addNode('Warehouse')">Add Warehouse</button>
         <button onclick="addNode('Transport')">Add Transport</button>
-        <button onclick="addNode('Retail')">Add Transport</button>
+        <button onclick="addNode('Retail')">Add Retail</button>
         <button onclick="undoDelete()">Undo Delete</button>
         <button onclick="exportToImage()">Export as PNG</button>
         <button onclick="exportToPDF()">Export as PDF</button>
@@ -239,71 +239,49 @@
     <script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
     <script>
-        let flowchart = document.getElementById('flowchart');
-        let selectedNode = null;
-        let lines = [];
-        let deletedNodes = [];
+        let nodeCounter = 0;
+        
+            function addNode(label) {
+                nodeCounter++;
+                let node = document.createElement("div");
+                node.className = "node";
+                node.textContent = label;
+                node.style.top = `${50 + nodeCounter * 60}px`;
+                node.style.left = "50px";
+                node.setAttribute("draggable", true);
+                document.getElementById("canvas").appendChild(node);
 
-        function addNode(type) {
-            let node = document.createElement("div");
-            node.className = "node";
-            node.innerText = type;
-            node.style.top = Math.random() * 300 + "px";
-            node.style.left = Math.random() * 500 + "px";
-            node.setAttribute("draggable", true);
-
-            node.onmousedown = function(event) { 
-                dragElement(node, event);
-            };
-
-            node.onclick = function() {
-                if (selectedNode && selectedNode !== node) {
-                    let line = new LeaderLine(selectedNode, node, { color: 'black', endPlug: 'arrow' });
-                    lines.push(line);
-                    selectedNode = null;
-                } else {
-                    selectedNode = node;
+            interact(node).draggable({
+                listeners: {
+                    move(event) {
+                        let target = event.target;
+                        let x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+                        let y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute("data-x", x);
+                        target.setAttribute("data-y", y);
+                    }
                 }
-            };
-
-            node.oncontextmenu = function(event) {
-                event.preventDefault();
-                deleteNode(node);
-            };
-
-            flowchart.appendChild(node);
+            });
+        }
+        
+        function exportToImage() {
+            html2canvas(document.getElementById("canvas")).then(canvas => {
+                let link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "logistics-flowchart.png";
+                link.click();
+            });
         }
 
-        function dragElement(elmnt, event) {
-            event.preventDefault();
-            let posX = event.clientX;
-            let posY = event.clientY;
-
-            document.onmousemove = function(e) {
-                let dx = e.clientX - posX;
-                let dy = e.clientY - posY;
-                elmnt.style.left = (elmnt.offsetLeft + dx) + "px";
-                elmnt.style.top = (elmnt.offsetTop + dy) + "px";
-                posX = e.clientX;
-                posY = e.clientY;
-
-                lines.forEach(line => line.position());
-            };
-
-            document.onmouseup = function() {
-                document.onmousemove = null;
-            };
-        }
-
-        function deleteNode(node) {
-            deletedNodes.push(node);
-            node.remove();
-        }
-
-        function undoDelete() {
-            if (deletedNodes.length > 0) {
-                flowchart.appendChild(deletedNodes.pop());
-            }
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            let doc = new jsPDF();
+            html2canvas(document.getElementById("canvas")).then(canvas => {
+                let imgData = canvas.toDataURL("image/png");
+                doc.addImage(imgData, 'PNG', 10, 10, 190, 100);
+                doc.save("logistics-flowchart.pdf");
+            });
         }
 
        </script>
