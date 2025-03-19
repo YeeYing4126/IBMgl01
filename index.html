@@ -222,15 +222,26 @@
         <button onclick="addNode('Warehouse')">Add Warehouse</button>
         <button onclick="addNode('Transport')">Add Transport</button>
         <button onclick="addNode('Retail')">Add Transport</button>
+        <button onclick="undoDelete()">Undo Delete</button>
         <button onclick="exportToImage()">Export as PNG</button>
         <button onclick="exportToPDF()">Export as PDF</button>
         <input type="file" id="uploadImage" accept="image/*" onchange="addImage(event)">
     </div>
     <div id="canvas" class="canvas"></div>
+    <svg id="connections">
 
+        <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                 <polygon points="0 0, 10 3.5, 0 7" fill="black" />
+            </marker>
+        </defs>
+    </svg>
     <script>
-        let nodeCounter = 0;
-        
+        let canvas = document.getElementById("canvas");
+        let svg = document.getElementById("connections");
+        let nodes = [];
+        let deletedNode = null;
+        let selectedNode = null;
         function addNode(label) {
             nodeCounter++;
             let node = document.createElement("div");
@@ -254,7 +265,72 @@
                 }
             });
         }
+        function addNode(label) {
+            let node = document.createElement("div");
+            node.className = "node";
+            node.textContent = label;
+            node.style.left = "50px";
+            node.style.top = "50px";
+            node.draggable = true;
+            node.oncontextmenu = function (event) {
+                event.preventDefault();
+                deleteNode(node);
+            };
+            node.onclick = function () { selectNode(node); };
+            node.ondragstart = dragStart;
+            node.ondragend = dragEnd;
+            canvas.appendChild(node);
+            nodes.push(node);
+        }
 
+        function deleteNode(node) {
+            deletedNode = node;
+            node.remove();
+            nodes = nodes.filter(n => n !== node);
+        }
+
+        function undoDelete() {
+            if (deletedNode) {
+                canvas.appendChild(deletedNode);
+                nodes.push(deletedNode);
+                deletedNode = null;
+            }
+        }
+
+        function selectNode(node) {
+            if (!selectedNode) {
+                selectedNode = node;
+            } else {
+                drawLine(selectedNode, node);
+                selectedNode = null;
+            }
+        }
+
+        function drawLine(startNode, endNode) {
+            let startX = startNode.offsetLeft + startNode.offsetWidth / 2;
+            let startY = startNode.offsetTop + startNode.offsetHeight / 2;
+            let endX = endNode.offsetLeft + endNode.offsetWidth / 2;
+            let endY = endNode.offsetTop + endNode.offsetHeight / 2;
+            
+            let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", startX);
+            line.setAttribute("y1", startY);
+            line.setAttribute("x2", endX);
+            line.setAttribute("y2", endY);
+            line.setAttribute("class", "arrow");
+            svg.appendChild(line);
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text/plain", "");
+            event.target.style.opacity = "0.5";
+        }
+
+        function dragEnd(event) {
+            event.target.style.opacity = "1";
+            event.target.style.left = `${event.pageX - canvas.offsetLeft - 60}px`;
+            event.target.style.top = `${event.pageY - canvas.offsetTop - 25}px`;
+        }
         function addImage(event) {
             let file = event.target.files[0];
             if (!file) return;
