@@ -237,136 +237,75 @@
         </defs>
     </svg>
     <script>
-        let canvas = document.getElementById("canvas");
-        let svg = document.getElementById("connections");
-        let nodes = [];
-        let deletedNode = null;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
+    <script>
+        let flowchart = document.getElementById('flowchart');
         let selectedNode = null;
-        function addNode(label) {
-            nodeCounter++;
-            let node = document.createElement("div");
-            node.className = "node";
-            node.textContent = label;
-            node.style.top = `${50 + nodeCounter * 60}px`;
-            node.style.left = "50px";
-            node.setAttribute("draggable", true);
-            document.getElementById("canvas").appendChild(node);
+        let lines = [];
+        let deletedNodes = [];
 
-            interact(node).draggable({
-                listeners: {
-                    move(event) {
-                        let target = event.target;
-                        let x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
-                        let y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
-                        target.style.transform = `translate(${x}px, ${y}px)`;
-                        target.setAttribute("data-x", x);
-                        target.setAttribute("data-y", y);
-                    }
-                }
-            });
-        }
-        function addNode(label) {
+        function addNode(type) {
             let node = document.createElement("div");
             node.className = "node";
-            node.textContent = label;
-            node.style.left = "50px";
-            node.style.top = "50px";
-            node.draggable = true;
-            node.oncontextmenu = function (event) {
+            node.innerText = type;
+            node.style.top = Math.random() * 300 + "px";
+            node.style.left = Math.random() * 500 + "px";
+            node.setAttribute("draggable", true);
+
+            node.onmousedown = function(event) { 
+                dragElement(node, event);
+            };
+
+            node.onclick = function() {
+                if (selectedNode && selectedNode !== node) {
+                    let line = new LeaderLine(selectedNode, node, { color: 'black', endPlug: 'arrow' });
+                    lines.push(line);
+                    selectedNode = null;
+                } else {
+                    selectedNode = node;
+                }
+            };
+
+            node.oncontextmenu = function(event) {
                 event.preventDefault();
                 deleteNode(node);
             };
-            node.onclick = function () { selectNode(node); };
-            node.ondragstart = dragStart;
-            node.ondragend = dragEnd;
-            canvas.appendChild(node);
-            nodes.push(node);
+
+            flowchart.appendChild(node);
+        }
+
+        function dragElement(elmnt, event) {
+            event.preventDefault();
+            let posX = event.clientX;
+            let posY = event.clientY;
+
+            document.onmousemove = function(e) {
+                let dx = e.clientX - posX;
+                let dy = e.clientY - posY;
+                elmnt.style.left = (elmnt.offsetLeft + dx) + "px";
+                elmnt.style.top = (elmnt.offsetTop + dy) + "px";
+                posX = e.clientX;
+                posY = e.clientY;
+
+                lines.forEach(line => line.position());
+            };
+
+            document.onmouseup = function() {
+                document.onmousemove = null;
+            };
         }
 
         function deleteNode(node) {
-            deletedNode = node;
+            deletedNodes.push(node);
             node.remove();
-            nodes = nodes.filter(n => n !== node);
         }
 
         function undoDelete() {
-            if (deletedNode) {
-                canvas.appendChild(deletedNode);
-                nodes.push(deletedNode);
-                deletedNode = null;
+            if (deletedNodes.length > 0) {
+                flowchart.appendChild(deletedNodes.pop());
             }
         }
 
-        function selectNode(node) {
-            if (!selectedNode) {
-                selectedNode = node;
-            } else {
-                drawLine(selectedNode, node);
-                selectedNode = null;
-            }
-        }
-
-        function drawLine(startNode, endNode) {
-            let startX = startNode.offsetLeft + startNode.offsetWidth / 2;
-            let startY = startNode.offsetTop + startNode.offsetHeight / 2;
-            let endX = endNode.offsetLeft + endNode.offsetWidth / 2;
-            let endY = endNode.offsetTop + endNode.offsetHeight / 2;
-            
-            let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("x1", startX);
-            line.setAttribute("y1", startY);
-            line.setAttribute("x2", endX);
-            line.setAttribute("y2", endY);
-            line.setAttribute("class", "arrow");
-            svg.appendChild(line);
-        }
-
-        function dragStart(event) {
-            event.dataTransfer.setData("text/plain", "");
-            event.target.style.opacity = "0.5";
-        }
-
-        function dragEnd(event) {
-            event.target.style.opacity = "1";
-            event.target.style.left = `${event.pageX - canvas.offsetLeft - 60}px`;
-            event.target.style.top = `${event.pageY - canvas.offsetTop - 25}px`;
-        }
-        function addImage(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let imgNode = document.createElement("div");
-                imgNode.className = "image-node";
-                imgNode.style.left = "100px";
-                imgNode.style.top = "100px";
-                let img = document.createElement("img");
-                img.src = e.target.result;
-                imgNode.appendChild(img);
-                document.getElementById("canvas").appendChild(imgNode);
-                makeDraggable(imgNode);
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        function exportToImage() {
-            html2canvas(document.getElementById("canvas")).then(canvas => {
-                let link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = "logistics-flowchart.png";
-                link.click();
-            });
-        }
-
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            let doc = new jsPDF();
-            html2canvas(document.getElementById("canvas")).then(canvas => {
-                let imgData = canvas.toDataURL("image/png");
-                doc.addImage(imgData, 'PNG', 10, 10, 190, 100);
-                doc.save("logistics-flowchart.pdf");
-            });
-        }
        </script>
     </div>
     
