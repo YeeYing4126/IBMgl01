@@ -264,7 +264,20 @@
                 }
             });
         }
-        
+        function deleteNode() {
+            let activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                deletedNodes.push(activeObject);
+                canvas.remove(activeObject);
+            }
+        }
+
+        function undoDelete() {
+            if (deletedNodes.length > 0) {
+                canvas.add(deletedNodes.pop());
+            }
+        }
+                
         function exportToImage() {
             html2canvas(document.getElementById("canvas")).then(canvas => {
                 let link = document.createElement("a");
