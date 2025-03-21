@@ -6,9 +6,6 @@
     <title>Sew Yee Ying - Portfolio</title>
     <title>Logistics Flowchart Builder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -149,15 +146,11 @@
         footer a:hover {
             color: #0A3E44;
         }
-         <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FedEx Delivery Process</title>
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true });
-        #canvas { width: 80%; height: 500px; border: 1px solid black; position: relative; margin: auto; overflow: hidden; }
-        .node, .image-node { position: absolute; padding: 10px; background: lightblue; border: 1px solid black; cursor: move; }
-        .image-node img { max-width: 100px; height: auto; }
+        
+        function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+    }
     </script>
         
     </style>
@@ -187,8 +180,8 @@
             <div class="assignment-container">
                 <div class="circle-container">
                     <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 1" class="circle-img">
-                    <p><strong>Assignment 1</strong></p>
-                    <input type="file" class="upload-btn">
+                    <p><strong>FedEx Logistics Process</strong></p>
+                    <button onclick="showPage('Click Here')">FedEx Logistics Process</button>
                 </div>
                 <div class="circle-container">
                     <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 2" class="circle-img">
@@ -214,90 +207,6 @@
             <h2>My Interests</h2>
             <p style="text-align: center; font-size: 1.2em; color: #555;">Dancing | Travelling | Video Editing</p>
         </div>
-    </div>
-
-        <!-- FedEx Logistics Flowchart -->
-        <div class="toolbar">
-        <button onclick="addNode('Supplier')">Add Supplier</button>
-        <button onclick="addNode('Warehouse')">Add Warehouse</button>
-        <button onclick="addNode('Transport')">Add Transport</button>
-        <button onclick="addNode('Retail')">Add Retail</button>
-        <button onclick="undoDelete()">Undo Delete</button>
-        <button onclick="exportToImage()">Export as PNG</button>
-        <button onclick="exportToPDF()">Export as PDF</button>
-        <input type="file" id="uploadImage" accept="image/*" onchange="addImage(event)">
-    </div>
-    <div id="canvas" class="canvas"></div>
-    <svg id="connections">
-
-        <defs>
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                 <polygon points="0 0, 10 3.5, 0 7" fill="black" />
-            </marker>
-        </defs>
-    </svg>
-    <script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leader-line/1.0.7/leader-line.min.js"></script>
-    <script>
-        let nodeCounter = 0;
-        
-            function addNode(label) {
-                nodeCounter++;
-                let node = document.createElement("div");
-                node.className = "node";
-                node.textContent = label;
-                node.style.top = `${50 + nodeCounter * 60}px`;
-                node.style.left = "50px";
-                node.setAttribute("draggable", true);
-                document.getElementById("canvas").appendChild(node);
-
-            interact(node).draggable({
-                listeners: {
-                    move(event) {
-                        let target = event.target;
-                        let x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
-                        let y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
-                        target.style.transform = `translate(${x}px, ${y}px)`;
-                        target.setAttribute("data-x", x);
-                        target.setAttribute("data-y", y);
-                    }
-                }
-            });
-        }
-        function deleteNode() {
-            let activeObject = canvas.getActiveObject();
-            if (activeObject) {
-                deletedNodes.push(activeObject);
-                canvas.remove(activeObject);
-            }
-        }
-
-        function undoDelete() {
-            if (deletedNodes.length > 0) {
-                canvas.add(deletedNodes.pop());
-            }
-        }
-                
-        function exportToImage() {
-            html2canvas(document.getElementById("canvas")).then(canvas => {
-                let link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = "logistics-flowchart.png";
-                link.click();
-            });
-        }
-
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            let doc = new jsPDF();
-            html2canvas(document.getElementById("canvas")).then(canvas => {
-                let imgData = canvas.toDataURL("image/png");
-                doc.addImage(imgData, 'PNG', 10, 10, 190, 100);
-                doc.save("logistics-flowchart.pdf");
-            });
-        }
-
-       </script>
     </div>
     
     <footer>
