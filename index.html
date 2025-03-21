@@ -2,212 +2,311 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sew Yee Ying - Portfolio</title>
     <title>Logistics Flowchart Builder</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.interactjs.io/v1.10.11/interact.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 0;
-            background: #f4f4f9;
-            color: #333;
-        }
-        header {
-            background: linear-gradient(135deg, #072E33, #0A3E44);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: 600;
-            border-bottom: 5px solid #0A3E44;
-        }
-        .container {
-            width: 85%;
-            margin: auto;
-            overflow: hidden;
-        }
-        .section {
-            background: white;
-            padding: 30px;
-            margin: 30px 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: #072E33;
-            font-size: 2em;
-            border-bottom: 3px solid #0A3E44;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .global-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .global-container img {
-            width: 40%;
-            border-radius: 12px;
-        }
-        .global-description {
-            width: 55%;
-            font-size: 1em;
-            color: #555;
-        }
-        .assignment-container, .social-container, .interests-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            text-align: center;
-        }
-        .circle-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 30%;
-        }
-        .circle-img {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .description {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #555;
-            text-align: left;
-            width: 50%;
-        }
-        .upload-btn {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: #072E33;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .upload-btn:hover {
-            background: #0A3E44;
-        }
-        .interests-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .interest-item {
-            display: flex;
-            align-items: center;
-            width: 48%;
-            justify-content: space-between;
-        }
-        .toolbar {
-            padding: 10px;
-            background: #333;
-            color: white;
-        }
-        .canvas {
-            width: 100vw;
-            height: 80vh;
-            border: 2px solid black;
-            position: relative;
-            overflow: hidden;
-            background: #f4f4f4;
-        }
-        .node {
-            width: 100px;
-            height: 50px;
-            position: absolute;
-            background: lightblue;
-            border: 2px solid blue;
-            text-align: center;
-            line-height: 50px;
-            cursor: grab;
-       }
-        footer {
-            background: #072E33;
-            color: white;
             padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        #toolbar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .canvas-container {
+            display: flex;
+        }
+        
+        #nodes-panel {
+            width: 150px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin-right: 20px;
+        }
+        
+        .node-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #ccc;
+            cursor: move;
+            border-radius: 4px;
+        }
+        
+        #canvas {
+            flex-grow: 1;
+            min-height: 600px;
+            border: 2px dashed #ccc;
+            position: relative;
+        }
+        
+        .flow-node {
+            position: absolute;
+            width: 120px;
+            padding: 15px;
+            background: #fff;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
             text-align: center;
-            font-size: 1.1em;
-        }
-        footer a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        footer a:hover {
-            color: #0A3E44;
+            cursor: move;
         }
         
-        function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
-        document.getElementById(pageId).style.display = 'block';
-    }
-    </script>
+        .connector {
+            width: 10px;
+            height: 10px;
+            background: #666;
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            cursor: crosshair;
+        }
         
+        .delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            cursor: pointer;
+            color: red;
+        }
+        
+        .connection {
+            position: absolute;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Sew Yee Ying</h1>
-        <p>Student ID: 2265221</p>
-    </header>
-    
-    <div class="container">
-        <!-- Global Operations and Logistics -->
-        <div class="section">
-            <h2>Global Operations and Logistics</h2>
-            <div class="global-container">
-                <img src="https://images.pexels.com/photos/13766338/pexels-photo-13766338.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Global Operations">
-                <p class="global-description">
-                    Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.
-                </p>
-            </div>
-        </div>
-
-        <!-- Assignments -->
-        <div class="section">
-            <h2>Assignments</h2>
-            <a href="https://excalidraw.com/#room=b468e6a21498408484d7,An9CUMKcCUUqtMzfSEucQQ" target="_blank">Click here to open Excalidraw</a>
-            <div class="assignment-container">
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 1" class="circle-img">
-                    <p><strong>FedEx Logistics Process</strong></p>
-                    <button onclick="showPage('Click Here')">FedEx Logistics Process</button>
-                </div>
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 2" class="circle-img">
-                    <p><strong>Assignment 2</strong></p>
-                    <input type="file" class="upload-btn">
-                </div>
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 3" class="circle-img">
-                    <p><strong>Assignment 3</strong></p>
-                    <input type="file" class="upload-btn">
-                </div>
-            </div>
-        </div>
-
-        <!-- About Me -->
-        <div class="section">
-            <h2>About Me</h2>
-            <p style="text-align: center; font-size: 1.2em; color: #555;">Exchange Student in Dong-A University</p>
-        </div>
-
-        <!-- My Interests -->
-        <div class="section">
-            <h2>My Interests</h2>
-            <p style="text-align: center; font-size: 1.2em; color: #555;">Dancing | Travelling | Video Editing</p>
-        </div>
+    <div id="toolbar">
+        <button onclick="exportPNG()">Export PNG</button>
+        <button onclick="undo()">Undo</button>
+        <button onclick="redo()">Redo</button>
+        <input type="color" id="nodeColor" onchange="changeNodeColor(this.value)">
     </div>
+
+    <div class="canvas-container">
+        <div id="nodes-panel">
+            <div class="node-item" data-type="Supplier">Supplier</div>
+            <div class="node-item" data-type="Warehouse">Warehouse</div>
+            <div class="node-item" data-type="Distribution">Distribution</div>
+            <div class="node-item" data-type="Retail">Retail</div>
+            <div class="node-item" data-type="Transport">Transport</div>
+        </div>
+        <div id="canvas"></div>
+    </div>
+
+    <script>
+        let nodes = [];
+        let connections = [];
+        let history = [];
+        let currentHistoryIndex = -1;
+        let draggingConnection = null;
+        let selectedNode = null;
+
+        // Initialize interact.js
+        interact('.node-item').draggable({
+            onstart: (event) => {
+                const type = event.target.getAttribute('data-type');
+                createNode(type, event.clientX, event.clientY);
+            }
+        });
+
+        function createNode(type, x, y) {
+            const nodeId = Date.now();
+            const node = document.createElement('div');
+            node.className = 'flow-node';
+            node.id = `node-${nodeId}`;
+            node.innerHTML = `
+                <span class="delete-btn" onclick="deleteNode(${nodeId})">×</span>
+                <div class="connector" data-node="${nodeId}"></div>
+                <div contenteditable="true">${type}</div>
+            `;
+            
+            node.style.left = `${x - 60}px`;
+            node.style.top = `${y - 20}px`;
+            
+            document.getElementById('canvas').appendChild(node);
+            nodes.push({ id: nodeId, element: node, x, y });
+            
+            makeDraggable(node);
+            setupConnector(node.querySelector('.connector'));
+            saveState();
+        }
+
+        function makeDraggable(element) {
+            interact(element).draggable({
+                onmove: (event) => {
+                    const target = event.target;
+                    const x = (parseFloat(target.style.left) || 0) + event.dx;
+                    const y = (parseFloat(target.style.top) || 0) + event.dy;
+                    target.style.left = `${x}px`;
+                    target.style.top = `${y}px`;
+                    updateConnections();
+                }
+            });
+        }
+
+        function setupConnector(connector) {
+            interact(connector).draggable({
+                onstart: (event) => {
+                    draggingConnection = {
+                        startNode: event.target.getAttribute('data-node'),
+                        element: document.createElement('div'),
+                        x1: event.clientX,
+                        y1: event.clientY
+                    };
+                    draggingConnection.element.className = 'connection';
+                    document.getElementById('canvas').appendChild(draggingConnection.element);
+                },
+                onmove: (event) => {
+                    if (!draggingConnection) return;
+                    const canvas = document.getElementById('canvas').getBoundingClientRect();
+                    const x2 = event.clientX - canvas.left;
+                    const y2 = event.clientY - canvas.top;
+                    drawConnectionLine(draggingConnection.element, 
+                        draggingConnection.x1 - canvas.left, 
+                        draggingConnection.y1 - canvas.top, 
+                        x2, y2);
+                },
+                onend: (event) => {
+                    if (!draggingConnection) return;
+                    const endConnector = document.elementFromPoint(event.clientX, event.clientY);
+                    if (endConnector && endConnector.classList.contains('connector')) {
+                        createConnection(draggingConnection.startNode, 
+                            endConnector.getAttribute('data-node'));
+                    }
+                    draggingConnection.element.remove();
+                    draggingConnection = null;
+                }
+            });
+        }
+
+        function createConnection(startId, endId) {
+            const connection = {
+                start: startId,
+                end: endId,
+                element: document.createElement('div')
+            };
+            connection.element.className = 'connection';
+            connections.push(connection);
+            document.getElementById('canvas').appendChild(connection.element);
+            updateConnections();
+            saveState();
+        }
+
+        function updateConnections() {
+            connections.forEach(conn => {
+                const startNode = nodes.find(n => n.id == conn.start);
+                const endNode = nodes.find(n => n.id == conn.end);
+                if (startNode && endNode) {
+                    const startRect = startNode.element.getBoundingClientRect();
+                    const endRect = endNode.element.getBoundingClientRect();
+                    const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+                    drawConnectionLine(conn.element,
+                        startRect.left + startRect.width/2 - canvasRect.left,
+                        startRect.bottom - canvasRect.top,
+                        endRect.left + endRect.width/2 - canvasRect.left,
+                        endRect.top - canvasRect.top
+                    );
+                }
+            });
+        }
+
+        function drawConnectionLine(element, x1, y1, x2, y2) {
+            const length = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            element.style.width = `${length}px`;
+            element.style.left = `${x1}px`;
+            element.style.top = `${y1}px`;
+            element.style.transform = `rotate(${angle}rad)`;
+            element.style.borderBottom = '2px solid #333';
+        }
+
+        function deleteNode(nodeId) {
+            const nodeIndex = nodes.findIndex(n => n.id === nodeId);
+            if (nodeIndex > -1) {
+                nodes[nodeIndex].element.remove();
+                nodes.splice(nodeIndex, 1);
+                connections = connections.filter(conn => 
+                    conn.start !== nodeId && conn.end !== nodeId);
+                updateConnections();
+                saveState();
+            }
+        }
+
+        function saveState() {
+            history = history.slice(0, currentHistoryIndex + 1);
+            history.push({
+                nodes: nodes.map(n => ({ ...n, element: null })),
+                connections: [...connections]
+            });
+            currentHistoryIndex++;
+        }
+
+        function undo() {
+            if (currentHistoryIndex > 0) {
+                currentHistoryIndex--;
+                restoreState();
+            }
+        }
+
+        function redo() {
+            if (currentHistoryIndex < history.length - 1) {
+                currentHistoryIndex++;
+                restoreState();
+            }
+        }
+
+        function restoreState() {
+            const state = history[currentHistoryIndex];
+            // Clear current state
+            nodes.forEach(n => n.element.remove());
+            connections.forEach(c => c.element.remove());
+            
+            // Restore nodes
+            nodes = state.nodes.map(n => {
+                const node = document.createElement('div');
+                // ... recreation logic ...
+                return { ...n, element: node };
+            });
+            
+            // Restore connections
+            connections = state.connections.map(conn => {
+                // ... recreation logic ...
+            });
+            
+            updateConnections();
+        }
+
+        function exportPNG() {
+            html2canvas(document.querySelector("#canvas")).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'flowchart.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function changeNodeColor(color) {
+            if (selectedNode) {
+                selectedNode.style.backgroundColor = color;
+                saveState();
+            }
+        }
+
+        // Initialize node selection
+        document.addEventListener('click', (e) => {
+            selectedNode = e.target.closest('.flow-node');
+        });
+    </script>
     
     <footer>
         <p>Contact me at: <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a></p>
