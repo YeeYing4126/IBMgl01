@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Editor</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .editor-container { width: 100vw; height: 100vh; position: relative; background: #f0f0f0; }
+        .node { position: absolute; width: 120px; height: 50px; background: white; border: 1px solid black; cursor: grab; padding: 10px; }
+        .line { position: absolute; background: black; height: 2px; position: absolute; }
+    </style>
+</head>
+<body>
+    <div class="editor-container" id="editor">
+        <button onclick="addNode()">Add Node</button>
+        <button onclick="undoAction()">Undo</button>
+        <button onclick="redoAction()">Redo</button>
+        <button onclick="exportToPNG()">Export PNG</button>
+        <button onclick="exportToPDF()">Export PDF</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        let nodes = [];
+        let lines = [];
+        let history = [];
+        let redoStack = [];
+        let isConnecting = false;
+        let startNode = null;
+        
+        function addNode() {
+            let node = document.createElement("div");
+            node.className = "node";
+            node.contentEditable = true;
+            node.style.left = "100px";
+            node.style.top = "100px";
+            node.onmousedown = dragStart;
+            node.ondblclick = startConnection;
+            document.getElementById("editor").appendChild(node);
+            nodes.push(node);
+            saveHistory();
+        }
+        
+        function dragStart(event) {
+            let node = event.target;
+            let shiftX = event.clientX - node.getBoundingClientRect().left;
+            let shiftY = event.clientY - node.getBoundingClientRect().top;
+            
+            function moveAt(pageX, pageY) {
+                node.style.left = pageX - shiftX + 'px';
+                node.style.top = pageY - shiftY + 'px';
+                updateLines();
+            }
+            
+            function onMouseMove(event) {
+                moveAt(event.pageX, event.pageY);
+            }
+            
+            document.addEventListener('mousemove', onMouseMove);
+            
+            node.onmouseup = function() {
+                document.removeEventListener('mousemove', onMouseMove);
+                node.onmouseup = null;
+                saveHistory();
+            };
+        }
+        
+        function startConnection(event) {
+            if (!isConnecting) {
+                isConnecting = true;
+                startNode = event.target;
+            } else {
+                let endNode = event.target;
+                createLine(startNode, endNode);
+                isConnecting = false;
+                saveHistory();
+            }
+        }
+        
+        function createLine(start, end) {
+            let line = document.createElement("div");
+            line.className = "line";
+            document.getElementById("editor").appendChild(line);
+            lines.push({ line, start, end });
+            updateLines();
+        }
+        
+        function updateLines() {
+            lines.forEach(({ line, start, end }) => {
+                let startRect = start.getBoundingClientRect();
+                let endRect = end.getBoundingClientRect();
+                let editorRect = document.getElementById("editor").getBoundingClientRect();
+                
+                let x1 = startRect.left + startRect.width / 2 - editorRect.left;
+                let y1 = startRect.top + startRect.height / 2 - editorRect.top;
+                let x2 = endRect.left + endRect.width / 2 - editorRect.left;
+                let y2 = endRect.top + endRect.height / 2 - editorRect.top;
+                
+                let length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                
+                line.style.width = length + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.left = x1 + 'px';
+                line.style.top = y1 + 'px';
+            });
+        }
+        
+        function saveHistory() {
+            history.push(nodes.map(node => ({ left: node.style.left, top: node.style.top })));
+            redoStack = [];
+        }
+        
+        function undoAction() {
+            if (history.length > 1) {
+                redoStack.push(history.pop());
+                let prevState = history[history.length - 1];
+                nodes.forEach((node, index) => {
+                    node.style.left = prevState[index].left;
+                    node.style.top = prevState[index].top;
+                });
+            }
+        }
+        
+        function redoAction() {
+            if (redoStack.length > 0) {
+                let nextState = redoStack.pop();
+                history.push(nextState);
+                nodes.forEach((node, index) => {
+                    node.style.left = nextState[index].left;
+                    node.style.top = nextState[index].top;
+                });
+            }
+        }
+        
+        function exportToPNG() {
+            html2canvas(document.getElementById("editor")).then(canvas => {
+                let link = document.createElement("a");
+                link.download = "node-editor.png";
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+        
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            html2canvas(document.getElementById("editor")).then(canvas => {
+                let pdf = new jsPDF();
+                pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 190, 100);
+                pdf.save("node-editor.pdf");
+            });
+        }
+    </script>
+</body>
+</html>
