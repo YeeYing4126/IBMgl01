@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics Flowchart Builder</title>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; overflow: hidden; }
+        .toolbar { padding: 10px; background: #ddd; display: flex; gap: 10px; }
+        .node { position: absolute; padding: 10px; background: #007bff; color: white; border-radius: 5px; cursor: move; }
+        .node .delete { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; cursor: pointer; }
+        .canvas { width: 100vw; height: 90vh; border: 1px solid black; position: relative; }
+        .line { position: absolute; width: 2px; background: black; }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="addNode('Supplier')">Add Supplier</button>
+        <button onclick="addNode('Warehouse')">Add Warehouse</button>
+        <button onclick="addNode('Distribution')">Add Distribution</button>
+        <button onclick="addNode('Retail')">Add Retail</button>
+        <button onclick="addNode('Transport')">Add Transport</button>
+        <button onclick="exportAsImage()">Export as PNG</button>
+        <button onclick="exportAsPDF()">Export as PDF</button>
+    </div>
+    <div class="canvas" id="canvas"></div>
+
+    <script>
+        let nodeCounter = 0;
+        let history = [];
+        let redoStack = [];
+
+        function addNode(type) {
+            const canvas = document.getElementById("canvas");
+            const node = document.createElement("div");
+            node.classList.add("node");
+            node.innerText = type;
+            node.id = `node-${nodeCounter++}`;
+            node.style.left = "50px";
+            node.style.top = "50px";
+            
+            const deleteBtn = document.createElement("button");
+            deleteBtn.innerText = "x";
+            deleteBtn.classList.add("delete");
+            deleteBtn.onclick = () => { node.remove(); saveState(); };
+            node.appendChild(deleteBtn);
+
+            canvas.appendChild(node);
+            makeDraggable(node);
+            saveState();
+        }
+
+        function makeDraggable(element) {
+            interact(element).draggable({
+                listeners: {
+                    move(event) {
+                        let target = event.target;
+                        let x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+                        let y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute("data-x", x);
+                        target.setAttribute("data-y", y);
+                    },
+                    end() { saveState(); }
+                }
+            });
+        }
+
+        function saveState() {
+            history.push(document.getElementById("canvas").innerHTML);
+            redoStack = [];
+        }
+
+        function undo() {
+            if (history.length > 1) {
+                redoStack.push(history.pop());
+                document.getElementById("canvas").innerHTML = history[history.length - 1];
+            }
+        }
+
+        function redo() {
+            if (redoStack.length > 0) {
+                history.push(redoStack.pop());
+                document.getElementById("canvas").innerHTML = history[history.length - 1];
+            }
+        }
+
+        function exportAsImage() {
+            html2canvas(document.getElementById("canvas")).then(canvas => {
+                let link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "flowchart.png";
+                link.click();
+            });
+        }
+
+        function exportAsPDF() {
+            const { jsPDF } = window.jspdf;
+            html2canvas(document.getElementById("canvas")).then(canvas => {
+                let imgData = canvas.toDataURL("image/png");
+                let pdf = new jsPDF("l", "mm", "a4");
+                pdf.addImage(imgData, "PNG", 10, 10, 280, 160);
+                pdf.save("flowchart.pdf");
+            });
+        }
+    </script>
+</body>
+</html>
