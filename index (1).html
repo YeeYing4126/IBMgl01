@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Virtual Library Analysis Tool</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Virtual Library - CSV Analysis</h1>
+  <input type="file" id="csvFile" accept=".csv" />
+  <button onclick="loadCSV()">Upload & Analyze</button>
+  <div id="summary"></div>
+  <canvas id="genreChart" width="600" height="400"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
