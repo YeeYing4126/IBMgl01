@@ -1,0 +1,65 @@
+from flask import Flask, request, render_template
+import pandas as pd
+import os
+import multiprocessing
+
+app = Flask(__name__)
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/')
+def upload_file():
+    return render_template('upload.html')
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    file = request.files['file']
+    if file:
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(file_path)
+        
+        df = pd.read_csv(file_path)
+        df['Order_Date'] = pd.to_datetime(df['Order_Date'], errors='coerce')
+        df['Actual_Delivery_Date'] = pd.to_datetime(df['Actual_Delivery_Date'], errors='coerce')
+        df['Expected_Delivery_Date'] = pd.to_datetime(df['Expected_Delivery_Date'], errors='coerce')
+        
+        df.dropna(subset=['Order_Date', 'Actual_Delivery_Date', 'Expected_Delivery_Date'], inplace=True)
+        
+        df['Lead_Time'] = (df['Actual_Delivery_Date'] - df['Order_Date']).dt.days
+        df['Delay_Days'] = (df['Actual_Delivery_Date'] - df['Expected_Delivery_Date']).dt.days
+        df['Month'] = df['Order_Date'].dt.month
+        
+        if df.empty:
+            return render_template('results.html', results={"Error": "No valid data to process"})
+        
+        results = {}
+        try:
+            results["Supplier with highest avg lead time"] = df.groupby("Supplier")["Lead_Time"].mean().idxmax()
+        except:
+            results["Supplier with highest avg lead time"] = "N/A"
+        
+        try:
+            results["Transport mode with lowest avg lead time"] = df.groupby("Transportation_Mode")["Lead_Time"].mean().idxmin()
+        except:
+            results["Transport mode with lowest avg lead time"] = "N/A"
+        
+        try:
+            results["Month with highest avg delay"] = df.groupby("Month")["Delay_Days"].mean().idxmax()
+        except:
+            results["Month with highest avg delay"] = "N/A"
+        
+        try:
+            results["Disruption type with longest avg delay"] = df[df["Disruption_Type"] != "None"].groupby("Disruption_Type")["Delay_Days"].mean().idxmax()
+        except:
+            results["Disruption type with longest avg delay"] = "N/A"
+        
+        try:
+            results["Product category with shortest avg lead time"] = df.groupby("Product_Category")["Lead_Time"].mean().idxmin()
+        except:
+            results["Product category with shortest avg lead time"] = "N/A"
+        
+        return render_template('results.html', results=results)
+
+if __name__ == '__main__':
+    multiprocessing.set_start_method("fork", force=True)
+    app.run(debug=True)
