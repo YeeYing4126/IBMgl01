@@ -30,12 +30,15 @@
             color: var(--text-color); 
             display: flex; 
         }
+
         .sidebar { 
             width: 200px; 
             background: var(--sidebar-bg); 
             padding: 10px; 
             border-right: 1px solid var(--grid-color);
+            z-index: 2;
         }
+
         .flowchart-container { 
             flex: 1; 
             height: 100vh; 
@@ -44,6 +47,7 @@
             transform-origin: 0 0;
             transition: transform 0.1s ease-out;
         }
+
         .grid-container {
             position: absolute;
             width: 10000%;
@@ -55,73 +59,84 @@
                 linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
             background-size: 20px 20px;
         }
-        button { 
-            background: var(--button-bg); 
-            border: 1px solid var(--grid-color); 
-            color: var(--text-color); 
-        }
-        .node {
-            color: var(--node-text);
-        }
-        /* Add to existing styles */
-        .theme-controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--button-bg);
-            padding: 5px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        body { 
-            margin: 0; 
-            font-family: Arial, sans-serif; 
-            background: #F8F7F2; 
-            color: #333; 
-            display: flex; 
-        }
-        .sidebar { 
-            width: 200px; 
-            background: #fff; 
-            padding: 10px; 
-            border-right: 1px solid #ddd;
-        }
-        .sidebar details {
-            margin-bottom: 10px;
-        }
-        .sidebar summary {
-            font-weight: bold;
-            margin: 5px 0;
-            cursor: pointer;
-        }
-        .flowchart-container { 
-            flex: 1; 
-            height: 100vh; 
-            position: relative; 
-            overflow: hidden;
-            transform-origin: 0 0;
-            transition: transform 0.1s ease-out;
-        }
-        .grid-container {
-            position: absolute;
-            width: 10000%;
-            height: 10000%;
-            left: -5000%;
-            top: -5000%;
-            background-image: 
-                linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-                linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-        }
+
         button { 
             width: 100%; 
             margin-bottom: 5px; 
             padding: 8px; 
-            background: #f0f0f0; 
-            border: 1px solid #ddd; 
-            color: #333; 
+            background: var(--button-bg); 
+            border: 1px solid var(--grid-color); 
+            color: var(--text-color); 
             cursor: pointer; 
             border-radius: 4px;
         }
+
+        .node {
+            position: absolute;
+            padding: 15px;
+            color: var(--node-text);
+            border-radius: 8px;
+            cursor: move;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+            min-height: 50px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .theme-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .theme-switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+        
         button:hover { background: #e0e0e0; }
         .node {
             position: absolute;
@@ -197,6 +212,13 @@
     </style>
 </head>
 <body>
+    <div class="theme-controls">
+        <label class="theme-switch">
+            <input type="checkbox" onchange="toggleTheme()">
+            <span class="theme-slider"></span>
+        </label>
+    </div>
+    
     <div class="sidebar">
         <details open>
             <summary>Nodes</summary>
@@ -219,10 +241,6 @@
             <button onclick="exportAsImage()">Export Image</button>
             <button onclick="exportAsPDF()">Export PDF</button>
         </details>
-    </div>
-
-      <div class="theme-controls">
-        <button onclick="toggleTheme()">Dark Mode</button>
     </div>
     
     <div class="flowchart-container" id="flowchart">
@@ -536,6 +554,22 @@
                 pdf.save('flowchart.pdf');
             });
         }
+        // Updated Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+        }
+
+        // Updated Zoom Function
+        function updateZoom() {
+            const container = document.getElementById("flowchart");
+            container.style.transform = `scale(${currentScale})`;
+            
+            // Update grid size based on zoom
+            const gridSize = 20 / currentScale;
+            document.querySelector('.grid-container').style.backgroundSize = 
+                `${gridSize}px ${gridSize}px`;
     </script>
 </body>
 </html>
