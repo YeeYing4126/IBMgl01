@@ -37,14 +37,15 @@
         let redoStack = [];
         
         function addNode(type) {
-            const flowchart = document.getElementById("flowchart");
+            const canvas = document.getElementById("canvas");
             const node = document.createElement("div");
-            node.className = "node";
-            node.style.left = `${Math.random() * 500}px`;
-            node.style.top = `${Math.random() * 400}px`;
-            node.style.backgroundColor = "gray";
-            node.draggable = true;
-            node.dataset.nodeId = nodeCount++;
+            node.classList.add("node");
+            node.innerText = type;
+            node.id = `node-${nodeCounter++}`;
+            const leftPosition = 50 + (nodeCounter * 120); // Increment node position for better layout
+            const topPosition = 50 + (nodeCounter * 50);  // Avoid nodes overlapping
+            node.style.left = `${leftPosition}px`;
+            node.style.top = `${topPosition}px`;
 
             // Create input for node name (editable)
             const input = document.createElement("input");
@@ -60,13 +61,11 @@
             };
             node.appendChild(colorPicker);
             
-            // Create a small delete button that appears on hover
             const deleteBtn = document.createElement("button");
-            deleteBtn.innerText = "X";
-            deleteBtn.className = "delete-btn";
+            deleteBtn.innerText = "x";
+            deleteBtn.classList.add("delete");
             deleteBtn.onclick = () => { node.remove(); saveState(); };
             node.appendChild(deleteBtn);
-            
                 };
             };
             
