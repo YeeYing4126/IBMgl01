@@ -33,12 +33,29 @@
             font-weight: bold;
             margin: 10px 0;
         }
+                .key-insights {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .insight-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #F8F7F2;
+            border-radius: 4px;
+        }
+        .chart-container {
+            height: 300px; /* Reduced chart height */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Procurement Analytics Tool</h1>
         <input type="file" id="fileInput" accept=".csv">
+        <div id="keyInsights" class="key-insights"></div>
         <div id="results"></div>
     </div>
 
@@ -79,6 +96,83 @@
             });
         }
 
+        async function handleFile(e) {
+            const file = e.target.files[0];
+            const text = await file.text();
+            const data = parseCSV(text);
+            
+            const results = document.getElementById('results');
+            const keyInsights = document.getElementById('keyInsights');
+            results.innerHTML = '';
+            keyInsights.innerHTML = '<h2>Key Insights</h2>';
+
+            const insights = [];
+            
+            insights.push(processQuestion1(data, results));
+            insights.push(processQuestion2(data, results));
+            insights.push(processQuestion3(data, results));
+            insights.push(processQuestion4(data, results));
+            insights.push(processQuestion5(data, results));
+
+            // Display key insights
+            insights.forEach(insight => {
+                const div = document.createElement('div');
+                div.className = 'insight-item';
+                div.innerHTML = `<strong>${insight.title}:</strong> ${insight.value}`;
+                keyInsights.appendChild(div);
+            });
+        }
+
+            const qDiv = createQuestionDiv('Supplier Lead Time Analysis');
+            createBarChart(qDiv, 
+                averages.map(x => x.supplier),
+                averages.map(x => x.average),
+                'Average Lead Time (days)',
+                'Supplier'
+            );
+            
+            return {
+                title: 'Highest Average Lead Time',
+                value: `${max.supplier} (${max.average.toFixed(1)} days)`
+            };
+        }
+
+        function createBarChart(container, labels, data, yLabel, xLabel) {
+            const canvas = document.createElement('canvas');
+            container.appendChild(canvas);
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${yLabel}: ${context.parsed.y} days`
+                            }
+                        }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: yLabel }
+                        },
+                        x: {
+                            title: { display: true, text: xLabel }
+                        }
+                    }
+                }
+            });
+        }
         function processQuestion1(data, container) {
             const leadTimes = {};
             data.forEach(row => {
