@@ -4,7 +4,7 @@
     <title>Procurement Analytics Tool</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-       body {
+        body {
             background-color: #F8F7F2;
             font-family: Arial, sans-serif;
             padding: 20px;
@@ -16,20 +16,18 @@
         .question-box {
             background: white;
             padding: 20px;
-            margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: fit-content;
         }
         #fileInput {
             margin-bottom: 20px;
             padding: 10px;
         }
-        .answer {
-            color: #5D8696;
-            font-weight: bold;
-            margin: 10px 0;
-        }
         .key-insights {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             background: white;
             padding: 20px;
             margin-bottom: 20px;
@@ -37,26 +35,21 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .insight-item {
-            margin: 10px 0;
-            padding: 10px;
+            padding: 15px;
             background: #F8F7F2;
             border-radius: 4px;
         }
-        .chart-container {
-            height: 300px;
-            margin-top: 15px;
-        }
-                .chart-grid {
+        #results {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            margin-top: 20px;
         }
         .chart-card {
             background: white;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 300px;
         }
         .insight-item strong {
             color: #5D8696;
@@ -67,7 +60,7 @@
             margin-left: 8px;
         }
         @media (max-width: 768px) {
-            .chart-grid {
+            .key-insights, #results {
                 grid-template-columns: 1fr;
             }
         }
@@ -182,10 +175,7 @@
             const min = averages.reduce((a, b) => a.average < b.average ? a : b);
             
             const qDiv = createQuestionDiv('Transportation Efficiency');
-            const grid = createChartGrid();
-            qDiv.appendChild(grid);
-            
-            createBarChart(grid, 
+            createBarChart(qDiv, 
                 averages.map(x => x.mode),
                 averages.map(x => x.average),
                 'Transportation Mode',
@@ -198,7 +188,7 @@
                 value: `${min.mode} (${min.average.toFixed(1)} days)`
             };
         }
-
+        
         // Question 3: Monthly Delays
         function processQuestion3(data) {
             const monthData = data.reduce((acc, row) => {
