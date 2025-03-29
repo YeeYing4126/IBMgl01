@@ -95,6 +95,18 @@
             });
         }
 
+        // Add click handler for sample data button
+        document.getElementById('loadSample').addEventListener('click', async () => {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/YeeYing4126/IBMgl01/6b817bdc71ddb71d66876aff67ac7d1ddc4064cc/lead_time_dataset.csv');
+                const text = await response.text();
+                const data = parseCSV(text);
+                processData(data);
+            } catch (error) {
+                alert('Error loading sample data: ' + error.message);
+            }
+        });
+        
         async function handleFile(e) {
             const file = e.target.files[0];
             const text = await file.text();
@@ -124,6 +136,40 @@
             });
         }
 
+                // Modified handleFile function
+        async function handleFile(e) {
+            const file = e.target.files[0];
+            const text = await file.text();
+            const data = parseCSV(text);
+            processData(data);
+        }
+
+        // Extracted data processing function
+        function processData(data) {
+            const results = document.getElementById('results');
+            const keyInsights = document.getElementById('keyInsights');
+            results.innerHTML = '';
+            keyInsights.innerHTML = '<h2>Key Insights</h2>';
+
+            const insights = [];
+            
+            insights.push(processQuestion1(data, results));
+            insights.push(processQuestion2(data, results));
+            insights.push(processQuestion3(data, results));
+            insights.push(processQuestion4(data, results));
+            insights.push(processQuestion5(data, results));
+
+            insights.forEach(insight => {
+                const div = document.createElement('div');
+                div.className = 'insight-item';
+                div.innerHTML = `
+                    <span style="color: #5D8696;">${insight.title}:</span>
+                    <span class="insight-value">${insight.value}</span>
+                `;
+                keyInsights.appendChild(div);
+            });
+        }
+        
         function calculateLeadTime(startDate, endDate) {
             return Math.ceil((endDate - startDate) / (1000 * 3600 * 24));
         }
