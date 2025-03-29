@@ -12,6 +12,7 @@
             --button-bg: #f0f0f0;
             --grid-color: #e0e0e0;
             --node-text: white;
+            --zoom-controls-bg: #fff;
         }
 
         .dark-theme {
@@ -21,6 +22,7 @@
             --button-bg: #333333;
             --grid-color: #4a4a4a;
             --node-text: #ffffff;
+            --zoom-controls-bg: #333;
         }
 
         body { 
@@ -136,39 +138,28 @@
         input:checked + .theme-slider:before {
             transform: translateX(26px);
         }
-        
-        button:hover { background: #e0e0e0; }
-        .node {
-            position: absolute;
-            padding: 15px;
-            color: white;
-            border-radius: 8px;
-            cursor: move;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 100px;
-            min-height: 50px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+
         .node-type {
             font-weight: bold;
             margin-bottom: 5px;
             pointer-events: none;
         }
+
         .node-name {
             border: none;
             background: transparent;
-            color: white;
+            color: var(--node-text);
             font-size: 12px;
             width: 80px;
             text-align: center;
             border-bottom: 1px dashed rgba(255,255,255,0.5);
         }
+
         .node-name:focus { 
             outline: none; 
-            border-bottom: 2px solid white; 
+            border-bottom: 2px solid var(--node-text); 
         }
+
         .delete-btn {
             background: #ff4444;
             color: white;
@@ -186,6 +177,7 @@
             justify-content: center;
             padding: 0;
         }
+
         #connections {
             position: absolute;
             top: 0;
@@ -194,15 +186,17 @@
             height: 100%;
             pointer-events: none;
         }
+
         .zoom-controls {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: white;
+            background: var(--zoom-controls-bg);
             padding: 5px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
         .zoom-controls button {
             width: 40px;
             height: 40px;
@@ -258,81 +252,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-        // Update zoom function to handle grid correctly
-        function updateZoom() {
-            const container = document.getElementById("flowchart");
-            container.style.transform = `scale(${currentScale})`;
-            
-            // Update grid size based on zoom
-            const gridSize = 20 / currentScale;
-            document.querySelector('.grid-container').style.backgroundSize = 
-                `${gridSize}px ${gridSize}px`;
-            
-            updateConnections();
-        }
-
-        // Modified theme toggle to handle CSS variables
+        // Theme Management
         function toggleTheme() {
             const body = document.body;
-            const themeButton = document.querySelector('.theme-controls button');
-            
+            const checkbox = document.querySelector('.theme-switch input');
             body.classList.toggle('dark-theme');
             const isDark = body.classList.contains('dark-theme');
-            themeButton.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            checkbox.checked = isDark;
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
 
-        // Initialize theme
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
+            const checkbox = document.querySelector('.theme-switch input');
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-theme');
-                document.querySelector('.theme-controls button').textContent = 'Light Mode';
-            }
-        }
-        initTheme();
-        // Add theme toggle function
-        function toggleTheme() {
-            const body = document.body;
-            const themeButton = document.querySelector('.theme-controls button');
-            
-            if (body.classList.contains('light-theme')) {
-                body.classList.remove('light-theme');
-                body.classList.add('dark-theme');
-                themeButton.textContent = 'Light Mode';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-theme');
-                body.classList.add('light-theme');
-                themeButton.textContent = 'Dark Mode';
-                localStorage.setItem('theme', 'light');
+                checkbox.checked = true;
             }
         }
 
-        // Initialize theme from localStorage
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            const themeButton = document.querySelector('.theme-controls button');
-            
-            document.body.classList.add(savedTheme + '-theme');
-            themeButton.textContent = savedTheme === 'light' ? 'Dark Mode' : 'Light Mode';
-        }
-
-        // Call initTheme at the end of the script
-        initTheme();
-        let nodeCounters = { Supplier: 1, Warehouse: 1, Transport: 1, Distribution: 1, Retail: 1 };
-        let history = [];
-        let redoStack = [];
-        let isConnecting = false;
-        let connectionStartId = null;
-        const colors = {
-            'Supplier': '#5D8696',
-            'Warehouse': '#78ABAF',
-            'Transport': '#8FAFCC',
-            'Distribution': '#CCA885',
-            'Retail': '#D9DAD4'
-        };
-        let connections = [];
+        // Zoom Management
         let currentScale = 1;
         const scaleStep = 0.1;
         const minScale = 0.5;
@@ -355,14 +294,21 @@
         function updateZoom() {
             const container = document.getElementById("flowchart");
             container.style.transform = `scale(${currentScale})`;
-            
-            // Update grid size based on zoom
             const gridSize = 20 / currentScale;
             document.querySelector('.grid-container').style.backgroundSize = 
                 `${gridSize}px ${gridSize}px`;
-            
             updateConnections();
         }
+
+        // Node Management
+        let nodeCounters = { Supplier: 1, Warehouse: 1, Transport: 1, Distribution: 1, Retail: 1 };
+        const colors = {
+            'Supplier': '#5D8696',
+            'Warehouse': '#78ABAF',
+            'Transport': '#8FAFCC',
+            'Distribution': '#CCA885',
+            'Retail': '#D9DAD4'
+        };
 
         function addNode(type) {
             const flowchart = document.getElementById("flowchart");
@@ -400,6 +346,7 @@
             saveState();
         }
 
+        // Dragging Functionality
         function makeDraggable(element) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             
@@ -409,7 +356,6 @@
             };
             
             function dragMouseDown(e) {
-                e = e || window.event;
                 e.preventDefault();
                 pos3 = e.clientX;
                 pos4 = e.clientY;
@@ -419,7 +365,6 @@
             }
 
             function elementDrag(e) {
-                e = e || window.event;
                 e.preventDefault();
                 pos1 = pos3 - e.clientX;
                 pos2 = pos4 - e.clientY;
@@ -442,6 +387,11 @@
             }
         }
 
+        // Connection Management
+        let isConnecting = false;
+        let connectionStartId = null;
+        let connections = [];
+
         function startConnecting() {
             isConnecting = true;
             connectionStartId = null;
@@ -461,10 +411,8 @@
             connections.forEach(conn => {
                 const startNode = document.getElementById(conn.start);
                 const endNode = document.getElementById(conn.end);
-                
                 if (!startNode || !endNode) return;
                 
-                // Get positions relative to container
                 const startX = startNode.offsetLeft + startNode.offsetWidth/2;
                 const startY = startNode.offsetTop + startNode.offsetHeight/2;
                 const endX = endNode.offsetLeft + endNode.offsetWidth/2;
@@ -475,7 +423,7 @@
                 line.setAttribute("y1", startY);
                 line.setAttribute("x2", endX);
                 line.setAttribute("y2", endY);
-                line.setAttribute("stroke", "#333");
+                line.setAttribute("stroke", "var(--text-color)");
                 line.setAttribute("stroke-width", "2");
                 svg.appendChild(line);
             });
@@ -486,21 +434,9 @@
             updateConnections();
         }
 
-        document.getElementById("flowchart").addEventListener('click', (e) => {
-            if (!isConnecting) return;
-            
-            const node = e.target.closest('.node');
-            if (!node) return;
-
-            if (!connectionStartId) {
-                connectionStartId = node.id;
-                node.style.filter = 'brightness(1.2)';
-            } else {
-                document.getElementById(connectionStartId).style.filter = 'none';
-                createConnection(connectionStartId, node.id);
-                isConnecting = false;
-            }
-        });
+        // Undo/Redo System
+        let history = [];
+        let redoStack = [];
 
         function saveState() {
             history.push({
@@ -534,6 +470,7 @@
             updateConnections();
         }
 
+        // Export Functions
         function exportAsImage() {
             html2canvas(document.getElementById("flowchart")).then(canvas => {
                 const link = document.createElement('a');
@@ -554,22 +491,27 @@
                 pdf.save('flowchart.pdf');
             });
         }
-        // Updated Theme Toggle
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-        }
 
-        // Updated Zoom Function
-        function updateZoom() {
-            const container = document.getElementById("flowchart");
-            container.style.transform = `scale(${currentScale})`;
+        // Event Listeners
+        document.getElementById("flowchart").addEventListener('click', (e) => {
+            if (!isConnecting) return;
             
-            // Update grid size based on zoom
-            const gridSize = 20 / currentScale;
-            document.querySelector('.grid-container').style.backgroundSize = 
-                `${gridSize}px ${gridSize}px`;
+            const node = e.target.closest('.node');
+            if (!node) return;
+
+            if (!connectionStartId) {
+                connectionStartId = node.id;
+                node.style.filter = 'brightness(1.2)';
+            } else {
+                document.getElementById(connectionStartId).style.filter = 'none';
+                createConnection(connectionStartId, node.id);
+                isConnecting = false;
+            }
+        });
+
+        // Initialization
+        initTheme();
+        updateZoom();
     </script>
 </body>
 </html>
