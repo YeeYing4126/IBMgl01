@@ -103,6 +103,21 @@
             height: 100%;
             pointer-events: none;
         }
+        .zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .zoom-controls button {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +148,11 @@
     <div class="flowchart-container" id="flowchart">
         <svg id="connections"></svg>
     </div>
+    
+     <div class="zoom-controls">
+        <button onclick="zoomOut()">-</button>
+        <button onclick="zoomIn()">+</button>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -153,6 +173,36 @@
         };
         let connections = [];
 
+        
+        // Add these variables at the top
+        let currentScale = 1;
+        const scaleStep = 0.1;
+        const minScale = 0.5;
+        const maxScale = 2;
+
+        // Add zoom functions
+        function zoomIn() {
+            if (currentScale < maxScale) {
+                currentScale += scaleStep;
+                updateZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (currentScale > minScale) {
+                currentScale -= scaleStep;
+                updateZoom();
+            }
+        }
+
+        function updateZoom() {
+            const container = document.getElementById("flowchart");
+            container.style.transform = `scale(${currentScale})`;
+            container.style.transformOrigin = '0 0';
+            
+            // Update connections to match zoom level
+            updateConnections();
+
         function addNode(type) {
             const flowchart = document.getElementById("flowchart");
             const node = document.createElement("div");
@@ -172,7 +222,8 @@
             const nameInput = document.createElement("input");
             nameInput.className = "node-name";
             nameInput.value = `${type} ${nodeCounters[type]-1}`;
-            nameInput.onblur = saveState;
+            nameInput.onclick = (e) => e.stopPropagation(); // Prevent dragging when clicking input
+            nameInput.oninput = saveState; // Save on every change
             node.appendChild(nameInput);
 
             // Delete button
@@ -194,7 +245,10 @@
         function makeDraggable(element) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             
-            element.onmousedown = dragMouseDown;
+            element.onmousedown = function(e) {
+                if (e.target.tagName === 'INPUT') return; // Allow input interaction
+                dragMouseDown(e);
+            };
             
             function dragMouseDown(e) {
                 e = e || window.event;
@@ -204,7 +258,6 @@
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
                 element.style.zIndex = 1000;
-            }
 
             function elementDrag(e) {
                 e = e || window.event;
