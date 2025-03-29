@@ -3,154 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node Editor</title>
+    <title>Flowchart Builder</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .editor-container { width: 100vw; height: 100vh; position: relative; background: #f0f0f0; }
-        .node { position: absolute; width: 120px; height: 50px; background: white; border: 1px solid black; cursor: grab; padding: 10px; }
-        .line { position: absolute; background: black; height: 2px; position: absolute; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #F8F7F2;
+            color: #333;
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            background: #222;
+            padding: 10px;
+        }
+        .flowchart-container {
+            flex: 1;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: url('https://www.transparenttextures.com/patterns/diagonal-stripes-light.png');
+            background-size: 20px 20px;
+        }
+        button {
+            width: 100%;
+            margin-bottom: 5px;
+            padding: 8px;
+            background: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #666;
+        }
+        .node {
+            position: absolute;
+            padding: 10px;
+            background: gray;
+            color: white;
+            border-radius: 5px;
+            cursor: move;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .node input {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 14px;
+            width: 100px;
+            text-align: center;
+        }
+        .node input:focus {
+            outline: none;
+            border-bottom: 1px solid white;
+        }
+        .node button {
+            margin-top: 5px;
+            background: #444;
+            border: none;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+        }
+        .delete-btn {
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        .color-btn {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="editor-container" id="editor">
-        <button onclick="addNode()">Add Node</button>
-        <button onclick="undoAction()">Undo</button>
-        <button onclick="redoAction()">Redo</button>
-        <button onclick="exportToPNG()">Export PNG</button>
-        <button onclick="exportToPDF()">Export PDF</button>
+    <div class="sidebar">
+        <button onclick="addNode('Supplier')">Add Supplier</button>
+        <button onclick="addNode('Warehouse')">Add Warehouse</button>
+        <button onclick="addNode('Transport')">Add Transport</button>
+        <button onclick="addNode('Distribution')">Add Distribution</button>
+        <button onclick="addNode('Retail')">Add Retail</button>
+        <button onclick="undo()">Undo</button>
+        <button onclick="redo()">Redo</button>
+        <button onclick="exportAsImage()">Export as Image</button>
+        <button onclick="exportAsPDF()">Export as PDF</button>
+        <button onclick="changeNodeColor()">Change Node Color</button>
+        <button onclick="enableLineDrawing()">Enable Line Drawing</button>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <div class="flowchart-container" id="flowchart"></div>
+
     <script>
-        let nodes = [];
-        let lines = [];
+        let nodeCount = 0;
         let history = [];
         let redoStack = [];
-        let isConnecting = false;
-        let startNode = null;
-        
-        function addNode() {
-            let node = document.createElement("div");
+        let lineDrawingEnabled = false;
+        let currentLine = null;
+
+        function addNode(type) {
+            const flowchart = document.getElementById("flowchart");
+            const node = document.createElement("div");
             node.className = "node";
-            node.contentEditable = true;
-            node.style.left = "100px";
-            node.style.top = "100px";
-            node.onmousedown = dragStart;
-            node.ondblclick = startConnection;
-            document.getElementById("editor").appendChild(node);
-            nodes.push(node);
-            saveHistory();
-        }
-        
-        function dragStart(event) {
-            let node = event.target;
-            let shiftX = event.clientX - node.getBoundingClientRect().left;
-            let shiftY = event.clientY - node.getBoundingClientRect().top;
-            
-            function moveAt(pageX, pageY) {
-                node.style.left = pageX - shiftX + 'px';
-                node.style.top = pageY - shiftY + 'px';
-                updateLines();
-            }
-            
-            function onMouseMove(event) {
-                moveAt(event.pageX, event.pageY);
-            }
-            
-            document.addEventListener('mousemove', onMouseMove);
-            
-            node.onmouseup = function() {
-                document.removeEventListener('mousemove', onMouseMove);
-                node.onmouseup = null;
-                saveHistory();
+            node.style.left = `${Math.random() * 500}px`;
+            node.style.top = `${Math.random() * 400}px`;
+            node.dataset.nodeId = nodeCount++;
+
+            const input = document.createElement("input");
+            input.value = type;
+            node.appendChild(input);
+
+            const renameBtn = document.createElement("button");
+            renameBtn.innerText = "Rename";
+            renameBtn.onclick = () => {
+                const newName = prompt("Enter new name:", input.value);
+                if (newName) input.value = newName;
             };
+            node.appendChild(renameBtn);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.innerText = "Delete";
+            deleteBtn.className = "delete-btn";
+            deleteBtn.onclick = () => {
+                node.remove();
+                saveState();
+            };
+            node.appendChild(deleteBtn);
+
+            node.ondragstart = () => false;
+            node.draggable = true;
+            node.onmousedown = (event) => {
+                let shiftX = event.clientX - node.getBoundingClientRect().left;
+                let shiftY = event.clientY - node.getBoundingClientRect().top;
+
+                function moveAt(pageX, pageY) {
+                    node.style.left = pageX - shiftX + 'px';
+                    node.style.top = pageY - shiftY + 'px';
+                }
+
+                function onMouseMove(event) {
+                    moveAt(event.pageX, event.pageY);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                node.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    node.onmouseup = null;
+                    saveState();
+                };
+            };
+
+            flowchart.appendChild(node);
+            saveState();
         }
-        
-        function startConnection(event) {
-            if (!isConnecting) {
-                isConnecting = true;
-                startNode = event.target;
-            } else {
-                let endNode = event.target;
-                createLine(startNode, endNode);
-                isConnecting = false;
-                saveHistory();
-            }
-        }
-        
-        function createLine(start, end) {
-            let line = document.createElement("div");
-            line.className = "line";
-            document.getElementById("editor").appendChild(line);
-            lines.push({ line, start, end });
-            updateLines();
-        }
-        
-        function updateLines() {
-            lines.forEach(({ line, start, end }) => {
-                let startRect = start.getBoundingClientRect();
-                let endRect = end.getBoundingClientRect();
-                let editorRect = document.getElementById("editor").getBoundingClientRect();
-                
-                let x1 = startRect.left + startRect.width / 2 - editorRect.left;
-                let y1 = startRect.top + startRect.height / 2 - editorRect.top;
-                let x2 = endRect.left + endRect.width / 2 - editorRect.left;
-                let y2 = endRect.top + endRect.height / 2 - editorRect.top;
-                
-                let length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-                let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-                
-                line.style.width = length + 'px';
-                line.style.transform = `rotate(${angle}deg)`;
-                line.style.left = x1 + 'px';
-                line.style.top = y1 + 'px';
+
+        function changeNodeColor() {
+            const colors = ["#5D8696", "#78ABAF", "#8FAFCC", "#CCA885", "#D9DAD4"];
+            const nodes = document.querySelectorAll('.node');
+            nodes.forEach(node => {
+                node.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             });
         }
-        
-        function saveHistory() {
-            history.push(nodes.map(node => ({ left: node.style.left, top: node.style.top })));
+
+        function enableLineDrawing() {
+            lineDrawingEnabled = !lineDrawingEnabled;
+            if (lineDrawingEnabled) {
+                alert("Click two nodes to draw a line between them!");
+            }
+        }
+
+        function drawLine(node1, node2) {
+            const line = document.createElement("div");
+            line.style.position = "absolute";
+            line.style.width = "2px";
+            line.style.backgroundColor = "black";
+
+            const x1 = node1.offsetLeft + node1.offsetWidth / 2;
+            const y1 = node1.offsetTop + node1.offsetHeight / 2;
+            const x2 = node2.offsetLeft + node2.offsetWidth / 2;
+            const y2 = node2.offsetTop + node2.offsetHeight / 2;
+
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx);
+
+            line.style.height = `${length}px`;
+            line.style.transform = `rotate(${angle}rad)`;
+            line.style.left = `${x1}px`;
+            line.style.top = `${y1}px`;
+
+            document.getElementById("flowchart").appendChild(line);
+        }
+
+        function saveState() {
+            history.push(document.getElementById("flowchart").innerHTML);
             redoStack = [];
         }
-        
-        function undoAction() {
+
+        function undo() {
             if (history.length > 1) {
                 redoStack.push(history.pop());
-                let prevState = history[history.length - 1];
-                nodes.forEach((node, index) => {
-                    node.style.left = prevState[index].left;
-                    node.style.top = prevState[index].top;
-                });
+                document.getElementById("flowchart").innerHTML = history[history.length - 1];
             }
         }
-        
-        function redoAction() {
+
+        function redo() {
             if (redoStack.length > 0) {
-                let nextState = redoStack.pop();
-                history.push(nextState);
-                nodes.forEach((node, index) => {
-                    node.style.left = nextState[index].left;
-                    node.style.top = nextState[index].top;
-                });
+                history.push(redoStack.pop());
+                document.getElementById("flowchart").innerHTML = history[history.length - 1];
             }
         }
-        
-        function exportToPNG() {
-            html2canvas(document.getElementById("editor")).then(canvas => {
-                let link = document.createElement("a");
-                link.download = "node-editor.png";
+
+        function exportAsImage() {
+            html2canvas(document.getElementById("flowchart")).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'flowchart.png';
                 link.href = canvas.toDataURL();
                 link.click();
             });
         }
-        
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            html2canvas(document.getElementById("editor")).then(canvas => {
-                let pdf = new jsPDF();
-                pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, 10, 190, 100);
-                pdf.save("node-editor.pdf");
+
+        function exportAsPDF() {
+            html2canvas(document.getElementById("flowchart")).then(canvas => {
+                let imgData = canvas.toDataURL('image/png');
+                let pdf = new jsPDF('landscape');
+                pdf.addImage(imgData, 'PNG', 10, 10);
+                pdf.save('flowchart.pdf');
             });
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
