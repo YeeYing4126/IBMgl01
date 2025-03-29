@@ -1,41 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Lead Time Analysis</title>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Analysis Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #F8F7F2;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #5D8696;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .table-container {
+            margin: 20px;
+            padding: 20px;
+            background-color: #D9DAD4;
+            border-radius: 8px;
+        }
+        .button {
+            background-color: #78ABAF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #8FAFCC;
+        }
+        .results {
+            margin-top: 20px;
+            color: #8FAFCC;
+        }
+    </style>
 </head>
 <body>
-  <h1>Lead Time Analysis Tool</h1>
-  <input type="file" id="csvFile" accept=".csv">
-  <div id="results"></div>
-  <script>
-    document.getElementById('csvFile').addEventListener('change', handleFile);
-    function handleFile(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = d3.csvParse(e.target.result);
-        analyzeData(data);
-      };
-      reader.readAsText(file);
-    }
-    function analyzeData(data) {
-      // Implement analysis logic here
-      const results = {
-        q1: 'BetaTech',
-        q2: 'Air',
-        q3: 'December',
-        q4: 'Production',
-        q5: 'Electronics'
-      };
-      document.getElementById('results').innerHTML = `
-        <p>Q1: ${results.q1}</p>
-        <p>Q2: ${results.q2}</p>
-        <p>Q3: ${results.q3}</p>
-        <p>Q4: ${results.q4}</p>
-        <p>Q5: ${results.q5}</p>
-      `;
-    }
-  </script>
+
+    <h1>Procurement Lead Time Analysis Tool</h1>
+    <input type="file" id="fileInput" class="button" />
+    <div class="content">
+        <h2 class="results" id="results"></h2>
+
+        <div class="chart-container">
+            <canvas id="supplierChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="delayChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="disruptionChart"></canvas>
+        </div>
+
+        <div class="table-container">
+            <h3>Data Preview:</h3>
+            <table id="dataTable" border="1" style="width: 100%;"></table>
+        </div>
+    </div>
+
+    <script>
+        // Set up color scheme for charts
+        const colors = ['#5D8696', '#78ABAF', '#8FAFCC', '#CCA885', '#D9DAD4'];
+
+        // Function to process and analyze the CSV data
+        function processCSV(data) {
+            let suppliers = {};
+            let months = {};
+            let disruptions = {};
+            let productCategories = {};
+
+            let rows = data.data;
+            rows.forEach(row => {
+                if (!row.Order_Date || !row.Actual_Delivery_Date || !row.Expected_Delivery_Date) return;
+
+                // Calculate lead time
+                const orderDate = new Date(row.Order_Date);
+                const actualDeliveryDate = new Date(row.Actual_Delivery_Date);
+                const expectedDeliveryDate = new Date(row.Expected_Delivery_Date);
+
+                const leadTime = (actualDeliveryDate - orderDate) / (1000 * 3600 * 24); // in days
+                const delayDays = (actualDeliveryDate - expectedDeliveryDate) / (1000 * 3600 * 24); // in days
+
+                // Supplier analysis
+                suppliers[row.Supplier] = suppliers[row.Supplier] || { totalLeadTime: 0, count: 0 };
+                suppliers[row.Supplier].totalLeadTime += leadTime;
+                suppliers[row.Supplier].count += 1;
+
+                // Month analysis
+                const month = actualDeliveryDate.getMonth() + 1; // 0-based month
+                months[month] = months[month] || { totalDelay: 0, count: 0 };
+                months[month].totalDelay += delayDays;
+                months[month].count += 1;
+
+                // Disruption analysis
+                if (row.Disruption_Type && row.Disruption_Type !== "None") {
+                    disruptions[row.Disruption_Type] = disruptions[row.Disruption_Type] || { totalDelay: 0, count: 0 };
+                    disruptions[row.Disruption_Type].totalDelay += delayDays;
+                    disruptions[row.Disruption_Type].count += 1;
+                }
+
+                // Product category analysis
+                productCategories[row.Product_Category] = productCategories[row.Product_Category] || { totalLeadTime: 0, count: 0 };
+                productCategories[row.Product_Category].totalLeadTime += leadTime;
+                productCategories[row.Product_Category].count += 1;
+            });
+
+            // Calculate averages and prepare for display
+            let supplierResults = [];
+            for (let supplier in suppliers) {
+                let avgLeadTime = suppliers[supplier].totalLeadTime / suppliers[supplier].count;
+                supplierResults.push({ supplier, avgLeadTime });
+            }
+
+            supplierResults.sort((a, b) => b.avgLeadTime - a.avgLeadTime);
+            const topSupplier = supplierResults[0];
+
+            let monthlyDelays = [];
+            for (let month in months) {
+                let avgDelay = months[month].totalDelay / months[month].count;
+                monthlyDelays.push({ month: `Month ${month}`, avgDelay });
+            }
+
+            monthlyDelays.sort((a, b) => b.avgDelay - a.avgDelay);
+            const topMonth = monthlyDelays[0];
+
+            let disruptionResults = [];
+            for (let disruption in disruptions) {
+                let avgDelay = disruptions[disruption].totalDelay / disruptions[disruption].count;
+                disruptionResults.push({ disruption, avgDelay });
+            }
+
+            disruptionResults.sort((a, b) => b.avgDelay - a.avgDelay);
+            const topDisruption = disruptionResults[0];
+
+            let productCategoryResults = [];
+            for (let category in productCategories) {
+                let avgLeadTime = productCategories[category].totalLeadTime / productCategories[category].count;
+                productCategoryResults.push({ category, avgLeadTime });
+            }
+
+            productCategoryResults.sort((a, b) => a.avgLeadTime - b.avgLeadTime);
+            const topCategory = productCategoryResults[0];
+
+            // Display results
+            document.getElementById('results').innerHTML = `
+                Top Supplier: ${topSupplier.supplier} with an average lead time of ${topSupplier.avgLeadTime.toFixed(2)} days.<br>
+                Top Month: ${topMonth.month} with an average delay of ${topMonth.avgDelay.toFixed(2)} days.<br>
+                Disruption causing most delays: ${topDisruption.disruption} with an average delay of ${topDisruption.avgDelay.toFixed(2)} days.<br>
+                Product Category with the shortest lead time: ${topCategory.category} with an average lead time of ${topCategory.avgLeadTime.toFixed(2)} days.
+            `;
+
+            // Generate Charts
+            generateCharts(supplierResults, monthlyDelays, disruptionResults);
+        }
+
+        // Generate charts for the results
+        function generateCharts(supplierResults, monthlyDelays, disruptionResults) {
+            const supplierLabels = supplierResults.map(item => item.supplier);
+            const supplierData = supplierResults.map(item => item.avgLeadTime);
+            const monthLabels = monthlyDelays.map(item => item.month);
+            const monthData = monthlyDelays.map(item => item.avgDelay);
+            const disruptionLabels = disruptionResults.map(item => item.disruption);
+            const disruptionData = disruptionResults.map(item => item.avgDelay);
+
+            // Supplier Chart
+            new Chart(document.getElementById('supplierChart'), {
+                type: 'bar',
+                data: {
+                    labels: supplierLabels,
+                    datasets: [{
+                        label: 'Average Lead Time (Days)',
+                        data: supplierData,
+                        backgroundColor: colors[0],
+                        borderColor: colors[0],
+                        borderWidth: 1
+                    }]
+                }
+            });
+
+            // Monthly Delay Chart
+            new Chart(document.getElementById('delayChart'), {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'Average Delay (Days)',
+                        data: monthData,
+                        backgroundColor: colors[1],
+                        borderColor: colors[1],
+                        fill: false,
+                        borderWidth: 2
+                    }]
+                }
+            });
+
+            // Disruption Delay Chart
+            new Chart(document.getElementById('disruptionChart'), {
+                type: 'pie',
+                data: {
+                    labels: disruptionLabels,
+                    datasets: [{
+                        data: disruptionData,
+                        backgroundColor: colors.slice(2, 5),
+                    }]
+                }
+            });
+        }
+
+        // File upload and parsing
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                Papa.parse(file, {
+                    complete: function(results) {
+                        processCSV(results);
+                    },
+                    header: true
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
