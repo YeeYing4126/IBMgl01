@@ -67,25 +67,6 @@
             deleteBtn.onclick = () => { node.remove(); saveState(); };
             node.appendChild(deleteBtn);
             
-            // Dragging functionality
-            node.onmousedown = (event) => {
-                let shiftX = event.clientX - node.getBoundingClientRect().left;
-                let shiftY = event.clientY - node.getBoundingClientRect().top;
-                
-                function moveAt(pageX, pageY) {
-                    node.style.left = pageX - shiftX + 'px';
-                    node.style.top = pageY - shiftY + 'px';
-                }
-                
-                function onMouseMove(event) {
-                    moveAt(event.pageX, event.pageY);
-                }
-                
-                document.addEventListener('mousemove', onMouseMove);
-                node.onmouseup = function() {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    node.onmouseup = null;
-                    saveState();
                 };
             };
             
