@@ -68,10 +68,21 @@
             text-align: center;
             transition: transform 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .assignment-card:hover {
-            transform: translateY(-5px);
+        .assignment-title {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .project-name {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
         }
 
         .assignment-btn {
@@ -86,12 +97,9 @@
             font-weight: 600;
             color: white;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
-        }
-
-        .assignment-btn:hover {
-            transform: scale(1.05);
+            margin-top: auto;
         }
 
         .btn-color-1 { background: #5D8696; }
@@ -100,18 +108,46 @@
         .btn-color-4 { background: #CCA885; }
         .btn-color-5 { background: #D9DAD4; color: #333; }
 
+        .comment-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .comment-form {
+            display: grid;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        textarea, input {
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
         .footer {
             background: var(--primary);
             color: white;
             text-align: center;
             padding: 2rem;
             margin-top: 4rem;
-        }
-
-        .footer a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
         }
 
         @media (max-width: 768px) {
@@ -137,45 +173,54 @@
         <div class="assignments-grid">
             <!-- Assignment 1 -->
             <div class="assignment-card">
-                <a href="https://excalidraw.com/#room=aac424f9cfa668b99228,LbKwzrox1K0LzhlLNo8oOw" 
+                <h3 class="assignment-title">Assignment 1</h3>
+                <p class="project-name">FedEx Delivery Process</p>
+                <a href="https://excalidraw.com/#room=ea18e7430261f4a28f7b,f7pWET1eoqdjHCyiAGCxIg" 
                    class="assignment-btn btn-color-1">
-                    <i class="fas fa-project-diagram"></i>
-                    Fedex Delivery Process
+                    <i class="fas fa-file-alt"></i>
+                    View Excalidraw
                 </a>
             </div>
 
             <!-- Assignment 2 -->
             <div class="assignment-card">
+                <h3 class="assignment-title">Assignment 2</h3>
+                <p class="project-name">Flow Chart Builder</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/editor.html" 
                    class="assignment-btn btn-color-2">
-                    <i class="fas fa-file-alt"></i>
-                    Flowchart Builder
+                    <i class="fas fa-project-diagram"></i>
+                    View Project
                 </a>
             </div>
 
             <!-- Assignment 3 -->
             <div class="assignment-card">
+                <h3 class="assignment-title">Assignment 3</h3>
+                <p class="project-name">Data Analysis</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/analysis.html" 
                    class="assignment-btn btn-color-3">
                     <i class="fas fa-chart-bar"></i>
-                    Procurement Data Analysis
+                    View Analysis
                 </a>
             </div>
 
-            <!-- Additional placeholders -->
+            <!-- Assignment 4 -->
             <div class="assignment-card">
-                <a href="#" class="assignment-btn btn-color-4">
-                    <i class="fas fa-cube"></i>
-                    Assignment 4
-                </a>
-            </div>
+                <h3 class="assignment-title">Assignment 4</h3>
+                <p class="project-name">Data Analysis</p>
+                <a href="#" 
+                   class="assignment-btn btn-color-3">
+                    <i class="fas fa-chart-bar"></i>
+        </div>
 
-            <div class="assignment-card">
-                <a href="#" class="assignment-btn btn-color-5">
-                    <i class="fas fa-shipping-fast"></i>
-                    Assignment 5
-                </a>
-            </div>
+        <!-- Comment Section -->
+        <div class="comment-section">
+            <h2 class="section-title">Share Your Thoughts</h2>
+            <form class="comment-form" id="commentForm">
+                <input type="text" placeholder="Your Name" required>
+                <textarea rows="4" placeholder="Your Comment..." required></textarea>
+                <button type="submit" class="submit-btn">Post Comment</button>
+            </form>
         </div>
     </div>
 
@@ -184,5 +229,23 @@
             <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a>
         </p>
     </footer>
+
+    <script>
+        // Simple comment form handling
+        document.getElementById('commentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const comment = {
+                name: formData.get('name'),
+                text: formData.get('comment')
+            };
+            
+            // Here you would typically send this to a server
+            // For now, we'll just log it and show an alert
+            console.log('New comment:', comment);
+            alert('Thank you for your comment!');
+            this.reset();
+        });
+    </script>
 </body>
 </html>
