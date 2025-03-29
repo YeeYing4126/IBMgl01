@@ -5,6 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flowchart Builder</title>
     <style>
+                :root {
+            --bg-color: #F8F7F2;
+            --text-color: #333;
+            --sidebar-bg: #fff;
+            --button-bg: #f0f0f0;
+            --grid-color: #e0e0e0;
+            --node-text: white;
+        }
+
+        .dark-theme {
+            --bg-color: #2d2d2d;
+            --text-color: #ffffff;
+            --sidebar-bg: #1a1a1a;
+            --button-bg: #333333;
+            --grid-color: #4a4a4a;
+            --node-text: #ffffff;
+        }
+
+        body { 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; 
+        }
+        .sidebar { 
+            width: 200px; 
+            background: var(--sidebar-bg); 
+            padding: 10px; 
+            border-right: 1px solid var(--grid-color);
+        }
+        /* Update all color references in existing styles to use variables */
+        .flowchart-container { 
+            background-image: 
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+        }
+        button { 
+            background: var(--button-bg); 
+            border: 1px solid var(--grid-color); 
+            color: var(--text-color); 
+        }
+        .node {
+            color: var(--node-text);
+        }
+        /* Add to existing styles */
+        .theme-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--button-bg);
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         body { 
             margin: 0; 
             font-family: Arial, sans-serif; 
@@ -152,6 +207,10 @@
             <button onclick="exportAsPDF()">Export PDF</button>
         </details>
     </div>
+
+      <div class="theme-controls">
+        <button onclick="toggleTheme()">Dark Mode</button>
+    </div>
     
     <div class="flowchart-container" id="flowchart">
         <div class="grid-container"></div>
@@ -168,6 +227,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
+        // Add theme toggle function
+        function toggleTheme() {
+            const body = document.body;
+            const themeButton = document.querySelector('.theme-controls button');
+            
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                themeButton.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+                themeButton.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Initialize theme from localStorage
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeButton = document.querySelector('.theme-controls button');
+            
+            document.body.classList.add(savedTheme + '-theme');
+            themeButton.textContent = savedTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+        }
+
+        // Call initTheme at the end of the script
+        initTheme();
         let nodeCounters = { Supplier: 1, Warehouse: 1, Transport: 1, Distribution: 1, Retail: 1 };
         let history = [];
         let redoStack = [];
