@@ -110,20 +110,25 @@
             const results = document.getElementById('results');
             const keyInsights = document.getElementById('keyInsights');
             results.innerHTML = '';
-            keyInsights.innerHTML = '<h2>Key Insights</h2>';
+            keyInsights.innerHTML = '<h2 style="color: #5D8696;">Key Insights</h2>';
 
             const insights = [];
             
+            // Process all questions
             insights.push(processQuestion1(data, results));
             insights.push(processQuestion2(data, results));
             insights.push(processQuestion3(data, results));
             insights.push(processQuestion4(data, results));
             insights.push(processQuestion5(data, results));
 
+            // Display key insights
             insights.forEach(insight => {
                 const div = document.createElement('div');
                 div.className = 'insight-item';
-                div.innerHTML = `<strong>${insight.title}:</strong> ${insight.value}`;
+                div.innerHTML = `
+                    <span style="color: #5D8696;">${insight.title}:</span>
+                    <span style="color: #CCA885; font-weight: bold;">${insight.value}</span>
+                `;
                 keyInsights.appendChild(div);
             });
         }
@@ -132,8 +137,8 @@
             return Math.ceil((endDate - startDate) / (1000 * 3600 * 24));
         }
 
-        // Question 1
-        function processQuestion1(data, container) {
+        // Question 1: Supplier Lead Time
+        function processQuestion1(data) {
             const leadTimes = data.reduce((acc, row) => {
                 const lt = calculateLeadTime(row.Order_Date, row.Actual_Delivery_Date);
                 acc[row.Supplier] = acc[row.Supplier] || [];
@@ -152,18 +157,19 @@
             createBarChart(qDiv, 
                 averages.map(x => x.supplier),
                 averages.map(x => x.average),
+                'Supplier',
                 'Average Lead Time (days)',
-                'Supplier'
+                false
             );
             
             return {
-                title: 'Highest Average Lead Time',
-                value: `${max.supplier} (${max.average.toFixed(1)} days)`
+                title: 'Supplier with Highest Average Lead Time',
+                value: `${max.supplier} (${max.average.toFixed(1} days)`
             };
         }
 
-        // Question 2
-        function processQuestion2(data, container) {
+        // Question 2: Transportation Mode
+        function processQuestion2(data) {
             const transportData = data.reduce((acc, row) => {
                 const lt = calculateLeadTime(row.Order_Date, row.Actual_Delivery_Date);
                 acc[row.Transportation_Mode] = acc[row.Transportation_Mode] || [];
@@ -179,21 +185,25 @@
             const min = averages.reduce((a, b) => a.average < b.average ? a : b);
             
             const qDiv = createQuestionDiv('Transportation Efficiency');
-            createBarChart(qDiv, 
+            const grid = createChartGrid();
+            qDiv.appendChild(grid);
+            
+            createBarChart(grid, 
                 averages.map(x => x.mode),
                 averages.map(x => x.average),
-                'Average Lead Time (days)',
-                'Transportation Mode'
+                'Transportation Mode',
+                'Average Days',
+                true
             );
             
             return {
-                title: 'Most Efficient Transportation',
+                title: 'Most Efficient Transportation Mode',
                 value: `${min.mode} (${min.average.toFixed(1)} days)`
             };
         }
 
-        // Question 3
-        function processQuestion3(data, container) {
+        // Question 3: Monthly Delays
+        function processQuestion3(data) {
             const monthData = data.reduce((acc, row) => {
                 const delay = calculateLeadTime(row.Expected_Delivery_Date, row.Actual_Delivery_Date);
                 const month = row.Order_Date.toLocaleString('default', { month: 'long' });
@@ -209,22 +219,23 @@
 
             const max = averages.reduce((a, b) => a.average > b.average ? a : b);
             
-            const qDiv = createQuestionDiv('Monthly Delivery Delays');
+            const qDiv = createQuestionDiv('Monthly Delivery Performance');
             createBarChart(qDiv, 
                 averages.map(x => x.month),
                 averages.map(x => x.average),
+                'Month',
                 'Average Delay (days)',
-                'Month'
+                false
             );
             
             return {
-                title: 'Worst Month for Delays',
+                title: 'Month with Highest Average Delay',
                 value: `${max.month} (${max.average.toFixed(1)} days)`
             };
         }
 
-        // Question 4
-        function processQuestion4(data, container) {
+        // Question 4: Disruptions
+        function processQuestion4(data) {
             const filteredData = data.filter(row => row.Disruption_Type && row.Disruption_Type !== 'None');
             const disruptionData = filteredData.reduce((acc, row) => {
                 const delay = calculateLeadTime(row.Expected_Delivery_Date, row.Actual_Delivery_Date);
@@ -244,18 +255,19 @@
             createBarChart(qDiv, 
                 averages.map(x => x.type),
                 averages.map(x => x.average),
+                'Disruption Type',
                 'Average Delay (days)',
-                'Disruption Type'
+                false
             );
             
             return {
-                title: 'Most Impactful Disruption',
+                title: 'Most Impactful Disruption Type',
                 value: `${max.type || 'None'} (${max.average.toFixed(1)} days)`
             };
         }
 
-        // Question 5
-        function processQuestion5(data, container) {
+        // Question 5: Product Categories
+        function processQuestion5(data) {
             const categoryData = data.reduce((acc, row) => {
                 const lt = calculateLeadTime(row.Order_Date, row.Actual_Delivery_Date);
                 acc[row.Product_Category] = acc[row.Product_Category] || [];
@@ -270,16 +282,20 @@
 
             const min = averages.reduce((a, b) => a.average < b.average ? a : b);
             
-            const qDiv = createQuestionDiv('Product Category Efficiency');
-            createBarChart(qDiv, 
+            const qDiv = createQuestionDiv('Product Category Performance');
+            const grid = createChartGrid();
+            qDiv.appendChild(grid);
+            
+            createBarChart(grid, 
                 averages.map(x => x.category),
                 averages.map(x => x.average),
+                'Product Category',
                 'Average Lead Time (days)',
-                'Product Category'
+                true
             );
             
             return {
-                title: 'Fastest Product Category',
+                title: 'Product Category with Shortest Lead Time',
                 value: `${min.category} (${min.average.toFixed(1)} days)`
             };
         }
@@ -287,16 +303,24 @@
         function createQuestionDiv(title) {
             const div = document.createElement('div');
             div.className = 'question-box';
-            div.innerHTML = `<h3>${title}</h3>`;
+            div.innerHTML = `<h3 style="color: #5D8696;">${title}</h3>`;
             document.getElementById('results').appendChild(div);
             return div;
         }
 
-        function createBarChart(container, labels, data, yLabel, xLabel) {
+        function createChartGrid() {
+            const grid = document.createElement('div');
+            grid.className = 'chart-grid';
+            return grid;
+        }
+
+        function createBarChart(container, labels, data, xLabel, yLabel, horizontal = false) {
             const canvas = document.createElement('canvas');
-            canvas.className = 'chart-container';
-            container.appendChild(canvas);
-            
+            const card = document.createElement('div');
+            card.className = 'chart-card';
+            card.appendChild(canvas);
+            container.appendChild(card);
+
             new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -308,23 +332,24 @@
                     }]
                 },
                 options: {
+                    indexAxis: horizontal ? 'y' : 'x',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: (context) => `${context.dataset.label || ''} ${context.parsed.y} days`
+                                label: (context) => `${context.parsed.y || context.parsed.x} days`
                             }
                         }
                     },
-                    scales: { 
-                        y: { 
+                    scales: {
+                        y: {
                             beginAtZero: true,
-                            title: { display: true, text: yLabel }
+                            title: { display: true, text: horizontal ? xLabel : yLabel }
                         },
                         x: {
-                            title: { display: true, text: xLabel }
+                            title: { display: true, text: horizontal ? yLabel : xLabel }
                         }
                     }
                 }
