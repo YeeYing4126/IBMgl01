@@ -31,10 +31,18 @@
             height: 100vh; 
             position: relative; 
             overflow: hidden;
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+        }
+        .grid-container {
+            position: absolute;
+            width: 10000%;
+            height: 10000%;
+            left: -5000%;
+            top: -5000%;
             background-image: 
                 linear-gradient(to right, #e0e0e0 1px, transparent 1px),
                 linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-            background-size: 20px 20px;
         }
         button { 
             width: 100%; 
@@ -118,20 +126,6 @@
             font-size: 20px;
             padding: 0;
         }
-        .flowchart-container {
-            transform-origin: 0 0;
-            transition: transform 0.1s ease-out;
-        }
-        .grid-container {
-            position: absolute;
-            width: 10000%;
-            height: 10000%;
-            left: -5000%;
-            top: -5000%;
-            background-image: 
-                linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-                linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-        }
     </style>
 </head>
 <body>
@@ -160,17 +154,13 @@
     </div>
     
     <div class="flowchart-container" id="flowchart">
+        <div class="grid-container"></div>
         <svg id="connections"></svg>
     </div>
     
-     <div class="zoom-controls">
+    <div class="zoom-controls">
         <button onclick="zoomOut()">-</button>
         <button onclick="zoomIn()">+</button>
-    </div>
-
-    <div class="flowchart-container" id="flowchart">
-        <div class="grid-container"></div>
-        <svg id="connections"></svg>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
@@ -191,15 +181,11 @@
             'Retail': '#D9DAD4'
         };
         let connections = [];
-
-        
-        // Add these variables at the top
         let currentScale = 1;
         const scaleStep = 0.1;
         const minScale = 0.5;
         const maxScale = 2;
 
-        // Add zoom functions
         function zoomIn() {
             if (currentScale < maxScale) {
                 currentScale += scaleStep;
@@ -222,52 +208,7 @@
             const gridSize = 20 / currentScale;
             document.querySelector('.grid-container').style.backgroundSize = 
                 `${gridSize}px ${gridSize}px`;
-
-            updateConnections();
-        }
-
-        // Modify the updateConnections function
-        function updateConnections() {
-            const svg = document.getElementById("connections");
-            svg.innerHTML = '';
             
-            connections.forEach(conn => {
-                const startNode = document.getElementById(conn.start);
-                const endNode = document.getElementById(conn.end);
-                
-                if (!startNode || !endNode) return;
-                
-                // Get positions relative to container (not viewport)
-                const startX = startNode.offsetLeft + startNode.offsetWidth/2;
-                const startY = startNode.offsetTop + startNode.offsetHeight/2;
-                const endX = endNode.offsetLeft + endNode.offsetWidth/2;
-                const endY = endNode.offsetTop + endNode.offsetHeight/2;
-                
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", startX);
-                line.setAttribute("y1", startY);
-                line.setAttribute("x2", endX);
-                line.setAttribute("y2", endY);
-                line.setAttribute("stroke", "#333");
-                line.setAttribute("stroke-width", "2");
-                svg.appendChild(line);
-            });
-        }
-
-        // Modify the elementDrag function in makeDraggable
-        function elementDrag(e) {
-            e = e || window.event;
-            e.preventDefault();
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            
-            const newTop = (element.offsetTop - pos2 / currentScale) + "px";
-            const newLeft = (element.offsetLeft - pos1 / currentScale) + "px";
-            
-            element.style.top = newTop;
-            element.style.left = newLeft;
             updateConnections();
         }
 
@@ -280,21 +221,18 @@
             node.style.left = `${50 + (Object.values(nodeCounters).reduce((a,b) => a+b) * 10)}px`;
             node.style.top = `${50 + (Object.values(nodeCounters).reduce((a,b) => a+b) * 10)}px`;
 
-            // Node type (fixed)
             const typeElement = document.createElement("div");
             typeElement.className = "node-type";
             typeElement.textContent = type;
             node.appendChild(typeElement);
 
-            // Editable name field
             const nameInput = document.createElement("input");
             nameInput.className = "node-name";
             nameInput.value = `${type} ${nodeCounters[type]-1}`;
-            nameInput.onclick = (e) => e.stopPropagation(); // Prevent dragging when clicking input
-            nameInput.oninput = saveState; // Save on every change
+            nameInput.onclick = (e) => e.stopPropagation();
+            nameInput.oninput = saveState;
             node.appendChild(nameInput);
 
-            // Delete button
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "delete-btn";
             deleteBtn.innerHTML = "×";
@@ -314,7 +252,7 @@
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             
             element.onmousedown = function(e) {
-                if (e.target.tagName === 'INPUT') return; // Allow input interaction
+                if (e.target.tagName === 'INPUT') return;
                 dragMouseDown(e);
             };
             
@@ -326,6 +264,7 @@
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
                 element.style.zIndex = 1000;
+            }
 
             function elementDrag(e) {
                 e = e || window.event;
@@ -335,8 +274,8 @@
                 pos3 = e.clientX;
                 pos4 = e.clientY;
                 
-                const newTop = (element.offsetTop - pos2) + "px";
-                const newLeft = (element.offsetLeft - pos1) + "px";
+                const newTop = (element.offsetTop - (pos2 / currentScale)) + "px";
+                const newLeft = (element.offsetLeft - (pos1 / currentScale)) + "px";
                 
                 element.style.top = newTop;
                 element.style.left = newLeft;
@@ -373,15 +312,17 @@
                 
                 if (!startNode || !endNode) return;
                 
-                const startRect = startNode.getBoundingClientRect();
-                const endRect = endNode.getBoundingClientRect();
-                const containerRect = document.getElementById("flowchart").getBoundingClientRect();
+                // Get positions relative to container
+                const startX = startNode.offsetLeft + startNode.offsetWidth/2;
+                const startY = startNode.offsetTop + startNode.offsetHeight/2;
+                const endX = endNode.offsetLeft + endNode.offsetWidth/2;
+                const endY = endNode.offsetTop + endNode.offsetHeight/2;
                 
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", startRect.left - containerRect.left + startRect.width/2);
-                line.setAttribute("y1", startRect.top - containerRect.top + startRect.height/2);
-                line.setAttribute("x2", endRect.left - containerRect.left + endRect.width/2);
-                line.setAttribute("y2", endRect.top - containerRect.top + endRect.height/2);
+                line.setAttribute("x1", startX);
+                line.setAttribute("y1", startY);
+                line.setAttribute("x2", endX);
+                line.setAttribute("y2", endY);
                 line.setAttribute("stroke", "#333");
                 line.setAttribute("stroke-width", "2");
                 svg.appendChild(line);
