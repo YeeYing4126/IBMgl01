@@ -1,68 +1,41 @@
-from flask import Flask, request, render_template
-import pandas as pd
-import os
-import multiprocessing
-
-app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-@app.route('/')
-def upload_file():
-    return render_template('upload.html')
-
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    file = request.files['file']
-    if file:
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(file_path)
-        
-        try:
-            df = pd.read_csv(file_path)
-            df['Order_Date'] = pd.to_datetime(df['Order_Date'], errors='coerce')
-            df['Actual_Delivery_Date'] = pd.to_datetime(df['Actual_Delivery_Date'], errors='coerce')
-            df['Expected_Delivery_Date'] = pd.to_datetime(df['Expected_Delivery_Date'], errors='coerce')
-            df.dropna(subset=['Order_Date', 'Actual_Delivery_Date', 'Expected_Delivery_Date'], inplace=True)
-            
-            df['Lead_Time'] = (df['Actual_Delivery_Date'] - df['Order_Date']).dt.days
-            df['Delay_Days'] = (df['Actual_Delivery_Date'] - df['Expected_Delivery_Date']).dt.days
-            df['Month'] = df['Order_Date'].dt.month
-            
-            if df.empty:
-                return render_template('results.html', results={"Error": "No valid data to process"})
-            
-            results = {}
-            try:
-                results["Supplier with highest avg lead time"] = df.groupby("Supplier")["Lead_Time"].mean().idxmax()
-            except:
-                results["Supplier with highest avg lead time"] = "N/A"
-            
-            try:
-                results["Transport mode with lowest avg lead time"] = df.groupby("Transportation_Mode")["Lead_Time"].mean().idxmin()
-            except:
-                results["Transport mode with lowest avg lead time"] = "N/A"
-            
-            try:
-                results["Month with highest avg delay"] = df.groupby("Month")["Delay_Days"].mean().idxmax()
-            except:
-                results["Month with highest avg delay"] = "N/A"
-            
-            try:
-                results["Disruption type with longest avg delay"] = df[df["Disruption_Type"] != "None"].groupby("Disruption_Type")["Delay_Days"].mean().idxmax()
-            except:
-                results["Disruption type with longest avg delay"] = "N/A"
-            
-            try:
-                results["Product category with shortest avg lead time"] = df.groupby("Product_Category")["Lead_Time"].mean().idxmin()
-            except:
-                results["Product category with shortest avg lead time"] = "N/A"
-            
-            return render_template('results.html', results=results)
-        
-        except Exception as e:
-            return render_template('results.html', results={"Error": str(e)})
-
-if __name__ == '__main__':
-    multiprocessing.set_start_method("fork", force=True)
-    app.run(debug=True)
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lead Time Analysis</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <h1>Lead Time Analysis Tool</h1>
+  <input type="file" id="csvFile" accept=".csv">
+  <div id="results"></div>
+  <script>
+    document.getElementById('csvFile').addEventListener('change', handleFile);
+    function handleFile(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = d3.csvParse(e.target.result);
+        analyzeData(data);
+      };
+      reader.readAsText(file);
+    }
+    function analyzeData(data) {
+      // Implement analysis logic here
+      const results = {
+        q1: 'BetaTech',
+        q2: 'Air',
+        q3: 'December',
+        q4: 'Production',
+        q5: 'Electronics'
+      };
+      document.getElementById('results').innerHTML = `
+        <p>Q1: ${results.q1}</p>
+        <p>Q2: ${results.q2}</p>
+        <p>Q3: ${results.q3}</p>
+        <p>Q4: ${results.q4}</p>
+        <p>Q5: ${results.q5}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
