@@ -20,10 +20,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .chart-container {
-            margin-top: 20px;
-            height: 400px;
-        }
         #fileInput {
             margin-bottom: 20px;
             padding: 10px;
@@ -33,7 +29,7 @@
             font-weight: bold;
             margin: 10px 0;
         }
-                .key-insights {
+        .key-insights {
             background: white;
             padding: 20px;
             margin-bottom: 20px;
@@ -47,7 +43,33 @@
             border-radius: 4px;
         }
         .chart-container {
-            height: 300px; /* Reduced chart height */
+            height: 300px;
+            margin-top: 15px;
+        }
+                .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .chart-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .insight-item strong {
+            color: #5D8696;
+        }
+        .insight-value {
+            color: #CCA885;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -64,24 +86,8 @@
         
         document.getElementById('fileInput').addEventListener('change', handleFile);
 
-        async function handleFile(e) {
-            const file = e.target.files[0];
-            const text = await file.text();
-            const data = parseCSV(text);
-            
-            const results = document.getElementById('results');
-            results.innerHTML = '';
-            
-            // Process questions
-            processQuestion1(data, results);
-            processQuestion2(data, results);
-            processQuestion3(data, results);
-            processQuestion4(data, results);
-            processQuestion5(data, results);
-        }
-
         function parseCSV(text) {
-            const rows = text.split('\n').slice(1);
+            const rows = text.split('\n').slice(1).filter(row => row.trim() !== '');
             return rows.map(row => {
                 const cells = row.split(',');
                 return {
@@ -114,7 +120,6 @@
             insights.push(processQuestion4(data, results));
             insights.push(processQuestion5(data, results));
 
-            // Display key insights
             insights.forEach(insight => {
                 const div = document.createElement('div');
                 div.className = 'insight-item';
@@ -123,6 +128,26 @@
             });
         }
 
+        function calculateLeadTime(startDate, endDate) {
+            return Math.ceil((endDate - startDate) / (1000 * 3600 * 24));
+        }
+
+        // Question 1
+        function processQuestion1(data, container) {
+            const leadTimes = data.reduce((acc, row) => {
+                const lt = calculateLeadTime(row.Order_Date, row.Actual_Delivery_Date);
+                acc[row.Supplier] = acc[row.Supplier] || [];
+                acc[row.Supplier].push(lt);
+                return acc;
+            }, {});
+
+            const averages = Object.entries(leadTimes).map(([supplier, times]) => ({
+                supplier,
+                average: times.reduce((a, b) => a + b, 0) / times.length
+            }));
+
+            const max = averages.reduce((a, b) => a.average > b.average ? a : b);
+            
             const qDiv = createQuestionDiv('Supplier Lead Time Analysis');
             createBarChart(qDiv, 
                 averages.map(x => x.supplier),
@@ -137,9 +162,141 @@
             };
         }
 
+        // Question 2
+        function processQuestion2(data, container) {
+            const transportData = data.reduce((acc, row) => {
+                const lt = calculateLeadTime(row.Order_Date, row.Actual_Delivery_Date);
+                acc[row.Transportation_Mode] = acc[row.Transportation_Mode] || [];
+                acc[row.Transportation_Mode].push(lt);
+                return acc;
+            }, {});
+
+            const averages = Object.entries(transportData).map(([mode, times]) => ({
+                mode,
+                average: times.reduce((a, b) => a + b, 0) / times.length
+            }));
+
+            const min = averages.reduce((a, b) => a.average < b.average ? a : b);
+            
+            const qDiv = createQuestionDiv('Transportation Efficiency');
+            createBarChart(qDiv, 
+                averages.map(x => x.mode),
+                averages.map(x => x.average),
+                'Average Lead Time (days)',
+                'Transportation Mode'
+            );
+            
+            return {
+                title: 'Most Efficient Transportation',
+                value: `${min.mode} (${min.average.toFixed(1)} days)`
+            };
+        }
+
+        // Question 3
+        function processQuestion3(data, container) {
+            const monthData = data.reduce((acc, row) => {
+                const delay = calculateLeadTime(row.Expected_Delivery_Date, row.Actual_Delivery_Date);
+                const month = row.Order_Date.toLocaleString('default', { month: 'long' });
+                acc[month] = acc[month] || [];
+                acc[month].push(delay);
+                return acc;
+            }, {});
+
+            const averages = Object.entries(monthData).map(([month, delays]) => ({
+                month,
+                average: delays.reduce((a, b) => a + b, 0) / delays.length
+            }));
+
+            const max = averages.reduce((a, b) => a.average > b.average ? a : b);
+            
+            const qDiv = createQuestionDiv('Monthly Delivery Delays');
+            createBarChart(qDiv, 
+                averages.map(x => x.month),
+                averages.map(x => x.average),
+                'Average Delay (days)',
+                'Month'
+            );
+            
+            return {
+                title: 'Worst Month for Delays',
+                value: `${max.month} (${max.average.toFixed(1)} days)`
+            };
+        }
+
+        // Question 4
+        function processQuestion4(data, container) {
+            const filteredData = data.filter(row => row.Disruption_Type && row.Disruption_Type !== 'None');
+            const disruptionData = filteredData.reduce((acc, row) => {
+                const delay = calculateLeadTime(row.Expected_Delivery_Date, row.Actual_Delivery_Date);
+                acc[row.Disruption_Type] = acc[row.Disruption_Type] || [];
+                acc[row.Disruption_Type].push(delay);
+                return acc;
+            }, {});
+
+            const averages = Object.entries(disruptionData).map(([type, delays]) => ({
+                type,
+                average: delays.reduce((a, b) => a + b, 0) / delays.length
+            }));
+
+            const max = averages.reduce((a, b) => a.average > b.average ? a : b, {average: 0});
+            
+            const qDiv = createQuestionDiv('Disruption Impact Analysis');
+            createBarChart(qDiv, 
+                averages.map(x => x.type),
+                averages.map(x => x.average),
+                'Average Delay (days)',
+                'Disruption Type'
+            );
+            
+            return {
+                title: 'Most Impactful Disruption',
+                value: `${max.type || 'None'} (${max.average.toFixed(1)} days)`
+            };
+        }
+
+        // Question 5
+        function processQuestion5(data, container) {
+            const categoryData = data.reduce((acc, row) => {
+                const lt = calculateLeadTime(row.Order_Date, row.Actual_Delivery_Date);
+                acc[row.Product_Category] = acc[row.Product_Category] || [];
+                acc[row.Product_Category].push(lt);
+                return acc;
+            }, {});
+
+            const averages = Object.entries(categoryData).map(([category, times]) => ({
+                category,
+                average: times.reduce((a, b) => a + b, 0) / times.length
+            }));
+
+            const min = averages.reduce((a, b) => a.average < b.average ? a : b);
+            
+            const qDiv = createQuestionDiv('Product Category Efficiency');
+            createBarChart(qDiv, 
+                averages.map(x => x.category),
+                averages.map(x => x.average),
+                'Average Lead Time (days)',
+                'Product Category'
+            );
+            
+            return {
+                title: 'Fastest Product Category',
+                value: `${min.category} (${min.average.toFixed(1)} days)`
+            };
+        }
+
+        function createQuestionDiv(title) {
+            const div = document.createElement('div');
+            div.className = 'question-box';
+            div.innerHTML = `<h3>${title}</h3>`;
+            document.getElementById('results').appendChild(div);
+            return div;
+        }
+
         function createBarChart(container, labels, data, yLabel, xLabel) {
             const canvas = document.createElement('canvas');
+            canvas.className = 'chart-container';
             container.appendChild(canvas);
+            
             new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -157,7 +314,7 @@
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: (context) => `${yLabel}: ${context.parsed.y} days`
+                                label: (context) => `${context.dataset.label || ''} ${context.parsed.y} days`
                             }
                         }
                     },
@@ -173,62 +330,99 @@
                 }
             });
         }
-        function processQuestion1(data, container) {
-            const leadTimes = {};
-            data.forEach(row => {
-                const leadTime = Math.ceil((row.Actual_Delivery_Date - row.Order_Date) / (1000 * 3600 * 24));
-                leadTimes[row.Supplier] = leadTimes[row.Supplier] || [];
-                leadTimes[row.Supplier].push(leadTime);
-            });
-
-            const averages = Object.entries(leadTimes).map(([supplier, times]) => ({
-                supplier,
-                average: times.reduce((a, b) => a + b, 0) / times.length
-            }));
-
-            const max = averages.reduce((a, b) => a.average > b.average ? a : b);
-            
-            const qDiv = createQuestionDiv('Q1: Which supplier has the highest average lead time?');
-            qDiv.innerHTML += `<div class="answer">Answer: ${max.supplier} (${max.average.toFixed(1)} days)</div>`;
-            
-            createBarChart(qDiv, 
-                averages.map(x => x.supplier),
-                averages.map(x => x.average),
-                'Average Lead Time by Supplier'
-            );
-        }
-
-        // Similar processing functions for Q2-Q5 (truncated for space)
-
-        function createQuestionDiv(questionText) {
-            const div = document.createElement('div');
-            div.className = 'question-box';
-            div.innerHTML = `<h3>${questionText}</h3>`;
-            results.appendChild(div);
-            return div;
-        }
-
-        function createBarChart(container, labels, data, title) {
+                // Update createBarChart function to support horizontal bars
+        function createBarChart(container, labels, data, yLabel, xLabel, horizontal = false) {
             const canvas = document.createElement('canvas');
-            container.appendChild(canvas);
+            canvas.style.height = '300px';
+            
             new Chart(canvas, {
-                type: 'bar',
+                type: horizontal ? 'bar' : 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: title,
                         data: data,
                         backgroundColor: colors,
                         borderWidth: 1
                     }]
                 },
                 options: {
+                    indexAxis: horizontal ? 'y' : 'x',
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } }
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.parsed.x || context.parsed.y} days`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: horizontal ? yLabel : xLabel }
+                        },
+                        x: {
+                            title: { display: true, text: horizontal ? xLabel : yLabel }
+                        }
+                    }
                 }
             });
+
+            const card = document.createElement('div');
+            card.className = 'chart-card';
+            card.appendChild(canvas);
+            container.appendChild(card);
         }
+
+        // Update processQuestion functions to use horizontal charts where appropriate
+        function processQuestion2(data, container) {
+            // ... (previous calculation logic) ...
+            
+            const qDiv = createQuestionDiv('Transportation Efficiency');
+            const grid = createChartGrid();
+            qDiv.appendChild(grid);
+            
+            createBarChart(grid, 
+                averages.map(x => x.mode),
+                averages.map(x => x.average),
+                'Transportation Mode',
+                'Average Days',
+                true  // Horizontal bar chart
+            );
+            
+            return {
+                title: 'Fastest Transportation',
+                value: `${min.mode} (${min.average.toFixed(1)} days)`
+            };
+        }
+
+        // Add this helper function
+        function createChartGrid() {
+            const grid = document.createElement('div');
+            grid.className = 'chart-grid';
+            return grid;
+        }
+
+        // Update insight display
+        function createQuestionDiv(title) {
+            const div = document.createElement('div');
+            div.className = 'question-box';
+            div.innerHTML = `<h3 style="color: #5D8696; margin-bottom: 15px;">${title}</h3>`;
+            document.getElementById('results').appendChild(div);
+            return div;
+        }
+
+        // Update insight items in handleFile function
+        insights.forEach(insight => {
+            const div = document.createElement('div');
+            div.className = 'insight-item';
+            div.innerHTML = `
+                <span style="color: #5D8696;">${insight.title}:</span>
+                <span class="insight-value">${insight.value}</span>
+            `;
+            keyInsights.appendChild(div);
+        });
     </script>
 </body>
 </html>
