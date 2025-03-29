@@ -4,212 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sew Yee Ying - Portfolio</title>
-    <title>Logistics Flowchart Builder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        :root {
+            --primary: #5D8696;
+            --secondary: #78ABAF;
+            --accent: #CCA885;
+            --background: #F8F7F2;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background: #f4f4f9;
+            background: var(--background);
             color: #333;
         }
-        header {
-            background: linear-gradient(135deg, #072E33, #0A3E44);
+
+        .header {
+            background: var(--primary);
             color: white;
-            padding: 30px;
+            padding: 2rem 1rem;
             text-align: center;
-            font-size: 1.5em;
-            font-weight: 600;
-            border-bottom: 5px solid #0A3E44;
-        }
-        .container {
-            width: 85%;
-            margin: auto;
-            overflow: hidden;
-        }
-        .section {
-            background: white;
-            padding: 30px;
-            margin: 30px 0;
-            border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        h2 {
-            color: #072E33;
-            font-size: 2em;
-            border-bottom: 3px solid #0A3E44;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        .student-id {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 2rem;
             text-align: center;
-        }
-        .global-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .global-container img {
-            width: 40%;
-            border-radius: 12px;
-        }
-        .global-description {
-            width: 55%;
-            font-size: 1em;
-            color: #555;
-        }
-        .assignment-container, .social-container, .interests-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            text-align: center;
-        }
-        .circle-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 30%;
-        }
-        .circle-img {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .description {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #555;
-            text-align: left;
-            width: 50%;
-        }
-        .upload-btn {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: #072E33;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .upload-btn:hover {
-            background: #0A3E44;
-        }
-        .interests-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .interest-item {
-            display: flex;
-            align-items: center;
-            width: 48%;
-            justify-content: space-between;
-        }
-        .toolbar {
-            padding: 10px;
-            background: #333;
-            color: white;
-        }
-        .canvas {
-            width: 100vw;
-            height: 80vh;
-            border: 2px solid black;
+            margin: 3rem 0;
             position: relative;
-            overflow: hidden;
-            background: #f4f4f4;
         }
-        .node {
-            width: 100px;
-            height: 50px;
-            position: absolute;
-            background: lightblue;
-            border: 2px solid blue;
+
+        .assignments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .assignment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
             text-align: center;
-            line-height: 50px;
-            cursor: grab;
-       }
-        footer {
-            background: #072E33;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .assignment-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
             color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
         }
-        footer a {
+
+        .assignment-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-color-1 { background: #5D8696; }
+        .btn-color-2 { background: #78ABAF; }
+        .btn-color-3 { background: #8FAFCC; }
+        .btn-color-4 { background: #CCA885; }
+        .btn-color-5 { background: #D9DAD4; color: #333; }
+
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer a {
             color: white;
             text-decoration: none;
             font-weight: 600;
         }
-        footer a:hover {
-            color: #0A3E44;
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .assignments-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        
-        function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
-        document.getElementById(pageId).style.display = 'block';
-    }
-    </script>
-        
     </style>
 </head>
 <body>
-    <header>
+    <header class="header">
         <h1>Sew Yee Ying</h1>
-        <p>Student ID: 2265221</p>
+        <div class="student-id">2265221</div>
     </header>
-    
+
     <div class="container">
-        <!-- Global Operations and Logistics -->
-        <div class="section">
-            <h2>Global Operations and Logistics</h2>
-            <div class="global-container">
-                <img src="https://images.pexels.com/photos/13766338/pexels-photo-13766338.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Global Operations">
-                <p class="global-description">
-                    Global operations and logistics are critical to ensuring the seamless movement of goods, services, and people across borders. This involves managing international supply chains, transportation, and coordination to meet global demand.
-                </p>
+        <h2 class="section-title">Assignments</h2>
+        
+        <div class="assignments-grid">
+            <!-- Assignment 1 -->
+            <div class="assignment-card">
+                <a href="https://excalidraw.com/#room=aac424f9cfa668b99228,LbKwzrox1K0LzhlLNo8oOw" 
+                   class="assignment-btn btn-color-1">
+                    <i class="fas fa-project-diagram"></i>
+                    Fedex Delivery Process
+                </a>
             </div>
-        </div>
 
-        <!-- Assignments -->
-        <div class="section">
-            <h2>Assignments</h2>
-            <a href="https://excalidraw.com/#room=b468e6a21498408484d7,An9CUMKcCUUqtMzfSEucQQ" target="_blank">Click here to open Excalidraw</a>
-            <div class="assignment-container">
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 1" class="circle-img">
-                    <button onclick="location.href='https://yeeying4126.github.io/IBMgl01/editor.html'">Flow Chart Builder</button>
-                    <p><strong>Flow Chart Builder</strong></p>
-                </div>
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 2" class="circle-img">
-                    <p><strong>Assignment 2</strong></p>
-                </div>
-                <div class="circle-container">
-                    <img src="https://images.pexels.com/photos/9159400/pexels-photo-9159400.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Assignment 3" class="circle-img">
-                    <button onclick="location.href='https://yeeying4126.github.io/IBMgl01/analysis.html'">Data Analysis</button>
-                    <p><strong>Assignment 8</strong></p>
-                </div>
+            <!-- Assignment 2 -->
+            <div class="assignment-card">
+                <a href="https://yeeying4126.github.io/IBMgl01/editor.html" 
+                   class="assignment-btn btn-color-2">
+                    <i class="fas fa-file-alt"></i>
+                    Flowchart Builder
+                </a>
             </div>
-        </div>
 
-        <!-- About Me -->
-        <div class="section">
-            <h2>About Me</h2>
-            <p style="text-align: center; font-size: 1.2em; color: #555;">Exchange Student in Dong-A University</p>
-        </div>
+            <!-- Assignment 3 -->
+            <div class="assignment-card">
+                <a href="https://yeeying4126.github.io/IBMgl01/analysis.html" 
+                   class="assignment-btn btn-color-3">
+                    <i class="fas fa-chart-bar"></i>
+                    Procurement Data Analysis
+                </a>
+            </div>
 
-        <!-- My Interests -->
-        <div class="section">
-            <h2>My Interests</h2>
-            <p style="text-align: center; font-size: 1.2em; color: #555;">Dancing | Travelling | Video Editing</p>
+            <!-- Additional placeholders -->
+            <div class="assignment-card">
+                <a href="#" class="assignment-btn btn-color-4">
+                    <i class="fas fa-cube"></i>
+                    Assignment 4
+                </a>
+            </div>
+
+            <div class="assignment-card">
+                <a href="#" class="assignment-btn btn-color-5">
+                    <i class="fas fa-shipping-fast"></i>
+                    Assignment 5
+                </a>
+            </div>
         </div>
     </div>
-    
-    <footer>
-        <p>Contact me at: <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a></p>
+
+    <footer class="footer">
+        <p>Contact me at: 
+            <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a>
+        </p>
     </footer>
 </body>
 </html>
