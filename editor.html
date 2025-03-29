@@ -118,6 +118,20 @@
             font-size: 20px;
             padding: 0;
         }
+        .flowchart-container {
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+        }
+        .grid-container {
+            position: absolute;
+            width: 10000%;
+            height: 10000%;
+            left: -5000%;
+            top: -5000%;
+            background-image: 
+                linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+                linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+        }
     </style>
 </head>
 <body>
@@ -152,6 +166,11 @@
      <div class="zoom-controls">
         <button onclick="zoomOut()">-</button>
         <button onclick="zoomIn()">+</button>
+    </div>
+
+    <div class="flowchart-container" id="flowchart">
+        <div class="grid-container"></div>
+        <svg id="connections"></svg>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
@@ -198,10 +217,59 @@
         function updateZoom() {
             const container = document.getElementById("flowchart");
             container.style.transform = `scale(${currentScale})`;
-            container.style.transformOrigin = '0 0';
             
-            // Update connections to match zoom level
+            // Update grid size based on zoom
+            const gridSize = 20 / currentScale;
+            document.querySelector('.grid-container').style.backgroundSize = 
+                `${gridSize}px ${gridSize}px`;
+
             updateConnections();
+        }
+
+        // Modify the updateConnections function
+        function updateConnections() {
+            const svg = document.getElementById("connections");
+            svg.innerHTML = '';
+            
+            connections.forEach(conn => {
+                const startNode = document.getElementById(conn.start);
+                const endNode = document.getElementById(conn.end);
+                
+                if (!startNode || !endNode) return;
+                
+                // Get positions relative to container (not viewport)
+                const startX = startNode.offsetLeft + startNode.offsetWidth/2;
+                const startY = startNode.offsetTop + startNode.offsetHeight/2;
+                const endX = endNode.offsetLeft + endNode.offsetWidth/2;
+                const endY = endNode.offsetTop + endNode.offsetHeight/2;
+                
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", startX);
+                line.setAttribute("y1", startY);
+                line.setAttribute("x2", endX);
+                line.setAttribute("y2", endY);
+                line.setAttribute("stroke", "#333");
+                line.setAttribute("stroke-width", "2");
+                svg.appendChild(line);
+            });
+        }
+
+        // Modify the elementDrag function in makeDraggable
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            
+            const newTop = (element.offsetTop - pos2 / currentScale) + "px";
+            const newLeft = (element.offsetLeft - pos1 / currentScale) + "px";
+            
+            element.style.top = newTop;
+            element.style.left = newLeft;
+            updateConnections();
+        }
 
         function addNode(type) {
             const flowchart = document.getElementById("flowchart");
