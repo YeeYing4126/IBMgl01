@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flowchart Builder</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #F8F7F2; color: black; display: flex; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #181818; color: white; display: flex; }
         .sidebar { width: 200px; background: #222; padding: 10px; }
-        .flowchart-container { flex: 1; height: 100vh; position: relative; overflow: hidden; border: 1px solid #ccc; background: #f0f0f0; background-image: linear-gradient(45deg, #e6e6e6 25%, transparent 25%, transparent 75%, #e6e6e6 75%, #e6e6e6), linear-gradient(45deg, #e6e6e6 25%, transparent 25%, transparent 75%, #e6e6e6 75%, #e6e6e6); background-size: 20px 20px; }
+        .flowchart-container { flex: 1; height: 100vh; position: relative; overflow: hidden; }
         button { width: 100%; margin-bottom: 5px; padding: 8px; background: #444; border: none; color: white; cursor: pointer; }
         button:hover { background: #666; }
-        .node { position: absolute; padding: 10px; background: gray; color: white; border-radius: 5px; cursor: move; display: flex; align-items: center; flex-direction: column; }
-        .node input { border: none; background: transparent; color: black; font-size: 14px; width: 80px; text-align: center; }
-        .node input:focus { outline: none; border-bottom: 1px solid black; }
-        .rename-btn { margin-top: 5px; padding: 3px 8px; font-size: 12px; background-color: #555; color: white; cursor: pointer; }
-        .delete-btn { background: red; color: white; border: none; cursor: pointer; padding: 5px; margin-top: 5px; position: absolute; top: 5px; right: 5px; display: none; }
-        .node:hover .delete-btn { display: block; }
-        .color-picker { margin-top: 5px; }
+        .node { position: absolute; padding: 10px; background: gray; color: white; border-radius: 5px; cursor: move; display: flex; align-items: center; }
+        .node input { border: none; background: transparent; color: white; font-size: 14px; width: 80px; text-align: center; }
+        .node input:focus { outline: none; border-bottom: 1px solid white; }
+        .delete-btn { background: red; color: white; border: none; cursor: pointer; padding: 3px; position: absolute; top: 5px; right: 5px; display: none; }
+        .node:hover .delete-btn { display: inline; }
     </style>
 </head>
 <body>
@@ -37,8 +35,7 @@
         let nodeCount = 0;
         let history = [];
         let redoStack = [];
-        let selectedNode = null;
-
+        
         function addNode(type) {
             const flowchart = document.getElementById("flowchart");
             const node = document.createElement("div");
@@ -49,84 +46,73 @@
             node.draggable = true;
             node.dataset.nodeId = nodeCount++;
 
+            // Create input for node name (editable)
             const input = document.createElement("input");
-            input.value = type;
-            input.readOnly = true;
-            input.onfocus = () => { input.readOnly = false; };
-            input.onblur = () => { input.readOnly = true; saveState(); };
+            input.value = `${type}${nodeCount}`;
+            input.onblur = () => saveState();
             node.appendChild(input);
-
-            const renameBtn = document.createElement("button");
-            renameBtn.innerText = "Rename";
-            renameBtn.className = "rename-btn";
-            renameBtn.onclick = () => { input.focus(); };
-            node.appendChild(renameBtn);
-
+            
+            // Create color picker for the specific node
+            const colorPicker = document.createElement("input");
+            colorPicker.type = "color";
+            colorPicker.oninput = (event) => {
+                node.style.backgroundColor = event.target.value;
+            };
+            node.appendChild(colorPicker);
+            
+            // Create a small delete button that appears on hover
             const deleteBtn = document.createElement("button");
             deleteBtn.innerText = "X";
             deleteBtn.className = "delete-btn";
             deleteBtn.onclick = () => { node.remove(); saveState(); };
             node.appendChild(deleteBtn);
-
-            const colorPicker = document.createElement("input");
-            colorPicker.type = "color";
-            colorPicker.className = "color-picker";
-            colorPicker.oninput = (event) => {
-                if (selectedNode) {
-                    selectedNode.style.backgroundColor = event.target.value;
-                }
-            };
-            node.appendChild(colorPicker);
-
+            
+            // Dragging functionality
             node.onmousedown = (event) => {
                 let shiftX = event.clientX - node.getBoundingClientRect().left;
                 let shiftY = event.clientY - node.getBoundingClientRect().top;
-
+                
                 function moveAt(pageX, pageY) {
                     node.style.left = pageX - shiftX + 'px';
                     node.style.top = pageY - shiftY + 'px';
                 }
-
+                
                 function onMouseMove(event) {
                     moveAt(event.pageX, event.pageY);
                 }
-
+                
                 document.addEventListener('mousemove', onMouseMove);
-
                 node.onmouseup = function() {
                     document.removeEventListener('mousemove', onMouseMove);
                     node.onmouseup = null;
                     saveState();
                 };
             };
-
+            
             node.ondragstart = () => false;
-
-            node.onclick = () => { selectedNode = node; };
-
             flowchart.appendChild(node);
             saveState();
         }
-
+        
         function saveState() {
             history.push(document.getElementById("flowchart").innerHTML);
             redoStack = [];
         }
-
+        
         function undo() {
             if (history.length > 1) {
                 redoStack.push(history.pop());
                 document.getElementById("flowchart").innerHTML = history[history.length - 1];
             }
         }
-
+        
         function redo() {
             if (redoStack.length > 0) {
                 history.push(redoStack.pop());
                 document.getElementById("flowchart").innerHTML = history[history.length - 1];
             }
         }
-
+        
         function exportAsImage() {
             html2canvas(document.getElementById("flowchart")).then(canvas => {
                 let link = document.createElement('a');
@@ -135,7 +121,7 @@
                 link.click();
             });
         }
-
+        
         function exportAsPDF() {
             html2canvas(document.getElementById("flowchart")).then(canvas => {
                 let imgData = canvas.toDataURL('image/png');
@@ -144,6 +130,7 @@
                 pdf.save('flowchart.pdf');
             });
         }
+        
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
