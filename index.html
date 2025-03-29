@@ -108,66 +108,46 @@
         .btn-color-4 { background: #CCA885; }
         .btn-color-5 { background: #D9DAD4; color: #333; }
 
-.comment-section {
-    background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    margin: 3rem 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    box-sizing: border-box;
-}
+        .comment-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.comment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-}
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-textarea, input {
-    padding: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-family: inherit;
-    width: 100%;
-    box-sizing: border-box;
-}
+        textarea, input {
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.submit-btn {
-    background: var(--primary);
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s ease;
-    width: fit-content;
-    margin: 0 auto;
-}
-
-/* Add media query for mobile responsiveness */
-@media (max-width: 768px) {
-    .comment-section {
-        padding: 1.5rem;
-    }
-    
-    .comment-form {
-        gap: 1rem;
-    }
-    
-    textarea, input {
-        font-size: 14px;
-    }
-    
-    .submit-btn {
-        width: 100%;
-        padding: 1rem;
-    }
-}
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            width: fit-content;
+            margin: 0 auto;
+        }
 
         .footer {
             background: var(--primary);
@@ -184,6 +164,23 @@ textarea, input {
             
             .assignments-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .comment-section {
+                padding: 1.5rem;
+            }
+            
+            .comment-form {
+                gap: 1rem;
+            }
+            
+            textarea, input {
+                font-size: 14px;
+            }
+            
+            .submit-btn {
+                width: 100%;
+                padding: 1rem;
             }
         }
     </style>
@@ -235,9 +232,11 @@ textarea, input {
             <div class="assignment-card">
                 <h3 class="assignment-title">Assignment 4</h3>
                 <p class="project-name">Data Analysis</p>
-                <a href="#" 
-                   class="assignment-btn btn-color-3">
+                <a href="#" class="assignment-btn btn-color-3">
                     <i class="fas fa-chart-bar"></i>
+                    Coming Soon
+                </a>
+            </div>
         </div>
 
         <!-- Comment Section -->
@@ -258,7 +257,6 @@ textarea, input {
     </footer>
 
     <script>
-        // Simple comment form handling
         document.getElementById('commentForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -267,8 +265,6 @@ textarea, input {
                 text: formData.get('comment')
             };
             
-            // Here you would typically send this to a server
-            // For now, we'll just log it and show an alert
             console.log('New comment:', comment);
             alert('Thank you for your comment!');
             this.reset();
