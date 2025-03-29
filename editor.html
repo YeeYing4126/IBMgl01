@@ -5,85 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flowchart Builder</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #F8F7F2;
-            color: #333;
-            display: flex;
-        }
-        .sidebar {
-            width: 200px;
-            background: #222;
-            padding: 10px;
-        }
-        .flowchart-container {
-            flex: 1;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
-            background: url('https://www.transparenttextures.com/patterns/diagonal-stripes-light.png');
-            background-size: 20px 20px;
-        }
-        button {
-            width: 100%;
-            margin-bottom: 5px;
-            padding: 8px;
-            background: #444;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #666;
-        }
-        .node {
-            position: absolute;
-            padding: 10px;
-            background: gray;
-            color: white;
-            border-radius: 5px;
-            cursor: move;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .node input {
-            border: none;
-            background: transparent;
-            color: white;
-            font-size: 14px;
-            width: 100px;
-            text-align: center;
-        }
-        .node input:focus {
-            outline: none;
-            border-bottom: 1px solid white;
-        }
-        .node button {
-            margin-top: 5px;
-            background: #444;
-            border: none;
-            color: white;
-            padding: 5px;
-            cursor: pointer;
-        }
-        .delete-btn {
-            background: red;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            margin-top: 5px;
-        }
-        .color-btn {
-            background-color: #444;
-            color: white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: #F8F7F2; color: black; display: flex; }
+        .sidebar { width: 200px; background: #222; padding: 10px; }
+        .flowchart-container { flex: 1; height: 100vh; position: relative; overflow: hidden; border: 1px solid #ccc; background: #f0f0f0; background-image: linear-gradient(45deg, #e6e6e6 25%, transparent 25%, transparent 75%, #e6e6e6 75%, #e6e6e6), linear-gradient(45deg, #e6e6e6 25%, transparent 25%, transparent 75%, #e6e6e6 75%, #e6e6e6); background-size: 20px 20px; }
+        button { width: 100%; margin-bottom: 5px; padding: 8px; background: #444; border: none; color: white; cursor: pointer; }
+        button:hover { background: #666; }
+        .node { position: absolute; padding: 10px; background: gray; color: white; border-radius: 5px; cursor: move; display: flex; align-items: center; flex-direction: column; }
+        .node input { border: none; background: transparent; color: black; font-size: 14px; width: 80px; text-align: center; }
+        .node input:focus { outline: none; border-bottom: 1px solid black; }
+        .rename-btn { margin-top: 5px; padding: 3px 8px; font-size: 12px; background-color: #555; color: white; cursor: pointer; }
+        .delete-btn { background: red; color: white; border: none; cursor: pointer; padding: 5px; margin-top: 5px; position: absolute; top: 5px; right: 5px; display: none; }
+        .node:hover .delete-btn { display: block; }
+        .color-picker { margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -97,8 +30,6 @@
         <button onclick="redo()">Redo</button>
         <button onclick="exportAsImage()">Export as Image</button>
         <button onclick="exportAsPDF()">Export as PDF</button>
-        <button onclick="changeNodeColor()">Change Node Color</button>
-        <button onclick="enableLineDrawing()">Enable Line Drawing</button>
     </div>
     <div class="flowchart-container" id="flowchart"></div>
 
@@ -106,8 +37,7 @@
         let nodeCount = 0;
         let history = [];
         let redoStack = [];
-        let lineDrawingEnabled = false;
-        let currentLine = null;
+        let selectedNode = null;
 
         function addNode(type) {
             const flowchart = document.getElementById("flowchart");
@@ -115,31 +45,39 @@
             node.className = "node";
             node.style.left = `${Math.random() * 500}px`;
             node.style.top = `${Math.random() * 400}px`;
+            node.style.backgroundColor = "gray";
+            node.draggable = true;
             node.dataset.nodeId = nodeCount++;
 
             const input = document.createElement("input");
             input.value = type;
+            input.readOnly = true;
+            input.onfocus = () => { input.readOnly = false; };
+            input.onblur = () => { input.readOnly = true; saveState(); };
             node.appendChild(input);
 
             const renameBtn = document.createElement("button");
             renameBtn.innerText = "Rename";
-            renameBtn.onclick = () => {
-                const newName = prompt("Enter new name:", input.value);
-                if (newName) input.value = newName;
-            };
+            renameBtn.className = "rename-btn";
+            renameBtn.onclick = () => { input.focus(); };
             node.appendChild(renameBtn);
 
             const deleteBtn = document.createElement("button");
-            deleteBtn.innerText = "Delete";
+            deleteBtn.innerText = "X";
             deleteBtn.className = "delete-btn";
-            deleteBtn.onclick = () => {
-                node.remove();
-                saveState();
-            };
+            deleteBtn.onclick = () => { node.remove(); saveState(); };
             node.appendChild(deleteBtn);
 
-            node.ondragstart = () => false;
-            node.draggable = true;
+            const colorPicker = document.createElement("input");
+            colorPicker.type = "color";
+            colorPicker.className = "color-picker";
+            colorPicker.oninput = (event) => {
+                if (selectedNode) {
+                    selectedNode.style.backgroundColor = event.target.value;
+                }
+            };
+            node.appendChild(colorPicker);
+
             node.onmousedown = (event) => {
                 let shiftX = event.clientX - node.getBoundingClientRect().left;
                 let shiftY = event.clientY - node.getBoundingClientRect().top;
@@ -154,6 +92,7 @@
                 }
 
                 document.addEventListener('mousemove', onMouseMove);
+
                 node.onmouseup = function() {
                     document.removeEventListener('mousemove', onMouseMove);
                     node.onmouseup = null;
@@ -161,47 +100,12 @@
                 };
             };
 
+            node.ondragstart = () => false;
+
+            node.onclick = () => { selectedNode = node; };
+
             flowchart.appendChild(node);
             saveState();
-        }
-
-        function changeNodeColor() {
-            const colors = ["#5D8696", "#78ABAF", "#8FAFCC", "#CCA885", "#D9DAD4"];
-            const nodes = document.querySelectorAll('.node');
-            nodes.forEach(node => {
-                node.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            });
-        }
-
-        function enableLineDrawing() {
-            lineDrawingEnabled = !lineDrawingEnabled;
-            if (lineDrawingEnabled) {
-                alert("Click two nodes to draw a line between them!");
-            }
-        }
-
-        function drawLine(node1, node2) {
-            const line = document.createElement("div");
-            line.style.position = "absolute";
-            line.style.width = "2px";
-            line.style.backgroundColor = "black";
-
-            const x1 = node1.offsetLeft + node1.offsetWidth / 2;
-            const y1 = node1.offsetTop + node1.offsetHeight / 2;
-            const x2 = node2.offsetLeft + node2.offsetWidth / 2;
-            const y2 = node2.offsetTop + node2.offsetHeight / 2;
-
-            const dx = x2 - x1;
-            const dy = y2 - y1;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx);
-
-            line.style.height = `${length}px`;
-            line.style.transform = `rotate(${angle}rad)`;
-            line.style.left = `${x1}px`;
-            line.style.top = `${y1}px`;
-
-            document.getElementById("flowchart").appendChild(line);
         }
 
         function saveState() {
