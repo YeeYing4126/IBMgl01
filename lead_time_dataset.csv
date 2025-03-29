@@ -1,0 +1,101 @@
+Order_ID,Supplier,Order_Date,Expected_Delivery_Date,Actual_Delivery_Date,Product_Category,Transportation_Mode,Supplier_Location,Disruption_Type,Customer_Demand,Order_Quantity
+ORD1000,GammaCorp,2/27/2024,3/8/2024,3/11/2024,Mechanical,Air,Korea,Customs,111,155
+ORD1001,Alpha Supplies,2/22/2024,3/7/2024,3/11/2024,Raw Materials,Sea,China,Weather,109,117
+ORD1002,BetaTech,1/17/2024,1/27/2024,1/30/2024,Electronics,Air,Germany,Customs,97,101
+ORD1003,GammaCorp,1/14/2024,1/28/2024,1/28/2024,Raw Materials,Sea,Korea,None,102,138
+ORD1004,GammaCorp,8/2/2024,8/12/2024,8/15/2024,Raw Materials,Air,Korea,Customs,120,123
+ORD1005,Alpha Supplies,3/22/2024,4/5/2024,4/9/2024,Mechanical,Sea,China,Customs,101,110
+ORD1006,Alpha Supplies,6/21/2024,7/1/2024,7/6/2024,Mechanical,Air,China,Weather,129,168
+ORD1007,BetaTech,11/5/2024,11/15/2024,11/18/2024,Electronics,Air,Germany,None,124,126
+ORD1008,GammaCorp,3/4/2024,3/16/2024,3/19/2024,Mechanical,Land,Korea,Weather,102,121
+ORD1009,BetaTech,11/17/2024,12/1/2024,12/5/2024,Mechanical,Sea,Germany,None,119,155
+ORD1010,GammaCorp,2/5/2024,2/15/2024,2/15/2024,Electronics,Air,Korea,None,109,133
+ORD1011,Alpha Supplies,4/29/2024,5/11/2024,5/16/2024,Mechanical,Land,China,Customs,124,130
+ORD1012,GammaCorp,7/5/2024,7/15/2024,7/18/2024,Mechanical,Air,Korea,Customs,123,137
+ORD1013,BetaTech,12/25/2024,1/6/2025,1/14/2025,Raw Materials,Land,Germany,Weather,132,134
+ORD1014,GammaCorp,3/28/2024,4/11/2024,4/13/2024,Electronics,Sea,Korea,Weather,100,112
+ORD1015,BetaTech,5/18/2024,5/30/2024,6/4/2024,Raw Materials,Land,Germany,None,115,126
+ORD1016,Alpha Supplies,12/16/2024,12/26/2024,12/30/2024,Electronics,Air,China,Customs,128,139
+ORD1017,Alpha Supplies,6/10/2024,6/24/2024,6/28/2024,Electronics,Sea,China,Customs,132,169
+ORD1018,GammaCorp,6/10/2024,6/20/2024,6/23/2024,Mechanical,Air,Korea,Customs,133,196
+ORD1019,GammaCorp,8/22/2024,9/1/2024,9/4/2024,Electronics,Air,Korea,Customs,119,153
+ORD1020,GammaCorp,10/2/2024,10/12/2024,10/15/2024,Raw Materials,Air,Korea,Production,118,134
+ORD1021,GammaCorp,7/23/2024,8/2/2024,8/3/2024,Electronics,Air,Korea,None,120,120
+ORD1022,Alpha Supplies,1/25/2024,2/6/2024,2/8/2024,Electronics,Land,China,None,103,142
+ORD1023,GammaCorp,8/4/2024,8/18/2024,8/21/2024,Mechanical,Sea,Korea,Customs,117,163
+ORD1024,BetaTech,9/27/2024,10/7/2024,10/10/2024,Raw Materials,Air,Germany,None,115,119
+ORD1025,Alpha Supplies,12/14/2024,12/28/2024,12/29/2024,Raw Materials,Sea,China,None,131,186
+ORD1026,BetaTech,11/24/2024,12/4/2024,12/13/2024,Mechanical,Air,Germany,Production,116,121
+ORD1027,BetaTech,1/2/2024,1/14/2024,1/18/2024,Raw Materials,Land,Germany,Customs,99,135
+ORD1028,GammaCorp,4/1/2024,4/15/2024,4/15/2024,Electronics,Sea,Korea,None,122,138
+ORD1029,BetaTech,11/23/2024,12/7/2024,12/15/2024,Electronics,Sea,Germany,Weather,117,161
+ORD1030,Alpha Supplies,10/3/2024,10/15/2024,10/16/2024,Raw Materials,Land,China,None,119,133
+ORD1031,GammaCorp,6/14/2024,6/28/2024,6/29/2024,Electronics,Sea,Korea,None,127,128
+ORD1032,BetaTech,5/2/2024,5/12/2024,5/17/2024,Raw Materials,Air,Germany,None,116,143
+ORD1033,Alpha Supplies,9/5/2024,9/17/2024,9/19/2024,Raw Materials,Land,China,None,109,122
+ORD1034,Alpha Supplies,12/3/2024,12/17/2024,12/22/2024,Raw Materials,Sea,China,Weather,135,148
+ORD1035,GammaCorp,11/6/2024,11/20/2024,11/21/2024,Electronics,Sea,Korea,None,117,126
+ORD1036,GammaCorp,12/19/2024,12/29/2024,12/31/2024,Mechanical,Air,Korea,Customs,126,165
+ORD1037,GammaCorp,11/28/2024,12/8/2024,12/12/2024,Raw Materials,Air,Korea,Production,118,170
+ORD1038,Alpha Supplies,4/25/2024,5/5/2024,5/6/2024,Electronics,Air,China,None,125,145
+ORD1039,Alpha Supplies,10/28/2024,11/7/2024,11/8/2024,Electronics,Air,China,None,110,124
+ORD1040,Alpha Supplies,4/27/2024,5/7/2024,5/9/2024,Electronics,Air,China,None,125,151
+ORD1041,Alpha Supplies,9/20/2024,9/30/2024,10/6/2024,Raw Materials,Air,China,Production,111,120
+ORD1042,GammaCorp,3/8/2024,3/22/2024,3/22/2024,Raw Materials,Sea,Korea,None,110,132
+ORD1043,Alpha Supplies,8/30/2024,9/11/2024,9/15/2024,Electronics,Land,China,Weather,122,179
+ORD1044,GammaCorp,8/8/2024,8/18/2024,8/20/2024,Mechanical,Air,Korea,Production,120,133
+ORD1045,GammaCorp,1/28/2024,2/11/2024,2/16/2024,Raw Materials,Sea,Korea,Weather,95,107
+ORD1046,BetaTech,6/22/2024,7/4/2024,7/8/2024,Electronics,Land,Germany,Customs,131,163
+ORD1047,Alpha Supplies,10/1/2024,10/15/2024,10/19/2024,Mechanical,Sea,China,Weather,110,124
+ORD1048,BetaTech,5/7/2024,5/19/2024,5/26/2024,Electronics,Land,Germany,Production,111,138
+ORD1049,GammaCorp,2/20/2024,3/1/2024,3/2/2024,Raw Materials,Air,Korea,None,106,134
+ORD1050,Alpha Supplies,5/1/2024,5/11/2024,5/17/2024,Mechanical,Air,China,Production,119,177
+ORD1051,BetaTech,1/31/2024,2/10/2024,2/12/2024,Electronics,Air,Germany,None,105,124
+ORD1052,BetaTech,8/20/2024,8/30/2024,9/4/2024,Raw Materials,Air,Germany,None,115,156
+ORD1053,GammaCorp,12/4/2024,12/18/2024,12/20/2024,Electronics,Sea,Korea,Weather,130,155
+ORD1054,Alpha Supplies,1/30/2024,2/13/2024,2/19/2024,Raw Materials,Sea,China,Weather,95,102
+ORD1055,BetaTech,1/30/2024,2/9/2024,2/13/2024,Mechanical,Air,Germany,None,97,125
+ORD1056,GammaCorp,3/21/2024,3/31/2024,4/4/2024,Raw Materials,Air,Korea,Weather,110,122
+ORD1057,Alpha Supplies,2/5/2024,2/19/2024,2/21/2024,Raw Materials,Sea,China,None,108,142
+ORD1058,BetaTech,3/2/2024,3/14/2024,3/20/2024,Raw Materials,Land,Germany,Customs,103,151
+ORD1059,GammaCorp,1/21/2024,2/4/2024,2/4/2024,Mechanical,Sea,Korea,None,102,109
+ORD1060,GammaCorp,9/24/2024,10/4/2024,10/7/2024,Mechanical,Air,Korea,Customs,113,119
+ORD1061,GammaCorp,6/9/2024,6/19/2024,6/21/2024,Mechanical,Air,Korea,Weather,134,199
+ORD1062,GammaCorp,6/2/2024,6/16/2024,6/19/2024,Electronics,Sea,Korea,Weather,128,161
+ORD1063,GammaCorp,10/15/2024,10/27/2024,10/27/2024,Electronics,Land,Korea,None,114,165
+ORD1064,GammaCorp,5/15/2024,5/25/2024,5/26/2024,Mechanical,Air,Korea,None,120,131
+ORD1065,Alpha Supplies,7/8/2024,7/18/2024,7/18/2024,Mechanical,Air,China,None,122,174
+ORD1066,GammaCorp,6/3/2024,6/17/2024,6/17/2024,Raw Materials,Sea,Korea,None,130,180
+ORD1067,GammaCorp,10/10/2024,10/20/2024,10/24/2024,Raw Materials,Air,Korea,Weather,117,162
+ORD1068,Alpha Supplies,5/15/2024,5/25/2024,5/27/2024,Electronics,Air,China,None,117,152
+ORD1069,Alpha Supplies,5/19/2024,5/29/2024,5/29/2024,Electronics,Air,China,None,115,140
+ORD1070,Alpha Supplies,12/17/2024,12/31/2024,1/1/2025,Mechanical,Sea,China,None,133,144
+ORD1071,BetaTech,1/27/2024,2/6/2024,2/9/2024,Mechanical,Air,Germany,None,98,115
+ORD1072,Alpha Supplies,1/2/2024,1/12/2024,1/14/2024,Electronics,Air,China,None,102,145
+ORD1073,BetaTech,3/23/2024,4/6/2024,4/11/2024,Raw Materials,Sea,Germany,None,110,130
+ORD1074,GammaCorp,1/5/2024,1/15/2024,1/16/2024,Raw Materials,Air,Korea,None,101,113
+ORD1075,GammaCorp,1/19/2024,1/31/2024,2/1/2024,Raw Materials,Land,Korea,None,97,140
+ORD1076,BetaTech,3/6/2024,3/16/2024,3/21/2024,Mechanical,Air,Germany,None,110,133
+ORD1077,Alpha Supplies,7/2/2024,7/12/2024,7/12/2024,Electronics,Air,China,None,120,131
+ORD1078,BetaTech,10/13/2024,10/25/2024,10/28/2024,Mechanical,Land,Germany,None,112,144
+ORD1079,GammaCorp,3/20/2024,4/1/2024,4/2/2024,Electronics,Land,Korea,None,104,149
+ORD1080,Alpha Supplies,7/30/2024,8/9/2024,8/11/2024,Raw Materials,Air,China,None,128,188
+ORD1081,BetaTech,12/8/2024,12/20/2024,12/24/2024,Electronics,Land,Germany,Customs,127,189
+ORD1082,GammaCorp,2/25/2024,3/6/2024,3/8/2024,Electronics,Air,Korea,None,108,123
+ORD1083,Alpha Supplies,4/12/2024,4/24/2024,4/27/2024,Mechanical,Land,China,Customs,117,126
+ORD1084,Alpha Supplies,4/24/2024,5/4/2024,5/6/2024,Electronics,Air,China,Customs,123,147
+ORD1085,BetaTech,2/5/2024,2/17/2024,2/24/2024,Mechanical,Land,Germany,Customs,115,131
+ORD1086,GammaCorp,7/23/2024,8/6/2024,8/10/2024,Raw Materials,Sea,Korea,Customs,129,176
+ORD1087,Alpha Supplies,2/29/2024,3/12/2024,3/18/2024,Mechanical,Land,China,Weather,111,127
+ORD1088,BetaTech,1/20/2024,1/30/2024,2/5/2024,Mechanical,Air,Germany,Customs,101,122
+ORD1089,BetaTech,8/11/2024,8/25/2024,8/30/2024,Raw Materials,Sea,Germany,Weather,124,124
+ORD1090,GammaCorp,4/7/2024,4/17/2024,4/23/2024,Raw Materials,Air,Korea,Production,118,165
+ORD1091,GammaCorp,10/2/2024,10/16/2024,10/17/2024,Raw Materials,Sea,Korea,None,112,130
+ORD1092,Alpha Supplies,7/5/2024,7/19/2024,7/20/2024,Raw Materials,Sea,China,None,121,126
+ORD1093,GammaCorp,6/9/2024,6/23/2024,6/24/2024,Electronics,Sea,Korea,None,133,143
+ORD1094,BetaTech,9/16/2024,9/26/2024,10/1/2024,Mechanical,Air,Germany,Customs,110,142
+ORD1095,GammaCorp,5/31/2024,6/14/2024,6/20/2024,Electronics,Sea,Korea,Production,114,143
+ORD1096,BetaTech,12/12/2024,12/26/2024,12/29/2024,Electronics,Sea,Germany,None,129,146
+ORD1097,BetaTech,7/26/2024,8/9/2024,8/15/2024,Electronics,Sea,Germany,Customs,125,128
+ORD1098,Alpha Supplies,8/8/2024,8/22/2024,8/23/2024,Raw Materials,Sea,China,None,118,142
+ORD1099,BetaTech,8/14/2024,8/28/2024,9/1/2024,Electronics,Sea,Germany,None,116,145
