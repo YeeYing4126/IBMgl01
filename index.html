@@ -126,6 +126,74 @@
             max-width: 600px;
             margin: 0 auto;
         }
+        
+        .contact-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .contact-link {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-link:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Comments Display */
+        .comments-container {
+            margin-top: 2rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .comment-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comment-text {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+
+        .comment-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .qr-modal img {
+            max-width: 300px;
+            border-radius: 10px;
+        }
 
         textarea, input {
             padding: 1rem;
@@ -241,34 +309,106 @@
 
         <!-- Comment Section -->
         <div class="comment-section">
-            <h2 class="section-title">Share Your Thoughts</h2>
-            <form class="comment-form" id="commentForm">
-                <input type="text" placeholder="Your Name" required>
-                <textarea rows="4" placeholder="Your Comment..." required></textarea>
-                <button type="submit" class="submit-btn">Post Comment</button>
-            </form>
-        </div>
+        <h2 class="section-title">Share Your Thoughts</h2>
+        <form class="comment-form" id="commentForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <textarea id="comment" rows="4" placeholder="Your Comment..." required></textarea>
+            <button type="submit" class="submit-btn">Post Comment</button>
+        </form>
+        <div class="comments-container" id="commentsContainer"></div>
     </div>
 
     <footer class="footer">
-        <p>Contact me at: 
-            <a href="mailto:averihere4126@gmail.com">averihere4126@gmail.com</a>
-        </p>
+        <p>Contact me:</p>
+        <div class="contact-container">
+            <a href="#kakao" class="contact-link" onclick="showQR()">
+                <i class="fas fa-comment"></i>
+                <span>KakaoTalk</span>
+            </a>
+            <a href="https://www.instagram.com/yee_ying_0414" target="_blank" class="contact-link">
+                <i class="fab fa-instagram"></i>
+                <span>Instagram</span>
+            </a>
+            <a href="mailto:averihere4126@gmail.com" class="contact-link">
+                <i class="fas fa-envelope"></i>
+                <span>Email</span>
+            </a>
+        </div>
+
+        <!-- QR Modal -->
+        <div class="qr-modal" id="qrModal">
+            <img src="your-qr-code-image.png" alt="KakaoTalk QR Code">
+        </div>
     </footer>
 
     <script>
-        document.getElementById('commentForm').addEventListener('submit', function(e) {
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Comment System
+        const commentForm = document.getElementById('commentForm');
+        const commentsContainer = document.getElementById('commentsContainer');
+
+        commentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(this);
-            const comment = {
-                name: formData.get('name'),
-                text: formData.get('comment')
-            };
             
-            console.log('New comment:', comment);
-            alert('Thank you for your comment!');
-            this.reset();
+            const comment = {
+                name: commentForm.name.value,
+                text: commentForm.comment.value,
+                date: new Date().toISOString()
+            };
+
+            try {
+                await db.collection('comments').add(comment);
+                commentForm.reset();
+                loadComments();
+            } catch (error) {
+                console.error('Error adding comment:', error);
+            }
         });
+
+        async function loadComments() {
+            try {
+                const querySnapshot = await db.collection('comments').orderBy('date', 'desc').get();
+                commentsContainer.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const comment = doc.data();
+                    commentsContainer.innerHTML += `
+                        <div class="comment-item">
+                            <div class="comment-author">${comment.name}</div>
+                            <div class="comment-text">${comment.text}</div>
+                            <div class="comment-date">${new Date(comment.date).toLocaleDateString()}</div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        // QR Code Modal
+        function showQR() {
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('qrModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Initial load
+        loadComments();
     </script>
 </body>
 </html>
