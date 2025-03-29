@@ -108,39 +108,66 @@
         .btn-color-4 { background: #CCA885; }
         .btn-color-5 { background: #D9DAD4; color: #333; }
 
-        .comment-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            margin: 3rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
+.comment-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 3rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    box-sizing: border-box;
+}
 
-        .comment-form {
-            display: grid;
-            gap: 1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
 
-        textarea, input {
-            padding: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            width: 100%;
-        }
+textarea, input {
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
 
-        .submit-btn {
-            background: var(--primary);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s ease;
-        }
+.submit-btn {
+    background: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+/* Add media query for mobile responsiveness */
+@media (max-width: 768px) {
+    .comment-section {
+        padding: 1.5rem;
+    }
+    
+    .comment-form {
+        gap: 1rem;
+    }
+    
+    textarea, input {
+        font-size: 14px;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+    }
+}
 
         .footer {
             background: var(--primary);
