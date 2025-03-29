@@ -98,7 +98,28 @@
             history.push(document.getElementById("flowchart").innerHTML);
             redoStack = [];
         }
-        
+
+        function makeDraggable(element) {
+            interact(element).draggable({
+                listeners: {
+                    move(event) {
+                        let target = event.target;
+                        let x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+                        let y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute("data-x", x);
+                        target.setAttribute("data-y", y);
+                    },
+                    end() { saveState(); }
+                }
+            });
+        }
+
+        function saveState() {
+            history.push(document.getElementById("canvas").innerHTML);
+            redoStack = [];
+        }
+
         function undo() {
             if (history.length > 1) {
                 redoStack.push(history.pop());
