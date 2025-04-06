@@ -95,7 +95,7 @@
 
         <!-- Problem Statement -->
         <div class="problem-container">
-            <img src="image.png" alt="Town Network" class="img-fluid mb-4">
+            <img src="Network Diagram.png" alt="Town Network" class="img-fluid mb-4">
             <h3 style="color: var(--primary);">Requirements</h3>
             <ul class="list-group mb-4">
                 <li class="list-group-item">Start/end at WH (Warehouse)</li>
