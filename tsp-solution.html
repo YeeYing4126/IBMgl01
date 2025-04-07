@@ -84,14 +84,12 @@
             margin: 1.5rem 0;
             padding-left: 1.5rem;
         }
-
         .flow-step {
             margin: 1.5rem 0;
             padding: 1rem;
             background: #f8f9fa;
             border-radius: 8px;
         }
-
         .step-number {
             width: 30px;
             height: 30px;
@@ -103,7 +101,6 @@
             justify-content: center;
             margin-right: 0.8rem;
         }
-
         .node-chain {
             margin: 0.5rem 0;
             padding: 0.5rem;
@@ -111,25 +108,21 @@
             border-radius: 5px;
             font-family: monospace;
         }
-
         .arrow {
             color: var(--primary);
             font-size: 1.2rem;
             margin: 0.5rem 0;
         }
-
         .key-logic {
             background: #f8f9fa;
             padding: 1.5rem;
             border-radius: 8px;
             height: 100%;
         }
-
         .key-logic h5 {
             margin-bottom: 1rem;
             color: var(--primary);
         }
-
         .key-logic li {
             padding: 0.5rem 0;
             border-bottom: 1px solid #dee2e6;
@@ -140,9 +133,7 @@
     <div class="container py-5">
         <!-- Problem Section -->
         <div class="problem-container">
-            <h1 class="text-center mb-4" style="color: var(--primary);">
-                The Traveling Salesman Problem (TSP)
-            </h1>
+            <h1 class="text-center mb-4" style="color: var(--primary);">The Traveling Salesman Problem (TSP)</h1>
             <div class="text-center">
                 <img src="Network Diagram.png" alt="Town Network" class="img-fluid mb-4" style="max-width: 600px;">
             </div>
@@ -162,12 +153,9 @@
                 <h5>Initial Route Attempt</h5>
                 <div class="text-center position-relative" style="min-height: 400px;">
                     <svg width="100%" height="400" viewBox="0 0 600 400">
-                        <!-- Connections -->
                         <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L250 350 L350 350 L300 50" 
                               fill="none" stroke="#dc3545" stroke-width="3" stroke-dasharray="5"/>
                         <line x1="450" y1="250" x2="250" y2="350" stroke="#dc3545" stroke-width="2" stroke-dasharray="5"/>
-
-                        <!-- Nodes -->
                         <circle cx="300" cy="50" r="30" fill="#5D8696"/>
                         <circle cx="150" cy="150" r="25" fill="#78ABAF"/>
                         <circle cx="450" cy="150" r="25" fill="#78ABAF"/>
@@ -175,8 +163,6 @@
                         <circle cx="450" cy="250" r="25" fill="#78ABAF"/>
                         <circle cx="250" cy="350" r="25" fill="#78ABAF"/>
                         <circle cx="350" cy="350" r="25" fill="#78ABAF"/>
-
-                        <!-- Labels -->
                         <text x="300" y="60" fill="white" text-anchor="middle" font-size="18">WH</text>
                         <text x="150" y="155" fill="white" text-anchor="middle">A</text>
                         <text x="450" y="155" fill="white" text-anchor="middle">B</text>
@@ -184,209 +170,133 @@
                         <text x="450" y="255" fill="white" text-anchor="middle">D</text>
                         <text x="250" y="355" fill="white" text-anchor="middle">E</text>
                         <text x="350" y="355" fill="white" text-anchor="middle">F</text>
-
-                        <!-- Warning Text -->
                         <text x="360" y="310" fill="#dc3545" font-weight="bold" font-size="14">⚠️ Invalid D-E Connection</text>
+                    </svg>
                 </div>
 
-            <!-- Requirements Breakdown -->
-            <div class="mb-4">
-                <h5 style="color: var(--secondary);">Requirements Analysis</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-group">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Start/End at WH
-                                <span class="badge bg-success">✓ Satisfied</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Visit each town once
-                                <span class="badge bg-success">✓ Satisfied</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Avoid D→E connection
-                                <span class="badge bg-danger">✗ Violated Initially</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Minimize distance
-                                <span class="badge bg-warning">⚠️ Needs Optimization</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 mt-3 mt-md-0">
-                        <div class="node-diagram">
-                            <div class="node wh-node">WH</div>
-                            <div class="node town-node">A</div>
-                            <div class="node town-node">B</div>
-                            <div class="node town-node">C</div>
-                            <div class="node town-node">D</div>
-                            <div class="node town-node">F</div>
-                            <div class="node town-node">E</div>
+                <!-- Requirements Breakdown -->
+                <div class="mb-4">
+                    <h5 style="color: var(--secondary);">Requirements Analysis</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Start/End at WH <span class="badge bg-success">✓ Satisfied</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Visit each town once <span class="badge bg-success">✓ Satisfied</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Avoid D→E connection <span class="badge bg-danger">✗ Violated Initially</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Minimize distance <span class="badge bg-warning">⚠️ Needs Optimization</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <div class="node-diagram">
+                                <div class="node wh-node">WH</div>
+                                <div class="node town-node">A</div>
+                                <div class="node town-node">B</div>
+                                <div class="node town-node">C</div>
+                                <div class="node town-node">D</div>
+                                <div class="node town-node">F</div>
+                                <div class="node town-node">E</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Route Evolution -->
-            <div class="mb-4">
-                <h5 style="color: var(--secondary);">Route Development</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header bg-warning text-dark">
-                                Initial Attempt
-                            </div>
-                            <div class="card-body">
-                                <code>WH → A → B → C → D → E → F → WH</code>
-                                <div class="mt-2 text-danger">
-                                    Problem: Contains forbidden D→E connection
+                <!-- Route Evolution -->
+                <div class="mb-4">
+                    <h5 style="color: var(--secondary);">Route Development</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-warning text-dark">Initial Attempt</div>
+                                <div class="card-body">
+                                    <code>WH → A → B → C → D → E → F → WH</code>
+                                    <div class="mt-2 text-danger">Problem: Contains forbidden D→E connection</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header bg-success text-white">
-                                Adjusted Solution
-                            </div>
-                            <div class="card-body">
-                                <code>WH → A → B → C → D → F → E → WH</code>
-                                <div class="mt-2 text-success">
-                                    Fix: Bypasses D→E via F node
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white">Adjusted Solution</div>
+                                <div class="card-body">
+                                    <code>WH → A → B → C → D → F → E → WH</code>
+                                    <div class="mt-2 text-success">Fix: Bypasses D→E via F node</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Connection Analysis Table -->
-            <h5 style="color: var(--secondary);">Node Connections Analysis</h5>
-            <table class="table table-bordered">
-                <thead class="bg-light">
-                    <tr><th>Towns+WH</th><th>Nodes</th><th>Connections</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>A,B + WH</td><td>3</td><td>3</td></tr>
-                    <tr><td>A,B,C + WH</td><td>4</td><td>6</td></tr>
-                    <tr><td>A,B,C,D + WH</td><td>5</td><td>10</td></tr>
-                    <tr><td>A,B,C,D,E + WH</td><td>6</td><td>15</td></tr>
-                    <tr><td>A,B,C,D,E,F + WH</td><td>7</td><td>21</td></tr>
-                </tbody>
-            </table>
+                <!-- Connection Analysis Table -->
+                <h5 style="color: var(--secondary);">Node Connections Analysis</h5>
+                <table class="table table-bordered">
+                    <thead class="bg-light">
+                        <tr><th>Towns+WH</th><th>Nodes</th><th>Connections</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A,B + WH</td><td>3</td><td>3</td></tr>
+                        <tr><td>A,B,C + WH</td><td>4</td><td>6</td></tr>
+                        <tr><td>A,B,C,D + WH</td><td>5</td><td>10</td></tr>
+                        <tr><td>A,B,C,D,E + WH</td><td>6</td><td>15</td></tr>
+                        <tr><td>A,B,C,D,E,F + WH</td><td>7</td><td>21</td></tr>
+                    </tbody>
+                </table>
 
-            <!-- Distance Problem -->
-            <div class="alert alert-info mt-4">
-                <h5>Problem Found</h5>
-                <ul>
-                    <li>Not optimal distance (long backtracking)</li>
-                </ul>
+                <!-- Distance Problem -->
+                <div class="alert alert-info mt-4">
+                    <h5>Problem Found</h5>
+                    <ul>
+                        <li>Not optimal distance (long backtracking)</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- AI Solution Section -->
         <div class="problem-container ai-process">
             <h3 style="color: var(--accent);">Optimized AI Solution</h3>
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="alert alert-success">
                         WH → A → B → C → D → F → E → WH
                         <span class="badge">Optimal Route: 66km</span>
                     </div>
-                    <ul class="list-group mb-4">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Avoids D→E connection
-                            <span class="badge bg-success">✓ Achieved</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Nearest-neighbor heuristic
-                            <span class="badge bg-primary">✓ Applied</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Total distance
-                            <span class="badge bg-danger">66km</span>
-                        </li>
-                    </ul>
-                    
-    <!-- AI Solution Section -->
-    <div class="problem-container ai-process">
-        <h3 style="color: var(--accent);">Optimal Route Algorithm</h3>
-        <div class="row">
-            <div class="col-md-6">
-        
-        <div class="algorithm-flow">
-            <div class="flow-step">
-                <div class="step-number">1</div>
-                Start at Warehouse
-                <div class="arrow">↓</div>
-            </div>
-            
-            <div class="flow-step">
-                <div class="step-number">2</div>
-                Always choose nearest unvisited node
-                <div class="node-chain">
-                    WH → A(10) → B(8) → C(7)
+                    <div class="algorithm-flow">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            Start at Warehouse
+                            <div class="arrow">↓</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            Choose nearest node
+                            <div class="node-chain">WH → A(10) → B(8) → C(7)</div>
+                            <div class="arrow">↓</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            Avoid D→E blockage
+                            <div class="node-chain">C → D(6) → <span class="text-danger">E🚫</span> → F(5)</div>
+                            <div class="arrow">↓</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            Complete route
+                            <div class="node-chain">F → E(8) → WH(22)</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="arrow">↓</div>
-            </div>
-
-            <div class="flow-step">
-                <div class="step-number">3</div>
-                At critical point D → Skip blocked path
-                <div class="node-chain">
-                    C → D(6) → <span class="text-danger">E🚫</span> → F(5)
-                </div>
-                <div class="arrow">↓</div>
-            </div>
-
-            <div class="flow-step">
-                <div class="step-number">4</div>
-                Complete remaining nodes
-                <div class="node-chain">
-                    F → E(8) → WH(22)
-                </div>
-            </div>
-        </div>
-        <!-- Algorithm Rules -->
-        <div class="col-md-6">
-            <div class="key-logic">
-                <h5>Core Algorithm Rules</h5>
-                <ul class="list-unstyled">
-                    <li>✓ Greedy selection: Nearest first</li>
-                    <li>✓ Blocked path detection</li>
-                    <li>✓ Route completion check</li>
-                    <li>✓ Return to origin</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Algorithm Code -->
-        <div class="col-md-6">
-            <pre><code class="language-python"># Simplified TSP Algorithm
-def find_route():
-    route = ['WH']
-    while len(route) < 7:  # 6 towns + WH
-        current = route[-1]
-        # Find nearest node not in route
-        next_node = min(
-            [n for n in nodes if n not in route],
-            key=lambda x: distances[current][x]
-        )
-        route.append(next_node)
-    return route + ['WH']</code></pre>
-        </div>
-    </div>
-</div>
-        
                 <div class="col-md-6">
                     <div class="text-center position-relative" style="min-height: 400px;">
                         <svg width="100%" height="400" viewBox="0 0 600 400">
-                            <!-- Optimized Path -->
                             <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L350 350 L250 350 L300 50" 
                                   fill="none" stroke="#28a745" stroke-width="4"/>
-
-                            <!-- Nodes -->
                             <circle cx="300" cy="50" r="30" fill="#5D8696"/>
                             <circle cx="150" cy="150" r="25" fill="#8FAFCC"/>
                             <circle cx="450" cy="150" r="25" fill="#8FAFCC"/>
@@ -394,8 +304,6 @@ def find_route():
                             <circle cx="450" cy="250" r="25" fill="#8FAFCC"/>
                             <circle cx="250" cy="350" r="25" fill="#8FAFCC"/>
                             <circle cx="350" cy="350" r="25" fill="#8FAFCC"/>
-
-                            <!-- Labels -->
                             <text x="300" y="60" fill="white" text-anchor="middle" font-size="18">WH</text>
                             <text x="150" y="155" fill="white" text-anchor="middle">A</text>
                             <text x="450" y="155" fill="white" text-anchor="middle">B</text>
@@ -403,8 +311,6 @@ def find_route():
                             <text x="450" y="255" fill="white" text-anchor="middle">D</text>
                             <text x="250" y="355" fill="white" text-anchor="middle">E</text>
                             <text x="350" y="355" fill="white" text-anchor="middle">F</text>
-
-                            <!-- Route Numbers -->
                             <text class="route-number" x="225" y="103">1</text>
                             <text class="route-number" x="300" y="157">2</text>
                             <text class="route-number" x="285" y="210">3</text>
@@ -417,26 +323,58 @@ def find_route():
                 </div>
             </div>
 
+            <!-- Rules & Code -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="key-logic">
+                        <h5>Core Algorithm Rules</h5>
+                        <ul class="list-unstyled">
+                            <li>✓ Greedy selection: Nearest first</li>
+                            <li>✓ Blocked path detection</li>
+                            <li>✓ Route completion check</li>
+                            <li>✓ Return to origin</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <pre><code class="language-python"># Simplified TSP Algorithm
+def find_route():
+    route = ['WH']
+    while len(route) < 7:  # 6 towns + WH
+        current = route[-1]
+        # Find nearest node not in route
+        next_node = min(
+            [n for n in nodes if n not in route],
+            key=lambda x: distances[current][x]
+        )
+        route.append(next_node)
+    return route + ['WH']</code></pre>
+                </div>
+            </div>
+
+            <!-- Distance Breakdown -->
             <div class="row mt-4">
                 <div class="col-12">
-            <div class="alert alert-info mt-4">
-                <h5>Distance Calculation Breakdown</h5>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr><th>Segment</th><th>Distance</th><th>Calculation</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>WH → A</td><td>10km</td><td>Base connection</td></tr>
-                        <tr><td>A → B</td><td>8km</td><td>Shortest available</td></tr>
-                        <tr><td>B → C</td><td>7km</td><td>Nearest neighbor</td></tr>
-                        <tr><td>C → D</td><td>6km</td><td>Direct connection</td></tr>
-                        <tr><td>D → F</td><td>5km</td><td>Avoids D→E blockage</td></tr>
-                        <tr><td>F → E</td><td>8km</td><td>Alternative path</td></tr>
-                        <tr><td>E → WH</td><td>22km</td><td>Final return</td></tr>
-                    </tbody>
-                </table>
-                <div class="mt-3">
-                    <strong>Total Distance:</strong> 10 + 8 + 7 + 6 + 5 + 8 + 22 = 66km
+                    <div class="alert alert-info">
+                        <h5>Distance Calculation Breakdown</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr><th>Segment</th><th>Distance</th><th>Calculation</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>WH → A</td><td>10km</td><td>Base connection</td></tr>
+                                <tr><td>A → B</td><td>8km</td><td>Shortest available</td></tr>
+                                <tr><td>B → C</td><td>7km</td><td>Nearest neighbor</td></tr>
+                                <tr><td>C → D</td><td>6km</td><td>Direct connection</td></tr>
+                                <tr><td>D → F</td><td>5km</td><td>Avoids D→E blockage</td></tr>
+                                <tr><td>F → E</td><td>8km</td><td>Alternative path</td></tr>
+                                <tr><td>E → WH</td><td>22km</td><td>Final return</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-3">
+                            <strong>Total Distance:</strong> 10 + 8 + 7 + 6 + 5 + 8 + 22 = 66km
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
