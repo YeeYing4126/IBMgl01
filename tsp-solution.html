@@ -334,8 +334,23 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Algorithm Rules -->
+        <div class="col-md-6">
+            <div class="key-logic">
+                <h5>Core Algorithm Rules</h5>
+                <ul class="list-unstyled">
+                    <li>✓ Greedy selection: Nearest first</li>
+                    <li>✓ Blocked path detection</li>
+                    <li>✓ Route completion check</li>
+                    <li>✓ Return to origin</li>
+                </ul>
+            </div>
+        </div>
 
-        <pre class="mt-4"><code class="language-python"># Simplified TSP Algorithm
+        <!-- Algorithm Code -->
+        <div class="col-md-6">
+            <pre><code class="language-python"># Simplified TSP Algorithm
 def find_route():
     route = ['WH']
     while len(route) < 7:  # 6 towns + WH
@@ -347,26 +362,9 @@ def find_route():
         )
         route.append(next_node)
     return route + ['WH']</code></pre>
-
-        <div class="key-logic mt-4">
-            <h5>Core Algorithm Rules</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <ul class="list-unstyled">
-                        <li>✓ Greedy selection: Nearest first</li>
-                        <li>✓ Blocked path detection</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <ul class="list-unstyled">
-                        <li>✓ Route completion check</li>
-                        <li>✓ Return to origin</li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
-</div> 
+</div>
 
                 <div class="col-md-6">
                     <div class="text-center position-relative" style="min-height: 400px;">
