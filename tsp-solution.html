@@ -93,115 +93,11 @@
         <!-- User Process Section -->
         <div class="problem-container user-process">
             <h3 style="color: var(--highlight);">My Process</h3>
-            <div class="mb-4">
-                <h5>Initial Route Attempt</h5>
-                <div class="text-center position-relative" style="min-height: 400px;">
-                    <svg width="100%" height="400" viewBox="0 0 600 400">
-                        <!-- Connections -->
+                                    <!-- Connections -->
                         <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L250 350 L350 350 L300 50" 
                               fill="none" stroke="#dc3545" stroke-width="3" stroke-dasharray="5"/>
                         <line x1="450" y1="250" x2="250" y2="350" stroke="#dc3545" stroke-width="2" stroke-dasharray="5"/>
-<!-- User's Process -->
-<div class="problem-container user-process">
-    <h3 style="color: var(--highlight);">My Process</h3>
-    
-    <!-- Requirements Breakdown -->
-    <div class="mb-4">
-        <h5 style="color: var(--secondary);">Requirements Analysis</h5>
-        <div class="row">
-            <div class="col-md-6">
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Start/End at WH
-                        <span class="badge bg-success">✓ Satisfied</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Visit each town once
-                        <span class="badge bg-success">✓ Satisfied</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Avoid D→E connection
-                        <span class="badge bg-danger">✗ Violated Initially</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Minimize distance
-                        <span class="badge bg-warning">⚠️ Needs Optimization</span>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-6 mt-3 mt-md-0">
-                <div class="node-diagram">
-                    <div class="node wh-node">WH</div>
-                    <div class="node town-node">A</div>
-                    <div class="node town-node">B</div>
-                    <div class="node town-node">C</div>
-                    <div class="node town-node">D</div>
-                    <div class="node town-node">F</div>
-                    <div class="node town-node">E</div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Route Evolution -->
-    <div class="mb-4">
-        <h5 style="color: var(--secondary);">Route Development</h5>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header bg-warning text-dark">
-                        Initial Attempt
-                    </div>
-                    <div class="card-body">
-                        <code>WH → A → B → C → D → E → F → WH</code>
-                        <div class="mt-2 text-danger">
-                            Problem: Contains forbidden D→E connection
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header bg-success text-white">
-                        Adjusted Solution
-                    </div>
-                    <div class="card-body">
-                        <code>WH → A → B → C → D → F → E → WH</code>
-                        <div class="mt-2 text-success">
-                            Fix: Bypasses D→E via F node
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Connection Analysis Table -->
-    <h5 style="color: var(--secondary);">Node Connections Analysis</h5>
-    <table class="table table-bordered">
-        <thead class="bg-light">
-            <tr><th>Towns+WH</th><th>Nodes</th><th>Connections</th></tr>
-        </thead>
-        <tbody>
-            <tr><td>A,B + WH</td><td>3</td><td>3</td></tr>
-            <tr><td>A,B,C + WH</td><td>4</td><td>6</td></tr>
-            <tr><td>A,B,C,D + WH</td><td>5</td><td>10</td></tr>
-            <tr><td>A,B,C,D,E + WH</td><td>6</td><td>15</td></tr>
-            <tr><td>A,B,C,D,E,F + WH</td><td>7</td><td>21</td></tr>
-        </tbody>
-    </table>
-
-    <!-- Distance Optimization Explanation -->
-    <div class="alert alert-info mt-4">
-        <h5>Distance Optimization Strategy</h5>
-        <ul>
-            <li>Original route had backtracking between E and F</li>
-            <li>New route reduces detour by connecting D→F directly</li>
-            <li>Maintained nearest-neighbor approach for efficiency</li>
-            <li>Total distance reduction: ~18% (estimated)</li>
-        </ul>
-    </div>
-</div>
                         <!-- Nodes -->
                         <circle cx="300" cy="50" r="30" fill="#5D8696"/>
                         <circle cx="150" cy="150" r="25" fill="#78ABAF"/>
@@ -231,6 +127,102 @@
                         <li>Not optimal distance (long backtracking)</li>
                     </ul>
                 </div>
+
+            <!-- Requirements Breakdown -->
+            <div class="mb-4">
+                <h5 style="color: var(--secondary);">Requirements Analysis</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Start/End at WH
+                                <span class="badge bg-success">✓ Satisfied</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Visit each town once
+                                <span class="badge bg-success">✓ Satisfied</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Avoid D→E connection
+                                <span class="badge bg-danger">✗ Violated Initially</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Minimize distance
+                                <span class="badge bg-warning">⚠️ Needs Optimization</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mt-3 mt-md-0">
+                        <div class="node-diagram">
+                            <div class="node wh-node">WH</div>
+                            <div class="node town-node">A</div>
+                            <div class="node town-node">B</div>
+                            <div class="node town-node">C</div>
+                            <div class="node town-node">D</div>
+                            <div class="node town-node">F</div>
+                            <div class="node town-node">E</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Route Evolution -->
+            <div class="mb-4">
+                <h5 style="color: var(--secondary);">Route Development</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-warning text-dark">
+                                Initial Attempt
+                            </div>
+                            <div class="card-body">
+                                <code>WH → A → B → C → D → E → F → WH</code>
+                                <div class="mt-2 text-danger">
+                                    Problem: Contains forbidden D→E connection
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                Adjusted Solution
+                            </div>
+                            <div class="card-body">
+                                <code>WH → A → B → C → D → F → E → WH</code>
+                                <div class="mt-2 text-success">
+                                    Fix: Bypasses D→E via F node
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connection Analysis Table -->
+            <h5 style="color: var(--secondary);">Node Connections Analysis</h5>
+            <table class="table table-bordered">
+                <thead class="bg-light">
+                    <tr><th>Towns+WH</th><th>Nodes</th><th>Connections</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>A,B + WH</td><td>3</td><td>3</td></tr>
+                    <tr><td>A,B,C + WH</td><td>4</td><td>6</td></tr>
+                    <tr><td>A,B,C,D + WH</td><td>5</td><td>10</td></tr>
+                    <tr><td>A,B,C,D,E + WH</td><td>6</td><td>15</td></tr>
+                    <tr><td>A,B,C,D,E,F + WH</td><td>7</td><td>21</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Distance Optimization Explanation -->
+            <div class="alert alert-info mt-4">
+                <h5>Distance Optimization Strategy</h5>
+                <ul>
+                    <li>Original route had backtracking between E and F</li>
+                    <li>New route reduces detour by connecting D→F directly</li>
+                    <li>Maintained nearest-neighbor approach for efficiency</li>
+                    <li>Total distance reduction: ~18% (estimated)</li>
+                </ul>
             </div>
         </div>
 
