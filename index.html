@@ -71,6 +71,8 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            position: relative;
+            overflow: hidden;
         }
 
         .assignment-title {
@@ -126,29 +128,21 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        
-        .contact-container {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 1rem;
+
+        .auth-container {
+            text-align: center;
+            margin-bottom: 1rem;
         }
 
-        .contact-link {
+        .login-btn {
+            background: var(--primary);
             color: white;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
         }
 
-        .contact-link:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Comments Display */
         .comments-container {
             margin-top: 2rem;
             max-width: 600px;
@@ -160,6 +154,7 @@
             padding: 1rem;
             border-radius: 8px;
             margin-bottom: 1rem;
+            position: relative;
         }
 
         .comment-author {
@@ -177,52 +172,22 @@
             color: #888;
         }
 
-        .qr-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .qr-modal img {
-            max-width: 300px;
-            border-radius: 10px;
-        }
-
-        textarea, input {
-            padding: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .submit-btn {
-            background: var(--primary);
+        .resolve-btn {
+            background: var(--secondary);
             color: white;
-            padding: 1rem 2rem;
+            padding: 4px 10px;
             border: none;
-            border-radius: 50px;
+            border-radius: 15px;
             cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s ease;
-            width: fit-content;
-            margin: 0 auto;
+            margin-top: 8px;
         }
 
-        .footer {
-            background: var(--primary);
+        .resolved-badge {
+            background: #28a745;
             color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
         }
 
         @media (max-width: 768px) {
@@ -245,11 +210,6 @@
             textarea, input {
                 font-size: 14px;
             }
-            
-            .submit-btn {
-                width: 100%;
-                padding: 1rem;
-            }
         }
     </style>
 </head>
@@ -263,8 +223,8 @@
         <h2 class="section-title">Assignments</h2>
         
         <div class="assignments-grid">
-            <!-- Assignment 1 -->
-            <div class="assignment-card">
+            <!-- Assignment Cards -->
+            <div class="assignment-card" data-assignment-id="1">
                 <h3 class="assignment-title">Assignment 1</h3>
                 <p class="project-name">FedEx Delivery Process</p>
                 <a href="https://excalidraw.com/#room=ea18e7430261f4a28f7b,f7pWET1eoqdjHCyiAGCxIg" 
@@ -274,8 +234,7 @@
                 </a>
             </div>
 
-            <!-- Assignment 2 -->
-            <div class="assignment-card">
+            <div class="assignment-card" data-assignment-id="2">
                 <h3 class="assignment-title">Assignment 2</h3>
                 <p class="project-name">Flow Chart Builder</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/editor.html" 
@@ -285,8 +244,7 @@
                 </a>
             </div>
 
-            <!-- Assignment 3 -->
-            <div class="assignment-card">
+            <div class="assignment-card" data-assignment-id="3">
                 <h3 class="assignment-title">Assignment 3</h3>
                 <p class="project-name">Data Analysis</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/analysis.html" 
@@ -296,58 +254,36 @@
                 </a>
             </div>
 
-            <!-- Assignment 4 -->
-            <div class="assignment-card">
+            <div class="assignment-card" data-assignment-id="4">
                 <h3 class="assignment-title">Assignment 4</h3>
                 <p class="project-name">TSP Solution</p>
-                <a href="https://yeeying4126.github.io/IBMgl01/tsp-solution.html" class="assignment-btn btn-color-3">
+                <a href="https://yeeying4126.github.io/IBMgl01/tsp-solution.html" 
+                   class="assignment-btn btn-color-4">
                     <i class="fa-solid fa-truck"></i>
                     View Solution
-                </a>
-            </div>
-
-            <!-- Assignment 5 -->
-            <div class="assignment-card">
-                <h3 class="assignment-title">Assignment 3</h3>
-                <p class="project-name">-</p>
-                <a href="https://yeeying4126.github.io/IBMgl01/analysis.html" 
-                   class="assignment-btn btn-color-3">
-                    <i class="fas fa-chart-bar"></i>
-                    Coming Soon
                 </a>
             </div>
         </div>
 
         <!-- Comment Section -->
         <div class="comment-section">
-        <h2 class="section-title">Share Your Thoughts</h2>
-        <form class="comment-form" id="commentForm">
-            <input type="text" id="name" placeholder="Your Name" required>
-            <textarea id="comment" rows="4" placeholder="Your Comment..." required></textarea>
-            <button type="submit" class="submit-btn">Post Comment</button>
-        </form>
-        <div class="comments-container" id="commentsContainer"></div>
+            <h2 class="section-title">Comments & Feedback</h2>
+            <div class="auth-container">
+                <button class="login-btn" id="loginBtn">Sign in with Google to Comment</button>
+                <div id="userInfo" style="display: none;">
+                    <span id="userName"></span>
+                    <button onclick="firebase.auth().signOut()">Logout</button>
+                </div>
+            </div>
+            <div class="comments-container" id="commentsContainer"></div>
+        </div>
     </div>
 
-    <footer class="footer">
-        <p>Contact me:</p>
-        <div class="contact-container">
-            <a href="https://www.instagram.com/yee_ying_0414" target="_blank" class="contact-link">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="mailto:averihere4126@gmail.com" class="contact-link">
-                <i class="fas fa-envelope"></i>
-            </a>
-        </div>
-
-        <!-- QR Modal -->
-        <div class="qr-modal" id="qrModal">
-            <img src="your-qr-code-image.png" alt="KakaoTalk QR Code">
-        </div>
-    </footer>
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script>
-        // Initialize Firebase
+        // Firebase Configuration (Replace with your values)
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -358,62 +294,107 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        // Comment System
-        const commentForm = document.getElementById('commentForm');
-        const commentsContainer = document.getElementById('commentsContainer');
+        // Authentication
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider);
+        });
 
-        commentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        auth.onAuthStateChanged(user => {
+            const userInfo = document.getElementById('userInfo');
+            const loginBtn = document.getElementById('loginBtn');
             
-            const comment = {
-                name: commentForm.name.value,
-                text: commentForm.comment.value,
-                date: new Date().toISOString()
-            };
-
-            try {
-                await db.collection('comments').add(comment);
-                commentForm.reset();
-                loadComments();
-            } catch (error) {
-                console.error('Error adding comment:', error);
+            if (user) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'block';
+                document.getElementById('userName').textContent = user.displayName;
+                initializeCommentSystem();
+            } else {
+                loginBtn.style.display = 'block';
+                userInfo.style.display = 'none';
+                document.getElementById('commentsContainer').innerHTML = '';
             }
         });
 
-        async function loadComments() {
-            try {
-                const querySnapshot = await db.collection('comments').orderBy('date', 'desc').get();
-                commentsContainer.innerHTML = '';
-                querySnapshot.forEach(doc => {
-                    const comment = doc.data();
-                    commentsContainer.innerHTML += `
-                        <div class="comment-item">
-                            <div class="comment-author">${comment.name}</div>
-                            <div class="comment-text">${comment.text}</div>
-                            <div class="comment-date">${new Date(comment.date).toLocaleDateString()}</div>
-                        </div>
-                    `;
+        // Comment System
+        let selectedAssignment = null;
+
+        function initializeCommentSystem() {
+            document.querySelectorAll('.assignment-card').forEach(card => {
+                const assignmentId = card.dataset.assignmentId;
+                const commentBtn = document.createElement('button');
+                commentBtn.className = 'assignment-btn btn-color-5';
+                commentBtn.innerHTML = '<i class="fas fa-comment"></i> View Comments';
+                commentBtn.onclick = () => showComments(assignmentId);
+                card.appendChild(commentBtn);
+            });
+
+            // Create comment form
+            const commentForm = document.createElement('form');
+            commentForm.className = 'comment-form';
+            commentForm.innerHTML = `
+                <textarea id="commentText" rows="4" placeholder="Write your comment..." required></textarea>
+                <button type="submit" class="submit-btn">Post Comment</button>
+            `;
+            
+            commentForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const user = auth.currentUser;
+                if (!user) return;
+
+                await db.collection('comments').add({
+                    assignmentId: selectedAssignment,
+                    text: commentForm.commentText.value,
+                    userName: user.displayName,
+                    userEmail: user.email,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    resolved: false
                 });
-            } catch (error) {
-                console.error('Error loading comments:', error);
-            }
+                commentForm.reset();
+                loadComments();
+            };
+
+            document.getElementById('commentsContainer').prepend(commentForm);
         }
 
-        // QR Code Modal
-        function showQR() {
-            document.getElementById('qrModal').style.display = 'flex';
+        async function showComments(assignmentId) {
+            selectedAssignment = assignmentId;
+            loadComments();
         }
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('qrModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+        async function loadComments() {
+            const commentsContainer = document.getElementById('commentsContainer');
+            commentsContainer.innerHTML = 'Loading comments...';
+
+            const snapshot = await db.collection('comments')
+                .where('assignmentId', '==', selectedAssignment)
+                .orderBy('timestamp', 'desc')
+                .get();
+
+            commentsContainer.innerHTML = '';
+            snapshot.forEach(doc => {
+                const comment = doc.data();
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'comment-item';
+                commentDiv.innerHTML = `
+                    <div class="comment-author">${comment.userName} (${comment.userEmail})</div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-date">${new Date(comment.timestamp?.toDate()).toLocaleString()}</div>
+                    ${comment.resolved ? 
+                        '<span class="resolved-badge">Resolved</span>' : 
+                        '<button class="resolve-btn" onclick="markResolved('${doc.id}')">Mark Resolved</button>'}
+                `;
+                commentsContainer.appendChild(commentDiv);
+            });
         }
 
-        // Initial load
-        loadComments();
+        async function markResolved(commentId) {
+            await db.collection('comments').doc(commentId).update({ resolved: true });
+            // Here you would add email notification logic
+            loadComments();
+        }
     </script>
 </body>
 </html>
