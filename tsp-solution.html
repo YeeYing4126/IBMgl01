@@ -348,7 +348,37 @@
                 </div>
             </div>
         </div>
+        <!-- Algorithm Rules -->
+        <div class="col-md-6">
+            <div class="key-logic">
+                <h5>Core Algorithm Rules</h5>
+                <ul class="list-unstyled">
+                    <li>✓ Greedy selection: Nearest first</li>
+                    <li>✓ Blocked path detection</li>
+                    <li>✓ Route completion check</li>
+                    <li>✓ Return to origin</li>
+                </ul>
+            </div>
+        </div>
 
+        <!-- Algorithm Code -->
+        <div class="col-md-6">
+            <pre><code class="language-python"># Simplified TSP Algorithm
+def find_route():
+    route = ['WH']
+    while len(route) < 7:  # 6 towns + WH
+        current = route[-1]
+        # Find nearest node not in route
+        next_node = min(
+            [n for n in nodes if n not in route],
+            key=lambda x: distances[current][x]
+        )
+        route.append(next_node)
+    return route + ['WH']</code></pre>
+        </div>
+    </div>
+</div>
+        
                 <div class="col-md-6">
                     <div class="text-center position-relative" style="min-height: 400px;">
                         <svg width="100%" height="400" viewBox="0 0 600 400">
@@ -411,35 +441,5 @@
             </div>
         </div>
     </div>
-        <!-- Algorithm Rules -->
-        <div class="col-md-6">
-            <div class="key-logic">
-                <h5>Core Algorithm Rules</h5>
-                <ul class="list-unstyled">
-                    <li>✓ Greedy selection: Nearest first</li>
-                    <li>✓ Blocked path detection</li>
-                    <li>✓ Route completion check</li>
-                    <li>✓ Return to origin</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Algorithm Code -->
-        <div class="col-md-6">
-            <pre><code class="language-python"># Simplified TSP Algorithm
-def find_route():
-    route = ['WH']
-    while len(route) < 7:  # 6 towns + WH
-        current = route[-1]
-        # Find nearest node not in route
-        next_node = min(
-            [n for n in nodes if n not in route],
-            key=lambda x: distances[current][x]
-        )
-        route.append(next_node)
-    return route + ['WH']</code></pre>
-        </div>
-    </div>
-</div>
 </body>
 </html>
