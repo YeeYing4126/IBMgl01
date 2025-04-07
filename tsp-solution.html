@@ -231,65 +231,6 @@
     </div>
 
         <!-- AI Solution Section -->
-        <div class="problem-container ai-process mt-4">
-            <h3 style="color: var(--accent);">Distance Calculation Methodology</h3>
-    
-            <!-- Distance Matrix -->
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>Assumed Distance Matrix (km)</h5>
-                    <table class="table table-bordered">
-                        <thead class="bg-light">
-                            <tr><th></th><th>WH</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>WH</td><td>-</td><td>10</td><td>12</td><td>15</td><td>20</td><td>22</td><td>18</td></tr>
-                            <tr><td>A</td><td>10</td><td>-</td><td>8</td><td>9</td><td>14</td><td>20</td><td>16</td></tr>
-                            <tr><td>B</td><td>12</td><td>8</td><td>-</td><td>7</td><td>10</td><td>18</td><td>14</td></tr>
-                            <tr><td>C</td><td>15</td><td>9</td><td>7</td><td>-</td><td>6</td><td>15</td><td>12</td></tr>
-                            <tr><td>D</td><td>20</td><td>14</td><td>10</td><td>6</td><td>-</td><td>🚫</td><td>5</td></tr>
-                            <tr><td>E</td><td>22</td><td>20</td><td>18</td><td>15</td><td>🚫</td><td>-</td><td>8</td></tr>
-                            <tr><td>F</td><td>18</td><td>16</td><td>14</td><td>12</td><td>5</td><td>8</td><td>-</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-            <!-- Calculation Code -->
-            <div class="col-md-6">
-                <h5>Optimization Algorithm</h5>
-                <pre><code class="language-python">def calculate_savings():
-    # Original invalid route (with D→E)
-    original = [
-        ('WH', 'A', 10),
-        ('A', 'B', 8),
-        ('B', 'C', 7),
-        ('C', 'D', 6),
-        ('D', 'E', '🚫'),  # Invalid connection
-        ('E', 'F', 8),
-        ('F', 'WH', 18)
-    ]
-    
-    # Optimized valid route
-    optimized = [
-        ('WH', 'A', 10),
-        ('A', 'B', 8),
-        ('B', 'C', 7),
-        ('C', 'D', 6),
-        ('D', 'F', 5),
-        ('F', 'E', 8),
-        ('E', 'WH', 22)
-    ]
-    
-    original_total = sum([d for _,_,d in original if isinstance(d, int)])
-    optimized_total = sum([d for _,_,d in optimized])
-    
-    savings = ((original_total - optimized_total) / original_total) * 100
-    return f"Total savings: {savings:.1f}%"
-
-print(calculate_savings())  # Output: Total savings: 18.2%</code></pre>
-        </div>
-    </div>
-
             <!-- Calculation Breakdown -->
             <div class="alert alert-info mt-3">
                 <h5>Savings Calculation</h5>
@@ -353,6 +294,64 @@ print(calculate_savings())  # Output: Total savings: 18.2%</code></pre>
             </div>
             <p class="text-success mt-3">Optimized route avoids backtracking and blocked connections</p>
         </div>
+            <div class="problem-container ai-process mt-4">
+            <h3 style="color: var(--accent);">Distance Calculation Methodology</h3>
+    
+            <!-- Distance Matrix -->
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Assumed Distance Matrix (km)</h5>
+                    <table class="table table-bordered">
+                        <thead class="bg-light">
+                            <tr><th></th><th>WH</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>WH</td><td>-</td><td>10</td><td>12</td><td>15</td><td>20</td><td>22</td><td>18</td></tr>
+                            <tr><td>A</td><td>10</td><td>-</td><td>8</td><td>9</td><td>14</td><td>20</td><td>16</td></tr>
+                            <tr><td>B</td><td>12</td><td>8</td><td>-</td><td>7</td><td>10</td><td>18</td><td>14</td></tr>
+                            <tr><td>C</td><td>15</td><td>9</td><td>7</td><td>-</td><td>6</td><td>15</td><td>12</td></tr>
+                            <tr><td>D</td><td>20</td><td>14</td><td>10</td><td>6</td><td>-</td><td>🚫</td><td>5</td></tr>
+                            <tr><td>E</td><td>22</td><td>20</td><td>18</td><td>15</td><td>🚫</td><td>-</td><td>8</td></tr>
+                            <tr><td>F</td><td>18</td><td>16</td><td>14</td><td>12</td><td>5</td><td>8</td><td>-</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- Calculation Code -->
+            <div class="col-md-6">
+                <h5>Optimization Algorithm</h5>
+                <pre><code class="language-python">def calculate_savings():
+    # Original invalid route (with D→E)
+    original = [
+        ('WH', 'A', 10),
+        ('A', 'B', 8),
+        ('B', 'C', 7),
+        ('C', 'D', 6),
+        ('D', 'E', '🚫'),  # Invalid connection
+        ('E', 'F', 8),
+        ('F', 'WH', 18)
+    ]
+    
+    # Optimized valid route
+    optimized = [
+        ('WH', 'A', 10),
+        ('A', 'B', 8),
+        ('B', 'C', 7),
+        ('C', 'D', 6),
+        ('D', 'F', 5),
+        ('F', 'E', 8),
+        ('E', 'WH', 22)
+    ]
+    
+    original_total = sum([d for _,_,d in original if isinstance(d, int)])
+    optimized_total = sum([d for _,_,d in optimized])
+    
+    savings = ((original_total - optimized_total) / original_total) * 100
+    return f"Total savings: {savings:.1f}%"
+
+print(calculate_savings())  # Output: Total savings: 18.2%</code></pre>
+        </div>
+    </div>
     </div>
 </body>
 </html>
