@@ -48,54 +48,39 @@
         }
         .wh-node { background: var(--primary); color: white; }
         .town-node { background: var(--secondary); color: white; }
-        .connection {
-            stroke: var(--neutral);
-            stroke-width: 2px;
-        }
         .badge {
             background: var(--highlight);
             color: white;
         }
-
         .connection {
-        stroke: #D9DAD4;
-        stroke-width: 2;
+            stroke: #D9DAD4;
+            stroke-width: 2;
         }
-
-       .blocked-connection {
-       stroke: #dc3545;
-       stroke-width: 2;
-       stroke-dasharray: 5,5;
-       }
-
-       .wh-node circle {
-       fill: #5D8696;
-       stroke: #2A2A2A;
-       stroke-width: 2;
-       }
-
-       .town-node circle {
-       fill: #78ABAF;
-       stroke: #2A2A2A;
-       stroke-width: 2;
-       }
-
-       .town-node text,
-       .wh-node text {
-       pointer-events: none;
-       user-select: none;
-       }
+        .blocked-connection {
+            stroke: #dc3545;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+        .route-number {
+            font-size: 20px;
+            font-weight: bold;
+            fill: #2A2A2A;
+            stroke: white;
+            stroke-width: 3px;
+            paint-order: stroke;
+        }
     </style>
 </head>
 <body>
     <div class="container py-5">
-        <h1 class="text-center mb-4" style="color: var(--primary);">
-            The Traveling Salesman Problem (TSP)
-        </h1>
-
-        <!-- Problem Statement -->
+        <!-- Problem Section -->
         <div class="problem-container">
-            <img src="Network Diagram.png" alt="Town Network" class="img-fluid mb-4">
+            <h1 class="text-center mb-4" style="color: var(--primary);">
+                The Traveling Salesman Problem (TSP)
+            </h1>
+            <div class="text-center">
+                <img src="Network Diagram.png" alt="Town Network" class="img-fluid mb-4" style="max-width: 600px;">
+            </div>
             <h3 style="color: var(--primary);">Requirements</h3>
             <ul class="list-group mb-4">
                 <li class="list-group-item">Start/end at WH (Warehouse)</li>
@@ -103,88 +88,157 @@
                 <li class="list-group-item">Avoid D→E connection</li>
                 <li class="list-group-item">Minimize total distance</li>
             </ul>
+        </div>
 
-        <!-- User's Process -->
+        <!-- User Process Section -->
         <div class="problem-container user-process">
             <h3 style="color: var(--highlight);">My Process</h3>
             <div class="mb-4">
-                <svg width="100%" height="400" viewBox="0 0 600 400">
-            <!-- Connection Calculations -->
-            <div class="node-diagram">
-                <div class="node wh-node">WH</div>
-                <div class="node town-node">A</div>
-                <div class="node town-node">B</div>
-                <div class="node town-node">C</div>
-                <div class="node town-node">D</div>
-                <div class="node town-node">E</div>
-                <div class="node town-node">F</div>
+                <h5>Initial Route Attempt</h5>
+                <div class="text-center position-relative" style="min-height: 400px;">
+                    <svg width="100%" height="400" viewBox="0 0 600 400">
+                        <!-- Connections -->
+                        <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L250 350 L350 350 L300 50" 
+                              fill="none" stroke="#dc3545" stroke-width="3" stroke-dasharray="5"/>
+                        <line x1="450" y1="250" x2="250" y2="350" stroke="#dc3545" stroke-width="2" stroke-dasharray="5"/>
+<!-- User's Process -->
+<div class="problem-container user-process">
+    <h3 style="color: var(--highlight);">My Process</h3>
+    
+    <!-- Requirements Breakdown -->
+    <div class="mb-4">
+        <h5 style="color: var(--secondary);">Requirements Analysis</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Start/End at WH
+                        <span class="badge bg-success">✓ Satisfied</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Visit each town once
+                        <span class="badge bg-success">✓ Satisfied</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Avoid D→E connection
+                        <span class="badge bg-danger">✗ Violated Initially</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Minimize distance
+                        <span class="badge bg-warning">⚠️ Needs Optimization</span>
+                    </li>
+                </ul>
             </div>
-            
-            <h5 style="color: var(--secondary);">Node Connections Analysis</h5>
-            <table class="table">
-                <tr><th>Towns+WH</th><th>Nodes</th><th>Connections</th></tr>
-                <tr><td>A,B + WH</td><td>3</td><td>3</td></tr>
-                <tr><td>A,B,C + WH</td><td>4</td><td>6</td></tr>
-                <tr><td>A,B,C,D + WH</td><td>5</td><td>10</td></tr>
-                <tr><td>A-F + WH</td><td>7</td><td>21</td></tr>
-            </table>
+            <div class="col-md-6 mt-3 mt-md-0">
+                <div class="node-diagram">
+                    <div class="node wh-node">WH</div>
+                    <div class="node town-node">A</div>
+                    <div class="node town-node">B</div>
+                    <div class="node town-node">C</div>
+                    <div class="node town-node">D</div>
+                    <div class="node town-node">F</div>
+                    <div class="node town-node">E</div>
+                </div>
+            </div>
         </div>
-                <h5>Initial Attempt:</h5>
-                <p>WH → A → B → C → D → E → F → WH</p>
+    </div>
+
+    <!-- Route Evolution -->
+    <div class="mb-4">
+        <h5 style="color: var(--secondary);">Route Development</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        Initial Attempt
+                    </div>
+                    <div class="card-body">
+                        <code>WH → A → B → C → D → E → F → WH</code>
+                        <div class="mt-2 text-danger">
+                            Problem: Contains forbidden D→E connection
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        Adjusted Solution
+                    </div>
+                    <div class="card-body">
+                        <code>WH → A → B → C → D → F → E → WH</code>
+                        <div class="mt-2 text-success">
+                            Fix: Bypasses D→E via F node
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Analysis Table -->
+    <h5 style="color: var(--secondary);">Node Connections Analysis</h5>
+    <table class="table table-bordered">
+        <thead class="bg-light">
+            <tr><th>Towns+WH</th><th>Nodes</th><th>Connections</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>A,B + WH</td><td>3</td><td>3</td></tr>
+            <tr><td>A,B,C + WH</td><td>4</td><td>6</td></tr>
+            <tr><td>A,B,C,D + WH</td><td>5</td><td>10</td></tr>
+            <tr><td>A,B,C,D,E + WH</td><td>6</td><td>15</td></tr>
+            <tr><td>A,B,C,D,E,F + WH</td><td>7</td><td>21</td></tr>
+        </tbody>
+    </table>
+
+    <!-- Distance Optimization Explanation -->
+    <div class="alert alert-info mt-4">
+        <h5>Distance Optimization Strategy</h5>
+        <ul>
+            <li>Original route had backtracking between E and F</li>
+            <li>New route reduces detour by connecting D→F directly</li>
+            <li>Maintained nearest-neighbor approach for efficiency</li>
+            <li>Total distance reduction: ~18% (estimated)</li>
+        </ul>
+    </div>
+</div>
+                        <!-- Nodes -->
+                        <circle cx="300" cy="50" r="30" fill="#5D8696"/>
+                        <circle cx="150" cy="150" r="25" fill="#78ABAF"/>
+                        <circle cx="450" cy="150" r="25" fill="#78ABAF"/>
+                        <circle cx="150" cy="250" r="25" fill="#78ABAF"/>
+                        <circle cx="450" cy="250" r="25" fill="#78ABAF"/>
+                        <circle cx="250" cy="350" r="25" fill="#78ABAF"/>
+                        <circle cx="350" cy="350" r="25" fill="#78ABAF"/>
+
+                        <!-- Labels -->
+                        <text x="300" y="60" fill="white" text-anchor="middle" font-size="18">WH</text>
+                        <text x="150" y="155" fill="white" text-anchor="middle">A</text>
+                        <text x="450" y="155" fill="white" text-anchor="middle">B</text>
+                        <text x="150" y="255" fill="white" text-anchor="middle">C</text>
+                        <text x="450" y="255" fill="white" text-anchor="middle">D</text>
+                        <text x="250" y="355" fill="white" text-anchor="middle">E</text>
+                        <text x="350" y="355" fill="white" text-anchor="middle">F</text>
+
+                        <!-- Warning Text -->
+                        <text x="360" y="300" fill="#dc3545" font-weight="bold" font-size="14">⚠️ Invalid D-E Connection</text>
+                    </svg>
+                </div>
                 <div class="alert alert-warning">
                     <strong>Problems Found:</strong>
-                    <ul>
+                    <ul class="mb-0">
                         <li>Violates D→E restriction</li>
                         <li>Not optimal distance (long backtracking)</li>
                     </ul>
                 </div>
             </div>
+        </div>
 
-            <h5>Connection Rules Visualization</h5>
-            <div class="node-diagram">
-                <div class="node wh-node">WH</div>
-                <div class="node town-node">D</div>
-                <div class="node town-node">E</div>
-                <span class="text-danger">🚫 No direct connection</span>
-            </div>
-        <!-- User Process Diagram -->
-        <div class="problem-container user-process">
-            <h3 style="color: var(--highlight);">My Initial Route Attempt</h3>
-            <div class="text-center position-relative" style="min-height: 400px;">
-               <svg width="100%" height="400" viewBox="0 0 600 400">
-                 <!-- Nodes -->
-                 <circle cx="300" cy="50" r="30" fill="#5D8696"/>
-                 <text x="300" y="60" fill="white" text-anchor="middle" font-size="18">WH</text>
-      
-                 <!-- Your Route Path (Red) -->
-                 <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L250 350 L350 350 L300 50" 
-                       fill="none" stroke="#dc3545" stroke-width="3" stroke-dasharray="5"/>
-      
-                 <!-- Blocked Connection -->
-                 <line x1="450" y1="250" x2="250" y2="350" stroke="#dc3545" stroke-width="2" stroke-dasharray="5"/>
-                 <text x="360" y="300" fill="#dc3545" font-weight="bold">⚠️ Invalid D-E Connection</text>
-
-                 <!-- Town Labels -->
-                 <g font-size="14" fill="white" text-anchor="middle">
-                   <circle cx="150" cy="150" r="25" fill="#78ABAF"/><text x="150" y="155">A</text>
-                   <circle cx="450" cy="150" r="25" fill="#78ABAF"/><text x="450" y="155">B</text>
-                   <circle cx="150" cy="250" r="25" fill="#78ABAF"/><text x="150" y="255">C</text>
-                   <circle cx="450" cy="250" r="25" fill="#78ABAF"/><text x="450" y="255">D</text>
-                   <circle cx="250" cy="350" r="25" fill="#78ABAF"/><text x="250" y="355">E</text>
-                   <circle cx="350" cy="350" r="25" fill="#78ABAF"/><text x="350" y="355">F</text>
-                 </g>
-               </svg>
-              </div>
-           </div>
-              <p class="text-muted">Issues: Uses blocked D-E connection and creates suboptimal loops</p>
-            </div>
-
-        <!-- AI Process -->
+        <!-- AI Solution Section -->
         <div class="problem-container ai-process">
-            <h3 style="color: var(--accent);">AI-Assisted Solution</h3>
+            <h3 style="color: var(--accent);">Optimized AI Solution</h3>
             <div class="row">
                 <div class="col-md-6">
-                    <h5>Optimized Route:</h5>
                     <div class="alert alert-success">
                         WH → A → B → C → D → F → E → WH
                         <span class="badge">Saves 18% distance</span>
@@ -196,60 +250,43 @@
                     </ul>
                 </div>
                 <div class="col-md-6">
-                    <h5>Route Visualization</h5>
-                    <div class="node-diagram">
-                        <div class="node wh-node">WH</div>
-                        <div class="node town-node">A</div>
-                        <div class="node town-node">B</div>
-                        <div class="node town-node">C</div>
-                        <div class="node town-node">D</div>
-                        <div class="node town-node">F</div>
-                        <div class="node town-node">E</div>
+                    <div class="text-center position-relative" style="min-height: 400px;">
+                        <svg width="100%" height="400" viewBox="0 0 600 400">
+                            <!-- Optimized Path -->
+                            <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L350 350 L250 350 L300 50" 
+                                  fill="none" stroke="#28a745" stroke-width="4"/>
+
+                            <!-- Nodes -->
+                            <circle cx="300" cy="50" r="30" fill="#5D8696"/>
+                            <circle cx="150" cy="150" r="25" fill="#8FAFCC"/>
+                            <circle cx="450" cy="150" r="25" fill="#8FAFCC"/>
+                            <circle cx="150" cy="250" r="25" fill="#8FAFCC"/>
+                            <circle cx="450" cy="250" r="25" fill="#8FAFCC"/>
+                            <circle cx="250" cy="350" r="25" fill="#8FAFCC"/>
+                            <circle cx="350" cy="350" r="25" fill="#8FAFCC"/>
+
+                            <!-- Labels -->
+                            <text x="300" y="60" fill="white" text-anchor="middle" font-size="18">WH</text>
+                            <text x="150" y="155" fill="white" text-anchor="middle">A</text>
+                            <text x="450" y="155" fill="white" text-anchor="middle">B</text>
+                            <text x="150" y="255" fill="white" text-anchor="middle">C</text>
+                            <text x="450" y="255" fill="white" text-anchor="middle">D</text>
+                            <text x="250" y="355" fill="white" text-anchor="middle">E</text>
+                            <text x="350" y="355" fill="white" text-anchor="middle">F</text>
+
+                            <!-- Route Numbers -->
+                            <text class="route-number" x="225" y="100">1</text>
+                            <text class="route-number" x="375" y="100">2</text>
+                            <text class="route-number" x="225" y="200">3</text>
+                            <text class="route-number" x="375" y="200">4</text>
+                            <text class="route-number" x="300" y="300">5</text>
+                            <text class="route-number" x="200" y="375">6</text>
+                        </svg>
                     </div>
-                    <p class="text-muted">*Arrows indicate travel direction</p>
                 </div>
-
-          <!-- AI Process Diagram -->
-          <div class="problem-container ai-process">
-            <h3 style="color: var(--accent);">Optimized AI Solution</h3>
-            <div class="text-center position-relative" style="min-height: 400px;">
-              <svg width="100%" height="400" viewBox="0 0 600 400">
-                <!-- Optimized Path (Green) -->
-                <path d="M300 50 L150 150 L450 150 L150 250 L450 250 L350 350 L250 350 L300 50" 
-                      fill="none" stroke="#28a745" stroke-width="4"/>
-      
-                <!-- Nodes -->
-                <circle cx="300" cy="50" r="30" fill="#5D8696"/>
-                <text x="300" y="60" fill="white" text-anchor="middle" font-size="18">WH</text>
-      
-                <!-- Blocked Connection Still Visible -->
-                <line x1="450" y1="250" x2="250" y2="350" stroke="#D9DAD4" stroke-width="2" stroke-dasharray="5"/>
-
-                <!-- Town Labels with Route Numbers -->
-                <g font-size="14" fill="white" text-anchor="middle">
-                  <circle cx="150" cy="150" r="25" fill="#8FAFCC"/><text x="150" y="155">A</text>
-                  <circle cx="450" cy="150" r="25" fill="#8FAFCC"/><text x="450" y="155">B</text>
-                  <circle cx="150" cy="250" r="25" fill="#8FAFCC"/><text x="150" y="255">C</text>
-                  <circle cx="450" cy="250" r="25" fill="#8FAFCC"/><text x="450" y="255">D</text>
-                  <circle cx="250" cy="350" r="25" fill="#8FAFCC"/><text x="250" y="355">E</text>
-                  <circle cx="350" cy="350" r="25" fill="#8FAFCC"/><text x="350" y="355">F</text>
-                </g>
-
-                <!-- Route Order Numbers -->
-                <g font-size="16" fill="#2A2A2A">
-                  <text x="225" y="100">➀</text>
-                  <text x="375" y="100">➁</text>
-                  <text x="225" y="200">➂</text>
-                  <text x="375" y="200">➃</text>
-                  <text x="300" y="325">➄</text>
-                  <text x="200" y="325">➅</text>
-                </g>
-              </svg>
             </div>
-            <p class="text-success">Saves 18% distance by avoiding backtracking</p>
-          </div>
-       </div>
+            <p class="text-success mt-3">Optimized route avoids backtracking and blocked connections</p>
+        </div>
     </div>
-  </div>
 </body>
 </html>
