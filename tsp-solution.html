@@ -273,7 +273,7 @@
         </div>
     </div>
 
-        <!-- AI Solution Section (revised) -->
+        <!-- AI Solution Section -->
         <div class="problem-container ai-process">
             <h3 style="color: var(--accent);">Optimized AI Solution</h3>
             <div class="row">
@@ -297,46 +297,45 @@
                         </li>
                     </ul>
                     
-<div class="problem-container ai-process">
-    <h3 style="color: var(--accent);">Optimal Route Algorithm</h3>
-    
-    <!-- Visual Algorithm Flow -->
-    <div class="algorithm-flow">
-        <div class="flow-step">
-            <div class="step-number">1</div>
-            Start at Warehouse
-            <div class="arrow">↓</div>
-        </div>
+    <!-- AI Solution Section -->
+    <div class="problem-container ai-process">
+        <h3 style="color: var(--accent);">Optimal Route Algorithm</h3>
         
-        <div class="flow-step">
-            <div class="step-number">2</div>
-            Always choose nearest unvisited node
-            <div class="node-chain">
-                WH → A(10) → B(8) → C(7)
+        <div class="algorithm-flow">
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                Start at Warehouse
+                <div class="arrow">↓</div>
             </div>
-            <div class="arrow">↓</div>
+            
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                Always choose nearest unvisited node
+                <div class="node-chain">
+                    WH → A(10) → B(8) → C(7)
+                </div>
+                <div class="arrow">↓</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                At critical point D → Skip blocked path
+                <div class="node-chain">
+                    C → D(6) → <span class="text-danger">E🚫</span> → F(5)
+                </div>
+                <div class="arrow">↓</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                Complete remaining nodes
+                <div class="node-chain">
+                    F → E(8) → WH(22)
+                </div>
+            </div>
         </div>
 
-        <div class="flow-step">
-            <div class="step-number">3</div>
-            At critical point D → Skip blocked path
-            <div class="node-chain">
-                C → D(6) → <span class="text-danger">E🚫</span> → F(5)
-            </div>
-            <div class="arrow">↓</div>
-        </div>
-
-        <div class="flow-step">
-            <div class="step-number">4</div>
-            Complete remaining nodes
-            <div class="node-chain">
-                F → E(8) → WH(22)
-            </div>
-        </div>
-    </div>
-
-    <!-- Algorithm Code -->
-    <pre class="mt-4"><code class="language-python"># Simplified TSP Algorithm
+        <pre class="mt-4"><code class="language-python"># Simplified TSP Algorithm
 def find_route():
     route = ['WH']
     while len(route) < 7:  # 6 towns + WH
@@ -349,22 +348,25 @@ def find_route():
         route.append(next_node)
     return route + ['WH']</code></pre>
 
-    <!-- Key Logic -->
-    <div class="key-logic mt-4">
-        <h5>Core Algorithm Rules</h5>
-        <div class="row">
-            <div class="col-md-6">
-                <ul class="list-unstyled">
-                    <li>✓ Greedy selection: Nearest first</li>
-                    <li>✓ Blocked path detection</li>
-                </ul>
+        <div class="key-logic mt-4">
+            <h5>Core Algorithm Rules</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li>✓ Greedy selection: Nearest first</li>
+                        <li>✓ Blocked path detection</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li>✓ Route completion check</li>
+                        <li>✓ Return to origin</li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-md-6">
-                <ul class="list-unstyled">
-                    <li>✓ Route completion check</li>
-                    <li>✓ Return to origin</li>
-                </ul>
-            </div>
+        </div>
+    </div>
+</div> 
 
                 <div class="col-md-6">
                     <div class="text-center position-relative" style="min-height: 400px;">
