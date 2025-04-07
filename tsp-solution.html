@@ -79,6 +79,49 @@
             stroke-width: 3px;
             paint-order: stroke;
         }
+        .algorithm-flow {
+            border-left: 2px solid var(--accent);
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .flow-step {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+        }
+
+        .node-chain {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .arrow {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+        }
+
+        .key-logic li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
     </style>
 </head>
 <body>
@@ -254,30 +297,74 @@
                         </li>
                     </ul>
                     
-                    <h5>Optimization Algorithm</h5>
-                    <pre><code class="language-python">def calculate_optimal_route():
-    # Valid connections with distances
-    distances = {
-        ('WH', 'A'): 10, ('A', 'WH'): 10,
-        ('A', 'B'): 8,  ('B', 'A'): 8,
-        ('B', 'C'): 7,  ('C', 'B'): 7,
-        ('C', 'D'): 6,  ('D', 'C'): 6,
-        ('D', 'F'): 5,  ('F', 'D'): 5,
-        ('F', 'E'): 8,  ('E', 'F'): 8,
-        ('E', 'WH'): 22,('WH', 'E'): 22
-    }
-
-    route = ['WH', 'A', 'B', 'C', 'D', 'F', 'E', 'WH']
-    total = 0
-    for i in range(len(route)-1):
-        total += distances[(route[i], route[i+1])]
+<div class="problem-container ai-process">
+    <h3 style="color: var(--accent);">Optimal Route Algorithm</h3>
     
-    return total, route
+    <!-- Visual Algorithm Flow -->
+    <div class="algorithm-flow">
+        <div class="flow-step">
+            <div class="step-number">1</div>
+            Start at Warehouse
+            <div class="arrow">↓</div>
+        </div>
+        
+        <div class="flow-step">
+            <div class="step-number">2</div>
+            Always choose nearest unvisited node
+            <div class="node-chain">
+                WH → A(10) → B(8) → C(7)
+            </div>
+            <div class="arrow">↓</div>
+        </div>
 
-total_distance, optimal_route = calculate_optimal_route()
-print(f"Optimal Route: {' → '.join(optimal_route)}")
-print(f"Total Distance: {total_distance}km")</code></pre>
-                </div>
+        <div class="flow-step">
+            <div class="step-number">3</div>
+            At critical point D → Skip blocked path
+            <div class="node-chain">
+                C → D(6) → <span class="text-danger">E🚫</span> → F(5)
+            </div>
+            <div class="arrow">↓</div>
+        </div>
+
+        <div class="flow-step">
+            <div class="step-number">4</div>
+            Complete remaining nodes
+            <div class="node-chain">
+                F → E(8) → WH(22)
+            </div>
+        </div>
+    </div>
+
+    <!-- Algorithm Code -->
+    <pre class="mt-4"><code class="language-python"># Simplified TSP Algorithm
+def find_route():
+    route = ['WH']
+    while len(route) < 7:  # 6 towns + WH
+        current = route[-1]
+        # Find nearest node not in route
+        next_node = min(
+            [n for n in nodes if n not in route],
+            key=lambda x: distances[current][x]
+        )
+        route.append(next_node)
+    return route + ['WH']</code></pre>
+
+    <!-- Key Logic -->
+    <div class="key-logic mt-4">
+        <h5>Core Algorithm Rules</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li>✓ Greedy selection: Nearest first</li>
+                    <li>✓ Blocked path detection</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li>✓ Route completion check</li>
+                    <li>✓ Return to origin</li>
+                </ul>
+            </div>
 
                 <div class="col-md-6">
                     <div class="text-center position-relative" style="min-height: 400px;">
@@ -307,7 +394,7 @@ print(f"Total Distance: {total_distance}km")</code></pre>
                             <!-- Route Numbers -->
                             <text class="route-number" x="225" y="103">1</text>
                             <text class="route-number" x="300" y="157">2</text>
-                            <text class="route-number" x="275" y="210">3</text>
+                            <text class="route-number" x="285" y="210">3</text>
                             <text class="route-number" x="330" y="258">4</text>
                             <text class="route-number" x="390" y="310">5</text>
                             <text class="route-number" x="295" y="358">6</text>
