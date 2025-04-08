@@ -65,16 +65,12 @@
             background: white;
             border-radius: 15px;
             padding: 1.5rem;
-            padding-bottom: 60px;
             text-align: center;
             transition: transform 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            position: relative;
-            min-height: 200px;
-            overflow: hidden;
         }
 
         .assignment-title {
@@ -90,15 +86,11 @@
         }
 
         .assignment-btn {
-            display: center;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            position: absolute;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 3rem);
+            width: 100%;
             padding: 1rem;
             border: none;
             border-radius: 50px;
@@ -115,6 +107,150 @@
         .btn-color-3 { background: #8FAFCC; }
         .btn-color-4 { background: #CCA885; }
         .btn-color-5 { background: #D9DAD4; color: #333; }
+
+        .comment-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .contact-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .contact-link {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-link:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Comments Display */
+        .comments-container {
+            margin-top: 2rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .comment-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comment-text {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+
+        .comment-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .qr-modal img {
+            max-width: 300px;
+            border-radius: 10px;
+        }
+
+        textarea, input {
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .assignments-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comment-section {
+                padding: 1.5rem;
+            }
+            
+            .comment-form {
+                gap: 1rem;
+            }
+            
+            textarea, input {
+                font-size: 14px;
+            }
+            
+            .submit-btn {
+                width: 100%;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -127,8 +263,8 @@
         <h2 class="section-title">Assignments</h2>
         
         <div class="assignments-grid">
-            <!-- Assignment Cards -->
-            <div class="assignment-card" data-assignment-id="1">
+            <!-- Assignment 1 -->
+            <div class="assignment-card">
                 <h3 class="assignment-title">Assignment 1</h3>
                 <p class="project-name">FedEx Delivery Process</p>
                 <a href="https://excalidraw.com/#room=ea18e7430261f4a28f7b,f7pWET1eoqdjHCyiAGCxIg" 
@@ -138,7 +274,8 @@
                 </a>
             </div>
 
-            <div class="assignment-card" data-assignment-id="2">
+            <!-- Assignment 2 -->
+            <div class="assignment-card">
                 <h3 class="assignment-title">Assignment 2</h3>
                 <p class="project-name">Flow Chart Builder</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/editor.html" 
@@ -148,7 +285,8 @@
                 </a>
             </div>
 
-            <div class="assignment-card" data-assignment-id="3">
+            <!-- Assignment 3 -->
+            <div class="assignment-card">
                 <h3 class="assignment-title">Assignment 3</h3>
                 <p class="project-name">Data Analysis</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/analysis.html" 
@@ -158,26 +296,125 @@
                 </a>
             </div>
 
-            <div class="assignment-card" data-assignment-id="4">
+            <!-- Assignment 4 -->
+            <div class="assignment-card">
                 <h3 class="assignment-title">Assignment 4</h3>
                 <p class="project-name">TSP Solution</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/tsp-solution.html" 
-                   class="assignment-btn btn-color-4">
+                    class="assignment-btn btn-color-4">
                     <i class="fa-solid fa-truck"></i>
                     View Solution
                 </a>
             </div>
-            
-            <div class="assignment-card" data-assignment-id="5">
+
+            <!-- Assignment 5 -->
+            <div class="assignment-card">
                 <h3 class="assignment-title">Assignment 5</h3>
-                <p class="project-name">-</p>
+                <p class="project-name">---</p>
                 <a href="https://yeeying4126.github.io/IBMgl01/.html" 
-                   class="assignment-btn btn-color-5">
-                    <i class="fas fa-chart-bar"></i>
+                    class="assignment-btn btn-color-5">
+                    <i class="fa-solid fa-truck"></i>
                     Coming Soon
                 </a>
             </div>
         </div>
+
+        <!-- Comment Section -->
+        <div class="comment-section">
+        <h2 class="section-title">Share Your Thoughts</h2>
+        <form class="comment-form" id="commentForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <textarea id="comment" rows="4" placeholder="Your Comment..." required></textarea>
+            <button type="submit" class="submit-btn">Post Comment</button>
+        </form>
+        <div class="comments-container" id="commentsContainer"></div>
+    </div>
+
+    <footer class="footer">
+        <p>Contact me:</p>
+        <div class="contact-container">
+            <a href="https://www.instagram.com/yee_ying_0414" target="_blank" class="contact-link">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="mailto:averihere4126@gmail.com" class="contact-link">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+
+        <!-- QR Modal -->
+        <div class="qr-modal" id="qrModal">
+            <img src="your-qr-code-image.png" alt="KakaoTalk QR Code">
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Comment System
+        const commentForm = document.getElementById('commentForm');
+        const commentsContainer = document.getElementById('commentsContainer');
+
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const comment = {
+                name: commentForm.name.value,
+                text: commentForm.comment.value,
+                date: new Date().toISOString()
+            };
+
+            try {
+                await db.collection('comments').add(comment);
+                commentForm.reset();
+                loadComments();
+            } catch (error) {
+                console.error('Error adding comment:', error);
+            }
+        });
+
+        async function loadComments() {
+            try {
+                const querySnapshot = await db.collection('comments').orderBy('date', 'desc').get();
+                commentsContainer.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const comment = doc.data();
+                    commentsContainer.innerHTML += `
+                        <div class="comment-item">
+                            <div class="comment-author">${comment.name}</div>
+                            <div class="comment-text">${comment.text}</div>
+                            <div class="comment-date">${new Date(comment.date).toLocaleDateString()}</div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        // QR Code Modal
+        function showQR() {
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('qrModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Initial load
+        loadComments();
     </script>
 </body>
 </html>
