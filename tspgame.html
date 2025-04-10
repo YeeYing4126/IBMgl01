@@ -1,0 +1,60 @@
+const pete = document.getElementById("pete");
+const icebergs = {
+  A: document.getElementById("A"),
+  B: document.getElementById("B"),
+  C: document.getElementById("C"),
+  D: document.getElementById("D"),
+  E: document.getElementById("E")
+};
+
+let current = "A";
+
+const connections = {
+  A: ["B"],
+  B: ["A", "C", "D"],
+  C: ["B"],
+  D: ["B", "E"],
+  E: ["D"]
+};
+
+function movePeteTo(id) {
+  const iceberg = icebergs[id];
+  pete.style.left = iceberg.offsetLeft + "px";
+  pete.style.top = iceberg.offsetTop + "px";
+  current = id;
+}
+
+function drawBridges() {
+  const canvas = document.getElementById("bridges");
+  const ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+
+  ctx.strokeStyle = "#0077aa";
+  ctx.lineWidth = 3;
+
+  for (const from in connections) {
+    connections[from].forEach(to => {
+      const fromEl = icebergs[from];
+      const toEl = icebergs[to];
+
+      ctx.beginPath();
+      ctx.moveTo(fromEl.offsetLeft + 30, fromEl.offsetTop + 30);
+      ctx.lineTo(toEl.offsetLeft + 30, toEl.offsetTop + 30);
+      ctx.stroke();
+    });
+  }
+}
+
+drawBridges();
+movePeteTo(current);
+
+for (let key in icebergs) {
+  icebergs[key].addEventListener("click", () => {
+    if (connections[current].includes(key)) {
+      movePeteTo(key);
+    } else {
+      alert("No bridge! Penguin Pete can't swim!");
+    }
+  });
+}
