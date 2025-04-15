@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mermaid’s Marina Delivery Dive</title>
+    <style>
+        canvas {
+            border: 2px solid #1a5c7a;
+            background: #0a2f4e;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #083358;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐚 Mermaid's Delivery Dive 🐚</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="feedback" style="margin-top: 20px;"></div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const feedbackDiv = document.getElementById('feedback');
+
+// Nodes (name: [x, y])
+const nodes = {
+    "Home Cave": [400, 500],
+    "Surface Trading Post": [200, 100],
+    "Sunken Ship": [600, 150],
+    "Coral Reef": [300, 300],
+    "Abandoned Cave": [500, 400]
+};
+
+// Paths: [node1, node2, cost, hazard]
+const paths = [
+    ["Home Cave", "Coral Reef", 3, null],
+    ["Coral Reef", "Surface Trading Post", 4, null],
+    ["Surface Trading Post", "Sunken Ship", 5, "shark"],
+    ["Sunken Ship", "Abandoned Cave", 2, null],
+    ["Abandoned Cave", "Home Cave", 6, "dark"]
+];
+
+let selectedNodes = [];
+let currentEnergy = 20;
+
+function drawNode(name, x, y, isSelected) {
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.fillStyle = isSelected ? "#4CAF50" : "#2196F3"; // Green/Blue
+    ctx.fill();
+    
+    // Draw node name
+    ctx.fillStyle = "white";
+    ctx.font = "14px Arial";
+    ctx.fillText(name, x - 40, y + 35);
+}
+
+function drawPath(x1, y1, x2, y2, cost) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Draw cost
+    ctx.fillStyle = "#FF5252";
+    ctx.fillText(cost, (x1 + x2)/2, (y1 + y2)/2);
+}
+
+function drawSelectedRoute() {
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = "#FFEB3B";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    
+    for(let i=0; i<selectedNodes.length-1; i++) {
+        const start = nodes[selectedNodes[i]];
+        const end = nodes[selectedNodes[i+1]];
+        ctx.moveTo(start[0], start[1]);
+        ctx.lineTo(end[0], end[1]);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+}
+
+function validateRoute() {
+    if (selectedNodes.length === 0) return;
+    
+    const allVisited = Object.keys(nodes).every(node => 
+        selectedNodes.includes(node)
+    );
+    const validStartEnd = 
+        selectedNodes[0] === "Home Cave" && 
+        selectedNodes[selectedNodes.length-1] === "Home Cave";
+    
+    if (!allVisited) return "Missed nodes!";
+    if (!validStartEnd) return "Must start/end at Home Cave!";
+    return "Success! 🎉 Treasures Delivered!";
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw all paths
+    paths.forEach(([n1, n2, cost]) => {
+        drawPath(...nodes[n1], ...nodes[n2], cost);
+    });
+    
+    // Draw selected route
+    if (selectedNodes.length >= 2) {
+        drawSelectedRoute();
+    }
+    
+    // Draw all nodes
+    Object.entries(nodes).forEach(([name, [x, y]]) => {
+        drawNode(name, x, y, selectedNodes.includes(name));
+    });
+}
+
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Check node clicks
+    Object.entries(nodes).forEach(([name, [x, y]]) => {
+        const distance = Math.hypot(mouseX - x, mouseY - y);
+        if (distance < 20 && !selectedNodes.includes(name)) {
+            selectedNodes.push(name);
+            feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
+        }
+    });
+    
+    draw();
+});
+
+document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        const result = validateRoute();
+        feedbackDiv.textContent = result;
+        feedbackDiv.style.color = result.startsWith("Success") ? "green" : "red";
+    }
+});
+
+// Initial draw
+draw();
+</script>
+
+<p>How to play:</p>
+<ul>
+    <li>Click nodes to build your route</li>
+    <li>Press ENTER to validate</li>
+    <li>Must visit all nodes and return to Home Cave!</li>
+</ul>
+</body>
+</html>
