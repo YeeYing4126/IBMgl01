@@ -1,60 +1,136 @@
-const pete = document.getElementById("pete");
-const icebergs = {
-  A: document.getElementById("A"),
-  B: document.getElementById("B"),
-  C: document.getElementById("C"),
-  D: document.getElementById("D"),
-  E: document.getElementById("E")
-};
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
 
-let current = "A";
+const nodes = [
+  { id: "surface", name: "Surface Trading Post", x: 50, y: 50 },
+  { id: "ship", name: "Sunken Ship", x: 300, y: 100 },
+  { id: "reef", name: "Coral Reef", x: 150, y: 250 },
+  { id: "cave", name: "Abandoned Cave", x: 350, y: 300 },
+  { id: "home", name: "Home Cave", x: 200, y: 400 },
+];
 
-const connections = {
-  A: ["B"],
-  B: ["A", "C", "D"],
-  C: ["B"],
-  D: ["B", "E"],
-  E: ["D"]
-};
+const paths = [
+  { from: "surface", to: "ship", cost: 5, type: "calm" },
+  { from: "surface", to: "reef", cost: 3, type: "kelp" },
+  { from: "ship", to: "cave", cost: 7, type: "predator" },
+  { from: "reef", to: "cave", cost: 4, type: "strong" },
+  { from: "reef", to: "home", cost: 3, type: "calm" },
+  { from: "cave", to: "home", cost: 2, type: "calm" },
+];
 
-function movePeteTo(id) {
-  const iceberg = icebergs[id];
-  pete.style.left = iceberg.offsetLeft + "px";
-  pete.style.top = iceberg.offsetTop + "px";
-  current = id;
-}
+export default function App() {
+  const [route, setRoute] = useState([]);
+  const [energy, setEnergy] = useState(0);
+  const [visited, setVisited] = useState(new Set());
+  const [complete, setComplete] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showSparkle, setShowSparkle] = useState(false);
+  const [mermaidStyle, setMermaidStyle] = useState("purple");
 
-function drawBridges() {
-  const canvas = document.getElementById("bridges");
-  const ctx = canvas.getContext("2d");
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  const handleMove = (from, to) => {
+    const path = paths.find((p) => p.from === from && p.to === to);
+    if (!path) return;
 
-  ctx.strokeStyle = "#0077aa";
-  ctx.lineWidth = 3;
+    const newRoute = [...route, to];
+    setRoute(newRoute);
+    setEnergy((e) => e + path.cost);
+    setVisited((prev) => new Set(prev.add(to)));
 
-  for (const from in connections) {
-    connections[from].forEach(to => {
-      const fromEl = icebergs[from];
-      const toEl = icebergs[to];
-
-      ctx.beginPath();
-      ctx.moveTo(fromEl.offsetLeft + 30, fromEl.offsetTop + 30);
-      ctx.lineTo(toEl.offsetLeft + 30, toEl.offsetTop + 30);
-      ctx.stroke();
-    });
-  }
-}
-
-drawBridges();
-movePeteTo(current);
-
-for (let key in icebergs) {
-  icebergs[key].addEventListener("click", () => {
-    if (connections[current].includes(key)) {
-      movePeteTo(key);
-    } else {
-      alert("No bridge! Penguin Pete can't swim!");
+    if (path.type === "predator") {
+      setMessage("🦈 Dodging sharks... slows you down!");
     }
-  });
+
+    if (to === "home") {
+      const allNodesVisited = nodes.every((node) => node.id === "surface" || visited.has(node.id) || node.id === "home");
+      if (allNodesVisited && newRoute.includes("ship") && newRoute.includes("reef") && newRoute.includes("cave")) {
+        setComplete(true);
+        setMessage("🎉 Success! Treasures delivered to the kingdom.");
+        setShowSparkle(true);
+      } else {
+        setMessage("⚠️ The kingdom is still missing supplies!");
+      }
+    }
+  };
+
+  const renderPath = (path) => {
+    const from = nodes.find((n) => n.id === path.from);
+    const to = nodes.find((n) => n.id === path.to);
+    return (
+      <line
+        key={`${path.from}-${path.to}`}
+        x1={from.x}
+        y1={from.y}
+        x2={to.x}
+        y2={to.y}
+        stroke={path.type === "predator" ? "red" : path.type === "kelp" ? "green" : path.type === "strong" ? "orange" : "blue"}
+        strokeWidth="2"
+      />
+    );
+  };
+
+  const getStars = () => {
+    if (energy <= 10) return "⭐⭐⭐";
+    if (energy <= 15) return "⭐⭐";
+    return "⭐";
+  };
+
+  return (
+    <div className="w-full h-screen bg-blue-100 flex flex-col items-center p-4">
+      <h1 className="text-2xl font-bold mb-2">Mermaid’s Marina Delivery Dive</h1>
+
+      <div className="mb-2">
+        <label htmlFor="color" className="mr-2 font-medium">Tail Color:</label>
+        <select id="color" onChange={(e) => setMermaidStyle(e.target.value)} value={mermaidStyle} className="rounded px-2 py-1">
+          <option value="purple">Purple</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="pink">Pink</option>
+        </select>
+      </div>
+
+      <svg width="400" height="500" className="bg-blue-200 rounded">
+        {paths.map(renderPath)}
+        {nodes.map((node) => (
+          <g key={node.id} onClick={() => handleMove(route[route.length - 1] || "surface", node.id)}>
+            <circle cx={node.x} cy={node.y} r="10" fill="purple" />
+            <text x={node.x + 12} y={node.y} fontSize="12" fill="black">
+              {node.name}
+            </text>
+          </g>
+        ))}
+
+        {/* Mermaid avatar */}
+        <motion.circle
+          cx={nodes.find((n) => n.id === (route[route.length - 1] || "surface")).x}
+          cy={nodes.find((n) => n.id === (route[route.length - 1] || "surface")).y}
+          r="8"
+          fill={mermaidStyle}
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        />
+
+        {/* Sparkle animation */}
+        {showSparkle && (
+          <motion.circle
+            cx="200"
+            cy="250"
+            r="40"
+            fill="gold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        )}
+      </svg>
+
+      <Card className="mt-4 p-4 text-center">
+        <p className="font-semibold">Current Route:</p>
+        <p>{["surface", ...route].join(" → ")}</p>
+        <p className="mt-2 font-semibold">Energy Used: {energy} 💦</p>
+        {complete && <p className="mt-2 text-green-600 font-bold">{getStars()} - Energy Efficient!</p>}
+        {message && <p className="mt-2 text-red-600">{message}</p>}
+      </Card>
+    </div>
+  );
 }
