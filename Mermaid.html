@@ -23,6 +23,11 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+         .particle {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +35,16 @@
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <div id="feedback" style="margin-top: 20px;"></div>
     <div id="energy">Energy: 20</div>
+
+    <audio id="bgMusic" loop>
+        <source src="Background Music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="hazardSound">
+        <source src="Hazard Sound.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="successSound">
+        <source src="Success Sound.mp3" type="audio/mpeg">
+    </audio>
 
 <script>
 const canvas = document.getElementById('gameCanvas');
@@ -128,12 +143,64 @@ function validateRoute() {
     return "Success! 🎉 Score: " + score;
 }
 }
+    // Particle System
+class Particle {
+    constructor(x, y, type) {
+        this.x = x;
+        this.y = y;
+        this.vx = Math.random() * 4 - 2;
+        this.vy = Math.random() * -3 - 2;
+        this.life = 1;
+        this.type = type;
+        this.element = document.createElement('div');
+        this.element.className = 'particle';
+        
+        if(this.type === 'shark') {
+            this.element.textContent = '🦈';
+            this.element.style.fontSize = '24px';
+        } else {
+            this.element.textContent = '💧';
+            this.element.style.color = '#00B7EB';
+        }
+        
+        document.body.appendChild(this.element);
+    }
+
+    update() {
+        this.life -= 0.02;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+        this.element.style.opacity = this.life;
+        
+        if(this.life <= 0) {
+            this.element.remove();
+            return false;
+        }
+        return true;
+    }
+}
+
+let particles = [];
+
+function createHazardEffect(x, y, type) {
+    for(let i = 0; i < 15; i++) {
+        particles.push(new Particle(x, y, type));
+    }
+}
+
+function updateParticles() {
+    particles = particles.filter(p => p.update());
+}
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
     if (selectedNodes.length >= 2) drawSelectedRoute();
     Object.entries(nodes).forEach(([name, [x, y]]) => drawNode(name, x, y, selectedNodes.includes(name)));
+
+    // Update particles first
+    updateParticles();
     
     // Draw mermaid
     if (selectedNodes.length > 0) {
@@ -179,6 +246,9 @@ canvas.addEventListener('click', (e) => {
                             feedbackDiv.classList.add('hazard-warning');
                             hazardSound.play();
                             setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
+                            const [nx, ny] = nodes[name];
+                            createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
+                            }
                         }
                     }
                 }
