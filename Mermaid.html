@@ -35,6 +35,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const feedbackDiv = document.getElementById('feedback');
+const energyDiv = document.getElementById('energy');
 
 // Nodes (name: [x, y])
 const nodes = {
@@ -60,10 +61,8 @@ let currentEnergy = 20;
 function drawNode(name, x, y, isSelected) {
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, Math.PI * 2);
-    ctx.fillStyle = isSelected ? "#4CAF50" : "#2196F3"; // Green/Blue
+    ctx.fillStyle = isSelected ? "#4CAF50" : "#2196F3";
     ctx.fill();
-    
-    // Draw node name
     ctx.fillStyle = "white";
     ctx.font = "14px Arial";
     ctx.fillText(name, x - 40, y + 35);
@@ -76,8 +75,6 @@ function drawPath(x1, y1, x2, y2, cost) {
     ctx.strokeStyle = "#FFFFFF";
     ctx.lineWidth = 2;
     ctx.stroke();
-    
-    // Draw cost
     ctx.fillStyle = "#FF5252";
     ctx.fillText(cost, (x1 + x2)/2, (y1 + y2)/2);
 }
@@ -87,7 +84,6 @@ function drawSelectedRoute() {
     ctx.strokeStyle = "#FFEB3B";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    
     for(let i=0; i<selectedNodes.length-1; i++) {
         const start = nodes[selectedNodes[i]];
         const end = nodes[selectedNodes[i+1]];
@@ -100,14 +96,8 @@ function drawSelectedRoute() {
 
 function validateRoute() {
     if (selectedNodes.length === 0) return;
-    
-    const allVisited = Object.keys(nodes).every(node => 
-        selectedNodes.includes(node)
-    );
-    const validStartEnd = 
-        selectedNodes[0] === "Home Cave" && 
-        selectedNodes[selectedNodes.length-1] === "Home Cave";
-    
+    const allVisited = Object.keys(nodes).every(node => selectedNodes.includes(node));
+    const validStartEnd = selectedNodes[0] === "Home Cave" && selectedNodes[selectedNodes.length-1] === "Home Cave";
     if (!allVisited) return "Missed nodes!";
     if (!validStartEnd) return "Must start/end at Home Cave!";
     return "Success! 🎉 Treasures Delivered!";
@@ -115,22 +105,10 @@ function validateRoute() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
+    if (selectedNodes.length >= 2) drawSelectedRoute();
+    Object.entries(nodes).forEach(([name, [x, y]]) => drawNode(name, x, y, selectedNodes.includes(name)));
     
-    // Draw all paths
-    paths.forEach(([n1, n2, cost]) => {
-        drawPath(...nodes[n1], ...nodes[n2], cost);
-    });
-    
-    // Draw selected route
-    if (selectedNodes.length >= 2) {
-        drawSelectedRoute();
-    }
-    
-    // Draw all nodes
-    Object.entries(nodes).forEach(([name, [x, y]]) => {
-        drawNode(name, x, y, selectedNodes.includes(name));
-    });
-
     // Draw mermaid
     if (selectedNodes.length > 0) {
         const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
@@ -144,12 +122,10 @@ canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    
-    // Check node clicks
+
     Object.entries(nodes).forEach(([name, [x, y]]) => {
         const distance = Math.hypot(mouseX - x, mouseY - y);
         if (distance < 20 && !selectedNodes.includes(name)) {
-            // Deduct energy if moving between nodes
             if (selectedNodes.length >= 1) {
                 const lastNode = selectedNodes[selectedNodes.length - 1];
                 const path = paths.find(p => 
@@ -158,7 +134,7 @@ canvas.addEventListener('click', (e) => {
                 );
                 if (path) {
                     currentEnergy -= path[2];
-                    document.getElementById('energy').textContent = `Energy: ${currentEnergy}`;
+                    energyDiv.textContent = `Energy: ${currentEnergy}`;
                     if (path[3]) {
                         feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
                         feedbackDiv.classList.add('hazard-warning');
@@ -168,10 +144,9 @@ canvas.addEventListener('click', (e) => {
             }
             selectedNodes.push(name);
             feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
+            draw();
         }
     });
-    
-    draw();
 });
 
 document.addEventListener('keypress', (e) => {
@@ -182,7 +157,6 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
-// Initial draw
 draw();
 </script>
 
