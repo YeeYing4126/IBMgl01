@@ -15,12 +15,21 @@
             background: #083358;
             color: white;
         }
+        .hazard-warning {
+            animation: flash 0.5s infinite;
+            color: red;
+        }
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
-    <h1>🐚 Mermaid's Delivery Dive 🐚</h1>
+    <h1>🐚 Mermaid’s Marina Delivery Dive 🐚</h1>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <div id="feedback" style="margin-top: 20px;"></div>
+    <div id="energy">Energy: 20</div>
 
 <script>
 const canvas = document.getElementById('gameCanvas');
@@ -147,9 +156,33 @@ document.addEventListener('keypress', (e) => {
         feedbackDiv.style.color = result.startsWith("Success") ? "green" : "red";
     }
 });
+     if (selectedNodes.length >= 1) {
+        const lastNode = selectedNodes[selectedNodes.length - 1];
+        const path = paths.find(p => 
+            (p[0] === lastNode && p[1] === name) || 
+            (p[1] === lastNode && p[0] === name)
+        );
+        if (path) {
+            currentEnergy -= path[2];
+            document.getElementById('energy').textContent = `Energy: ${currentEnergy}`;
+    }
+});
+        if (path && path[3]) {
+            feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
+            feedbackDiv.classList.add('hazard-warning');
+            setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
+    }
+});
 
 // Initial draw
 draw();
+       if (selectedNodes.length > 0) {
+           const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
+           ctx.fillStyle = "#FF69B4";
+           ctx.font = "24px Arial";
+           ctx.fillText("🧜♀️", x - 15, y - 30);
+       }
+    }
 </script>
 
 <p>How to play:</p>
