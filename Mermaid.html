@@ -95,12 +95,38 @@ function drawSelectedRoute() {
 }
 
 function validateRoute() {
-    if (selectedNodes.length === 0) return;
+    if (selectedNodes.length === 0) "No route!";
     const allVisited = Object.keys(nodes).every(node => selectedNodes.includes(node));
     const validStartEnd = selectedNodes[0] === "Home Cave" && selectedNodes[selectedNodes.length-1] === "Home Cave";
     if (!allVisited) return "Missed nodes!";
     if (!validStartEnd) return "Must start/end at Home Cave!";
     return "Success! 🎉 Treasures Delivered!";
+    function validateRoute() {
+    if (selectedNodes.length === 0) return "No route!";
+    
+    // Check start/end at Home Cave
+    const validStartEnd = 
+        selectedNodes[0] === "Home Cave" && 
+        selectedNodes[selectedNodes.length-1] === "Home Cave";
+    
+    // Check all nodes visited (excluding duplicate Home Cave)
+    const requiredNodes = Object.keys(nodes).filter(n => n !== "Home Cave");
+    const allVisited = requiredNodes.every(node => selectedNodes.includes(node));
+    
+    if (!validStartEnd) return "Must start/end at Home Cave! 🏠";
+    if (!allVisited) return "Missed nodes!";
+    
+    // Calculate score
+    const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+    score = (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20);
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+    }
+    scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
+    successSound.play();
+    return "Success! 🎉 Score: " + score;
+}
 }
 
 function draw() {
@@ -125,30 +151,45 @@ canvas.addEventListener('click', (e) => {
 
     Object.entries(nodes).forEach(([name, [x, y]]) => {
         const distance = Math.hypot(mouseX - x, mouseY - y);
-        if (distance < 20 && !selectedNodes.includes(name)) {
-            if (selectedNodes.length >= 1) {
-                const lastNode = selectedNodes[selectedNodes.length - 1];
-                const path = paths.find(p => 
-                    (p[0] === lastNode && p[1] === name) || 
-                    (p[1] === lastNode && p[0] === name)
-                );
-                if (path) {
-                    currentEnergy -= path[2];
-                    energyDiv.textContent = `Energy: ${currentEnergy}`;
-                    if (path[3]) {
-                        feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
-                        feedbackDiv.classList.add('hazard-warning');
-                        setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
+        
+        // Allow clicking Home Cave again ONLY if it's the last node
+        if (distance < 20) {
+            const isHomeCave = (name === "Home Cave");
+            const isFirstNode = (selectedNodes.length === 0);
+            
+            if (isHomeCave && !isFirstNode && selectedNodes.includes(name)) {
+                // Allow selecting Home Cave to complete the loop
+                selectedNodes.push(name);
+                feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
+                draw();
+            } 
+            else if (!selectedNodes.includes(name)) {
+                // For other nodes: proceed as before
+                if (selectedNodes.length >= 1) {
+                    const lastNode = selectedNodes[selectedNodes.length - 1];
+                    const path = paths.find(p => 
+                        (p[0] === lastNode && p[1] === name) || 
+                        (p[1] === lastNode && p[0] === name)
+                    );
+                    if (path) {
+                        currentEnergy -= path[2];
+                        energyDiv.textContent = `Energy: ${currentEnergy}`;
+                        if (path[3]) {
+                            feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
+                            feedbackDiv.classList.add('hazard-warning');
+                            hazardSound.play();
+                            setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
+                        }
                     }
                 }
+                selectedNodes.push(name);
+                feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
+                draw();
             }
-            selectedNodes.push(name);
-            feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
-            draw();
         }
     });
 });
-
+    
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const result = validateRoute();
@@ -157,6 +198,11 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
+        // Always reset after validation (success or failure)
+        selectedNodes = [];
+        currentEnergy = 20;
+        startTime = Date.now();
+        energyDiv.textContent = `Energy: ${currentEnergy}`;
 draw();
 </script>
 
