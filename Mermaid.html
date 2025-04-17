@@ -14,6 +14,8 @@
             font-family: Arial, sans-serif;
             background: #083358;
             color: white;
+            margin: 0;
+            overflow: hidden;
         }
         .hazard-warning {
             animation: flash 0.5s infinite;
@@ -56,10 +58,6 @@
     <div id="energy">Energy: 20</div>
     <div id="score">Score: 0 | High Score: 0</div>
 
-    <!-- Particle Images -->
-    <img id="bubble" src="https://example.com/bubble.png" style="display:none;">
-    <img id="shark" src="https://example.com/shark-icon.png" style="display:none;">
-
     <audio id="bgMusic" loop>
         <source src="Background Music.mp3" type="audio/mpeg">
     </audio>
@@ -72,14 +70,14 @@
 
 <script>
 // ========================
-// ENHANCED GAME ENGINE
+// GAME INITIALIZATION
 // ========================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const feedbackDiv = document.getElementById('feedback');
 const energyDiv = document.getElementById('energy');
 const scoreDiv = document.getElementById('score');
-    
+
 // Audio System
 const audio = {
     bgMusic: document.getElementById('bgMusic'),
@@ -98,69 +96,23 @@ document.getElementById('musicVolume').addEventListener('input', (e) => {
 });
 document.getElementById('sfxVolume').addEventListener('input', (e) => {
     audio.volumes.sfx = e.target.value;
+    audio.hazardSound.volume = audio.volumes.sfx;
+    audio.successSound.volume = audio.volumes.sfx;
 });
-    
-// Nodes (name: [x, y])
-const nodes = {
-    "Home Cave": [400, 500],
-    "Surface Trading Post": [200, 100],
-    "Sunken Ship": [600, 150],
-    "Coral Reef": [300, 300],
-    "Abandoned Cave": [500, 400]
-};
-
-// Paths: [node1, node2, cost, hazard]
-const paths = [
-    ["Home Cave", "Coral Reef", 3, null],
-    ["Coral Reef", "Surface Trading Post", 4, null],
-    ["Surface Trading Post", "Sunken Ship", 5, "shark"],
-    ["Sunken Ship", "Abandoned Cave", 2, null],
-    ["Abandoned Cave", "Home Cave", 6, "dark"]
-];
-
-let selectedNodes = [];
-let currentEnergy = 20;
-let score = 0;
-let highScore = localStorage.getItem('highScore') || 0;
-let startTime = Date.now();
-
-// Particle Pooling System
-const particlePool = [];
-const MAX_PARTICLES = 100;
 
 // Particle System
+const particles = [];
 class Particle {
-    constructor() {
-        this.element = document.createElement('img');
-        this.element.className = 'particle';
-        this.element.style.display = 'none';
-        document.body.appendChild(this.element);
-    }
-
-    activate(x, y, type) {
-        this.element.src = type === 'shark' ? 
-            'https://example.com/shark-icon.png' : 
-            'https://example.com/bubble.png';
-        this.x = x;
-        this.y = y;
-        this.vx = Math.random() * 4 - 2;
-        this.vy = Math.random() * -3 - 2;
-        this.life = 1;
-        this.element.style.display = 'block';
-        this.element.style.transform = `translate(${x}px, ${y}px)`;
-   }
-        
     constructor(x, y, type) {
         this.x = x;
         this.y = y;
         this.vx = Math.random() * 4 - 2;
         this.vy = Math.random() * -3 - 2;
         this.life = 1;
-        this.type = type;
         this.element = document.createElement('div');
         this.element.className = 'particle';
         
-        if(this.type === 'shark') {
+        if(type === 'shark') {
             this.element.textContent = '🦈';
             this.element.style.fontSize = '24px';
         } else {
@@ -179,26 +131,12 @@ class Particle {
         this.element.style.opacity = this.life;
         
         if(this.life <= 0) {
-            this.element.style.display = 'none';
+            this.element.remove();
             return false;
         }
         return true;
     }
 }
-
-// Initialize particle pool
-for(let i = 0; i < MAX_PARTICLES; i++) {
-    particlePool.push(new Particle());
-}
-
-function createHazardEffect(x, y, type) {
-    for(let i = 0; i < 15; i++) {
-        const particle = particlePool.find(p => !p.element.style.display);
-        if(particle) particle.activate(x, y, type);
-    }
-}
-    
-let particles = [];
 
 function createHazardEffect(x, y, type) {
     for(let i = 0; i < 15; i++) {
@@ -210,83 +148,85 @@ function updateParticles() {
     particles = particles.filter(p => p.update());
 }
 
-function drawNode(name, x, y, isSelected) {
-    ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2);
-    ctx.fillStyle = isSelected ? "#4CAF50" : "#2196F3";
-    ctx.fill();
-    ctx.fillStyle = "white";
-    ctx.font = "14px Arial";
-    ctx.fillText(name, x - 40, y + 35);
-}
+// Game Data
+const nodes = {
+    "Home Cave": [400, 500],
+    "Surface Trading Post": [200, 100],
+    "Sunken Ship": [600, 150],
+    "Coral Reef": [300, 300],
+    "Abandoned Cave": [500, 400]
+};
 
-function drawPath(x1, y1, x2, y2, cost) {
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = "#FF5252";
-    ctx.fillText(cost, (x1 + x2)/2, (y1 + y2)/2);
-}
+const paths = [
+    ["Home Cave", "Coral Reef", 3, null],
+    ["Coral Reef", "Surface Trading Post", 4, null],
+    ["Surface Trading Post", "Sunken Ship", 5, "shark"],
+    ["Sunken Ship", "Abandoned Cave", 2, null],
+    ["Abandoned Cave", "Home Cave", 6, "dark"]
+];
 
-function drawSelectedRoute() {
-    ctx.setLineDash([5, 5]);
-    ctx.strokeStyle = "#FFEB3B";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    for(let i=0; i<selectedNodes.length-1; i++) {
-        const start = nodes[selectedNodes[i]];
-        const end = nodes[selectedNodes[i+1]];
-        ctx.moveTo(start[0], start[1]);
-        ctx.lineTo(end[0], end[1]);
-    }
-    ctx.stroke();
-    ctx.setLineDash([]);
-}
+let selectedNodes = [];
+let currentEnergy = 20;
+let score = 0;
+let highScore = localStorage.getItem('highScore') || 0;
+let startTime = Date.now();
 
+// ========================
+// GAME FUNCTIONS
+// ========================
 function validateRoute() {
     if (selectedNodes.length === 0) return "No route!";
     
-    // Check start/end at Home Cave
     const validStartEnd = 
         selectedNodes[0] === "Home Cave" && 
         selectedNodes[selectedNodes.length-1] === "Home Cave";
     
-    // Check all nodes visited (excluding duplicate Home Cave)
     const requiredNodes = Object.keys(nodes).filter(n => n !== "Home Cave");
     const allVisited = requiredNodes.every(node => selectedNodes.includes(node));
     
     if (!validStartEnd) return "Must start/end at Home Cave! 🏠";
     if (!allVisited) return "Missed nodes!";
     
-    // Calculate score
     const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
     score = (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20);
+    
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
     }
+    
     scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
-    successSound.play();
+    audio.successSound.play();
     return "Success! 🎉 Score: " + score;
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Update particles
-    updateParticles();
-    
     // Draw paths
-    paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
-    
-    // Draw selected route
-    if (selectedNodes.length >= 2) drawSelectedRoute();
+    paths.forEach(([n1, n2, cost]) => {
+        const [x1, y1] = nodes[n1];
+        const [x2, y2] = nodes[n2];
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "#FF5252";
+        ctx.fillText(cost, (x1 + x2)/2, (y1 + y2)/2);
+    });
     
     // Draw nodes
-    Object.entries(nodes).forEach(([name, [x, y]]) => drawNode(name, x, y, selectedNodes.includes(name)));
+    Object.entries(nodes).forEach(([name, [x, y]]) => {
+        ctx.beginPath();
+        ctx.arc(x, y, 20, 0, Math.PI * 2);
+        ctx.fillStyle = selectedNodes.includes(name) ? "#4CAF50" : "#2196F3";
+        ctx.fill();
+        ctx.fillStyle = "white";
+        ctx.font = "14px Arial";
+        ctx.fillText(name, x - 40, y + 35);
+    });
     
     // Draw mermaid
     if (selectedNodes.length > 0) {
@@ -295,8 +235,14 @@ function draw() {
         ctx.font = "24px Arial";
         ctx.fillText("🧜", x - 15, y - 30);
     }
+    
+    // Update particles
+    updateParticles();
 }
 
+// ========================
+// EVENT HANDLERS
+// ========================
 canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -305,35 +251,33 @@ canvas.addEventListener('click', (e) => {
     Object.entries(nodes).forEach(([name, [x, y]]) => {
         const distance = Math.hypot(mouseX - x, mouseY - y);
         
-        // Allow clicking Home Cave again ONLY if it's the last node
         if (distance < 20) {
             const isHomeCave = (name === "Home Cave");
             const isFirstNode = (selectedNodes.length === 0);
             
             if (isHomeCave && !isFirstNode && selectedNodes.includes(name)) {
-                // Allow selecting Home Cave to complete the loop
                 selectedNodes.push(name);
                 feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
                 draw();
             } 
             else if (!selectedNodes.includes(name)) {
-                // For other nodes: proceed as before
                 if (selectedNodes.length >= 1) {
                     const lastNode = selectedNodes[selectedNodes.length - 1];
                     const path = paths.find(p => 
                         (p[0] === lastNode && p[1] === name) || 
                         (p[1] === lastNode && p[0] === name)
                     );
+                    
                     if (path) {
                         currentEnergy -= path[2];
                         energyDiv.textContent = `Energy: ${currentEnergy}`;
+                        
                         if (path[3]) {
                             feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
                             feedbackDiv.classList.add('hazard-warning');
-                            hazardSound.play();
+                            audio.hazardSound.play();
                             setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
-                            const [nx, ny] = nodes[name];
-                            createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
+                            createHazardEffect(x + rect.left, y + rect.top, path[3]);
                         }
                     }
                 }
@@ -359,26 +303,20 @@ document.addEventListener('keypress', (e) => {
         draw();
     }
 });
-    
+
 // ========================
 // GAME START
 // ========================
-audio.bgMusic.loop = true;
 audio.bgMusic.volume = audio.volumes.music;
 audio.bgMusic.play();
-    
-// Initial draw
 draw();
-// Start background music
-bgMusic.play();
 </script>
 
 <p>How to play:</p>
 <ul>
-    <li>Try to minimize your route to save energy!</li>
+    <li>Try to minimize your energy and visit all places!</li>
     <li>Press ENTER to validate</li>
     <li>Adjust volumes using sliders top-right</li>
-    <li>Must visit all places and return to Home Cave!</li>
 </ul>
 </body>
 </html>
