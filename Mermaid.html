@@ -299,7 +299,18 @@ canvas.addEventListener('click', (e) => {
         if (distance < 20) {
             const isHomeCave = (name === "Home Cave");
             const isFirstNode = (selectedNodes.length === 0);
-            
+
+            // Prevent selecting the same node twice in a row
+            if (selectedNodes[selectedNodes.length - 1] === name) return;
+
+            // Allow clicking Home Cave again ONLY if it's the last node to complete the loop
+            if (name === "Home Cave" && selectedNodes.length > 0) {
+                selectedNodes.push(name);
+                const message = validateRoute();
+                showMessage(message);
+                return;
+           }
+                
             if (isHomeCave && !isFirstNode && selectedNodes.includes(name)) {
                 // Allow selecting Home Cave to complete the loop
                 selectedNodes.push(name);
@@ -362,7 +373,26 @@ canvas.addEventListener('click', (e) => {
                     bgMusic.play();
                     feedbackDiv.textContent = "Started journey!";
                 }
+
+                // Check for hazard on path
+                if (selectedNodes.length > 1) {
+                    const lastTwo = selectedNodes.slice(-2);
+                    const hazardPath = paths.find(p => 
+                        (p[0] === lastTwo[0] && p[1] === lastTwo[1]) || 
+                        (p[1] === lastTwo[0] && p[0] === lastTwo[1])
+                    );
+                    if (hazardPath && hazardPath[3]) {
+                        createHazardEffect(x, y, hazardPath[3]);
+                        hazardSound.play();
+                    }
+                }
+
+                if (currentEnergy <= 0) {
+                    showMessage("Out of energy! 😴");
+                }
             }
+      });
+});
 
             draw();
                         
