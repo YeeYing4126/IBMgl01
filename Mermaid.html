@@ -308,22 +308,32 @@ canvas.addEventListener('click', (e) => {
             } 
             else if (!selectedNodes.includes(name)) {
                 // For other nodes: proceed as before
-                if (selectedNodes.length >= 1) {
+                if (selectedNodes.length >= 0) {
                     const lastNode = selectedNodes[selectedNodes.length - 1];
                     const path = paths.find(p => 
                         (p[0] === lastNode && p[1] === name) || 
                         (p[1] === lastNode && p[0] === name)
                     );
+
+                    if (!path) {
+                        feedbackDiv.textContent = "⚠️ Invalid move! No direct path.";
+                        return;
+                    }
+
+                    const [_, __, cost, hazard] = path;
+
                     if (path) {
                         currentEnergy -= path[2];
                         energyDiv.textContent = `Energy: ${currentEnergy}`;
                         if (path[3]) {
-                            feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
+                            feedbackDiv.textContent = "💤 Not enough energy!";
                             feedbackDiv.classList.add('hazard-warning');
                             hazardSound.play();
                             setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
                             const [nx, ny] = nodes[name];
                             createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
+                            return;
+                            }
                     if (path) {
                         const [n1, n2, cost, hazard] = path;
                         if (currentEnergy >= cost) {
@@ -333,13 +343,36 @@ canvas.addEventListener('click', (e) => {
                             feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
         
                     if (hazard) {
-                            feedbackDiv.innerHTML += `<br><span class="hazard-warning">⚠️ Hazard encountered: ${hazard}!</span>`;
+                            feedbackDiv.innerHTML = `<span class="hazard-warning">⚠️ Hazard encountered: ${hazard.toUpperCase()}!</span>`;
                             hazardSound.play();
                             const [hx, hy] = nodes[name];
-                            createHazardEffect(hx, hy, hazard);
-                        }
+                            createHazardEffect(x, y, hazard);
+                    } else {
+                            feedbackDiv.textContent = `Moved to ${name}`;
+                    }
 
-                        draw();
+                    selectedNodes.push(name);
+                } else {
+                    if (name !== "Home Cave") {
+                        feedbackDiv.textContent = "🚫 Must start at Home Cave!";
+                        return;
+                    }
+                    selectedNodes.push(name);
+                    startTime = Date.now();
+                    bgMusic.play();
+                    feedbackDiv.textContent = "Started journey!";
+                }
+            }
+
+            draw();
+                        
+         // If returned to Home Cave and route has at least one node in between, validate
+                if (selectedNodes.length > 2 && name === "Home Cave") {
+                    const result = validateRoute();
+                    feedbackDiv.innerHTML = result;
+                    bgMusic.pause();
+                    bgMusic.currentTime = 0;
+                }
 
         // Check if player returned home after visiting all nodes
                     if (name === "Home Cave" && selectedNodes.length > 1) {
@@ -358,7 +391,6 @@ canvas.addEventListener('click', (e) => {
                 feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
                 draw();
             }
-        }
     });
 });
 
