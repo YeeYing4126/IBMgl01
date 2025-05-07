@@ -15,6 +15,10 @@
             background: #083358;
             color: white;
         }
+        h1 {
+            font-size: 2rem;
+            color: #00796b;
+        }
         .hazard-warning {
             animation: flash 0.5s infinite;
             color: red;
@@ -28,20 +32,44 @@
             pointer-events: none;
             user-select: none;
         }
-        #score {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        #scoreboard {
+            font-size: 1.5rem;
+            margin: 20px;
+        }
+        #gameMessage {
+            font-size: 1.2rem;
+            color: green;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 10px;
+            border: none;
+            background-color: #4db6ac;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00897b;
         }
     </style>
 </head>
 <body>
-    <h1>🐚 Mermaid’s Marina Delivery Dive 🐚</h1>
+    <h1>🐚 Mermaid’s Marina Delivery Dive 🐠</h1>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <div id="feedback" style="margin-top: 20px;"></div>
     <div id="energy">Energy: 20</div>
-    <div id="score">Score: 0 | High Score: 0</div>
+    <div id="scoreboard">
+        Score: <span id="score">0</span> | High Score: <span id="highScore">0</span>
+  </div>
+    
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="resetGame()">Reset</button>
 
+    <div id="gameMessage"></div>
+    
     <audio id="bgMusic" loop>
         <source src="Background Music.mp3" type="audio/mpeg">
     </audio>
@@ -83,7 +111,8 @@ const paths = [
 let selectedNodes = [];
 let currentEnergy = 20;
 let score = 0;
-let highScore = localStorage.getItem('highScore') || 0;
+let highScore = 0;
+let gameRunning = false;
 let startTime = Date.now();
 
 // Particle System
@@ -172,6 +201,41 @@ function drawSelectedRoute() {
     ctx.setLineDash([]);
 }
 
+    function startGame() {
+      if (!gameRunning) {
+        score = Math.floor(Math.random() * 2000); // Replace this with real game logic
+        gameRunning = true;
+        updateScore();
+        showMessage("Game in progress...");
+        setTimeout(endGame, 2000); // Simulate a short game session
+      }
+    }
+
+    function endGame() {
+      gameRunning = false;
+      if (score > highScore) {
+        highScore = score;
+      }
+      updateScore();
+      showMessage(`Success! 🏆 Score: ${score}`);
+    }
+
+    function resetGame() {
+      score = 0;
+      gameRunning = false;
+      updateScore();
+      showMessage("");
+    }
+
+    function updateScore() {
+      document.getElementById("score").textContent = score;
+      document.getElementById("highScore").textContent = highScore;
+    }
+
+    function showMessage(msg) {
+      document.getElementById("gameMessage").textContent = msg;
+    }
+    
 function validateRoute() {
     if (selectedNodes.length === 0) return "No route!";
     
@@ -260,6 +324,33 @@ canvas.addEventListener('click', (e) => {
                             setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
                             const [nx, ny] = nodes[name];
                             createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
+                    if (path) {
+                        const [n1, n2, cost, hazard] = path;
+                        if (currentEnergy >= cost) {
+                            selectedNodes.push(name);
+                            currentEnergy -= cost;
+                            energyDiv.textContent = `Energy: ${currentEnergy}`;
+                            feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
+        
+                    if (hazard) {
+                            feedbackDiv.innerHTML += `<br><span class="hazard-warning">⚠️ Hazard encountered: ${hazard}!</span>`;
+                            hazardSound.play();
+                            const [hx, hy] = nodes[name];
+                            createHazardEffect(hx, hy, hazard);
+                        }
+
+                        draw();
+
+        // Check if player returned home after visiting all nodes
+                    if (name === "Home Cave" && selectedNodes.length > 1) {
+                            feedbackDiv.textContent = validateRoute();
+                            }
+                    } else {
+                            feedbackDiv.innerHTML = `<span class="hazard-warning">Not enough energy to move!</span>`;
+                    }
+                    } else {
+                            feedbackDiv.innerHTML = `<span class="hazard-warning">Invalid move! Nodes not connected.</span>`;
+                            }
                         }
                     }
                 }
