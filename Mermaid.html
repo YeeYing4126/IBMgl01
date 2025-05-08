@@ -85,10 +85,19 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const feedbackDiv = document.getElementById('feedback');
 const energyDiv = document.getElementById('energy');
-const scoreDiv = document.getElementById('score');
+const scoreSpan = document.getElementById('score');
+const highScoreSpan = document.getElementById('highScore');
 const bgMusic = document.getElementById('bgMusic');
 const hazardSound = document.getElementById('hazardSound');
 const successSound = document.getElementById('successSound');
+
+// Game state
+let selectedNodes = [];
+let currentEnergy = 20;
+let score = 0;
+let highScore = localStorage.getItem('highScore') || 0;
+let gameRunning = false;
+let startTime = Date.now();
 
 // Nodes (name: [x, y])
 const nodes = {
@@ -107,13 +116,6 @@ const paths = [
     ["Sunken Ship", "Abandoned Cave", 2, null],
     ["Abandoned Cave", "Home Cave", 6, "dark"]
 ];
-
-let selectedNodes = [];
-let currentEnergy = 20;
-let score = 0;
-let highScore = 0;
-let gameRunning = false;
-let startTime = Date.now();
 
 // Particle System
 class Particle {
@@ -237,36 +239,35 @@ function drawSelectedRoute() {
     }
     
 function validateRoute() {
-    if (selectedNodes.length === 0) return "No route!";
+    if (selectedNodes.length < 2) return "Route too short!";
     
     // Check start/end at Home Cave
-    const validStartEnd = 
-        selectedNodes[0] === "Home Cave" && 
-        selectedNodes[selectedNodes.length-1] === "Home Cave";
+    const validStartEnd = selectedNodes[0] === "Home Cave" && 
+                         selectedNodes[selectedNodes.length-1] === "Home Cave";
     
     // Check all nodes visited (excluding duplicate Home Cave)
     const requiredNodes = Object.keys(nodes).filter(n => n !== "Home Cave");
     const allVisited = requiredNodes.every(node => selectedNodes.includes(node));
     
     if (!validStartEnd) return "Must start/end at Home Cave! 🏠";
-    if (!allVisited) return "Missed nodes!";
+    if (!allVisited) return "Missed some locations!";
     
     // Calculate score
     const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
-    score = (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20);
+    score = Math.max(0, (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20));
+   
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
     }
-    scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
+
     successSound.play();
-    return "Success! 🎉 Score: " + score;
+    gameRunning = false;
+    return `Success! 🎉 Score: ${score}`;
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Update particles
     updateParticles();
     
     // Draw paths
@@ -276,7 +277,8 @@ function draw() {
     if (selectedNodes.length >= 2) drawSelectedRoute();
     
     // Draw nodes
-    Object.entries(nodes).forEach(([name, [x, y]]) => drawNode(name, x, y, selectedNodes.includes(name)));
+    Object.entries(nodes).forEach(([name, [x, y]]) => 
+         drawNode(name, x, y, selectedNodes.includes(name)));
     
     // Draw mermaid
     if (selectedNodes.length > 0) {
@@ -288,49 +290,65 @@ function draw() {
 }
 
 canvas.addEventListener('click', (e) => {
+    if (!gameRunning) return;
+    
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
     Object.entries(nodes).forEach(([name, [x, y]]) => {
-        const distance = Math.hypot(mouseX - x, mouseY - y);
-        
-        // Allow clicking Home Cave again ONLY if it's the last node
-        if (distance < 20) {
-            const isHomeCave = (name === "Home Cave");
-            const isFirstNode = (selectedNodes.length === 0);
-
-            // Prevent selecting the same node twice in a row
-            if (selectedNodes[selectedNodes.length - 1] === name) return;
-
-            // Allow clicking Home Cave again ONLY if it's the last node to complete the loop
-            if (name === "Home Cave" && selectedNodes.length > 0) {
-                selectedNodes.push(name);
-                const message = validateRoute();
-                showMessage(message);
+        if (Math.hypot(mouseX - x, mouseY - y) < 20) {
+            if (selectedNodes.length === 0 && name !== "Home Cave") {
+                feedbackDiv.textContent = "Must start at Home Cave!";
                 return;
-           }
-                
-            if (isHomeCave && !isFirstNode && selectedNodes.includes(name)) {
-                // Allow selecting Home Cave to complete the loop
-                selectedNodes.push(name);
-                feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
-                draw();
-            } 
-            else if (!selectedNodes.includes(name)) {
-                // For other nodes: proceed as before
-                if (selectedNodes.length >= 0) {
-                    const lastNode = selectedNodes[selectedNodes.length - 1];
-                    const path = paths.find(p => 
-                        (p[0] === lastNode && p[1] === name) || 
-                        (p[1] === lastNode && p[0] === name)
-                    );
+            }
+            
+            if (selectedNodes.includes(name) && name !== "Home Cave") {
+                feedbackDiv.textContent = "Already visited this location!";
+                return;
+            }
 
-                    if (!path) {
-                        feedbackDiv.textContent = "⚠️ Invalid move! No direct path.";
-                        return;
-                    }
+            if (selectedNodes.length > 0) {
+                const lastNode = selectedNodes[selectedNodes.length - 1];
+                const path = paths.find(p => 
+                    (p[0] === lastNode && p[1] === name) || 
+                    (p[1] === lastNode && p[0] === name)
+                );
 
+                if (!path) {
+                    feedbackDiv.textContent = "⚠️ No path exists! ⚠️";
+                    return;
+                }
+
+                const cost = path[2];
+                if (currentEnergy < cost) {
+                    feedbackDiv.innerHTML = `<span class="hazard-warning">Not enough energy!</span>`;
+                    return;
+                }
+
+                currentEnergy -= cost;
+                energyDiv.textContent = `Energy: ${currentEnergy}`;
+
+                if (path[3]) {
+                    feedbackDiv.innerHTML = `<span class="hazard-warning">⚠️ ${path[3].toUpperCase()} hazard!</span>`;
+                    hazardSound.play();
+                    createHazardEffect(x, y, path[3]);
+                }
+            }
+
+            selectedNodes.push(name);
+            feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
+            
+            if (name === "Home Cave" && selectedNodes.length > 1) {
+                feedbackDiv.textContent = validateRoute();
+                gameRunning = false;
+            }
+            
+            draw();
+        }
+    });
+});
+    
                     const [_, __, cost, hazard] = path;
 
                     if (path) {
@@ -439,12 +457,14 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
-// Initial draw
+// Initialize high score
+highScoreSpan.textContent = highScore;
 draw();
+    
 // Start background music
 bgMusic.play();
 </script>
-
+    
 <p>How to play:</p>
 <ul>
     <li>Click nodes to build your route</li>
