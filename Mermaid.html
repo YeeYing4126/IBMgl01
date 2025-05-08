@@ -203,40 +203,31 @@ function drawSelectedRoute() {
     ctx.setLineDash([]);
 }
 
-    function startGame() {
-      if (!gameRunning) {
-        score = Math.floor(Math.random() * 2000); // Replace this with real game logic
-        gameRunning = true;
-        updateScore();
-        showMessage("Game in progress...");
-        setTimeout(endGame, 2000); // Simulate a short game session
-      }
-    }
+function startGame() {
+    selectedNodes = [];
+    currentEnergy = 20;
+    startTime = Date.now();
+    energyDiv.textContent = `Energy: ${currentEnergy}`;
+    score = 0;
+    scoreSpan.textContent = '0';
+    gameRunning = true;
+    feedbackDiv.textContent = "Game started! Click nodes to plan your route";
+    bgMusic.play();
+    draw();
+}
 
-    function endGame() {
-      gameRunning = false;
-      if (score > highScore) {
-        highScore = score;
-      }
-      updateScore();
-      showMessage(`Success! 🏆 Score: ${score}`);
-    }
-
-    function resetGame() {
-      score = 0;
-      gameRunning = false;
-      updateScore();
-      showMessage("");
-    }
-
-    function updateScore() {
-      document.getElementById("score").textContent = score;
-      document.getElementById("highScore").textContent = highScore;
-    }
-
-    function showMessage(msg) {
-      document.getElementById("gameMessage").textContent = msg;
-    }
+function resetGame() {
+    gameRunning = false;
+    selectedNodes = [];
+    currentEnergy = 20;
+    score = 0;
+    energyDiv.textContent = `Energy: ${currentEnergy}`;
+    scoreSpan.textContent = '0';
+    feedbackDiv.textContent = "";
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    draw();
+}
     
 function validateRoute() {
     if (selectedNodes.length < 2) return "Route too short!";
@@ -255,12 +246,13 @@ function validateRoute() {
     // Calculate score
     const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
     score = Math.max(0, (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20));
-   
+    
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
+        highScoreSpan.textContent = highScore;
     }
-
+    
     successSound.play();
     gameRunning = false;
     return `Success! 🎉 Score: ${score}`;
@@ -269,7 +261,7 @@ function validateRoute() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     updateParticles();
-    
+
     // Draw paths
     paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
     
@@ -278,7 +270,7 @@ function draw() {
     
     // Draw nodes
     Object.entries(nodes).forEach(([name, [x, y]]) => 
-         drawNode(name, x, y, selectedNodes.includes(name)));
+        drawNode(name, x, y, selectedNodes.includes(name)));
     
     // Draw mermaid
     if (selectedNodes.length > 0) {
@@ -340,129 +332,24 @@ canvas.addEventListener('click', (e) => {
             feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
             
             if (name === "Home Cave" && selectedNodes.length > 1) {
-                feedbackDiv.textContent = validateRoute();
+                const result = validateRoute();
+                feedbackDiv.textContent = result;
                 gameRunning = false;
+                if (result.startsWith("Success")) {
+                    scoreSpan.textContent = score;
+                    if (score > highScore) {
+                        highScoreSpan.textContent = score;
+                    }
+                }
             }
             
             draw();
         }
     });
 });
-    
-                    const [_, __, cost, hazard] = path;
 
-                    if (path) {
-                        currentEnergy -= path[2];
-                        energyDiv.textContent = `Energy: ${currentEnergy}`;
-                        if (path[3]) {
-                            feedbackDiv.textContent = "💤 Not enough energy!";
-                            feedbackDiv.classList.add('hazard-warning');
-                            hazardSound.play();
-                            setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
-                            const [nx, ny] = nodes[name];
-                            createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
-                            return;
-                            }
-                    if (path) {
-                        const [n1, n2, cost, hazard] = path;
-                        if (currentEnergy >= cost) {
-                            selectedNodes.push(name);
-                            currentEnergy -= cost;
-                            energyDiv.textContent = `Energy: ${currentEnergy}`;
-                            feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
-        
-                    if (hazard) {
-                            feedbackDiv.innerHTML = `<span class="hazard-warning">⚠️ Hazard encountered: ${hazard.toUpperCase()}!</span>`;
-                            hazardSound.play();
-                            const [hx, hy] = nodes[name];
-                            createHazardEffect(x, y, hazard);
-                    } else {
-                            feedbackDiv.textContent = `Moved to ${name}`;
-                    }
-
-                    selectedNodes.push(name);
-                } else {
-                    if (name !== "Home Cave") {
-                        feedbackDiv.textContent = "🚫 Must start at Home Cave!";
-                        return;
-                    }
-                    selectedNodes.push(name);
-                    startTime = Date.now();
-                    bgMusic.play();
-                    feedbackDiv.textContent = "Started journey!";
-                }
-
-                // Check for hazard on path
-                if (selectedNodes.length > 1) {
-                    const lastTwo = selectedNodes.slice(-2);
-                    const hazardPath = paths.find(p => 
-                        (p[0] === lastTwo[0] && p[1] === lastTwo[1]) || 
-                        (p[1] === lastTwo[0] && p[0] === lastTwo[1])
-                    );
-                    if (hazardPath && hazardPath[3]) {
-                        createHazardEffect(x, y, hazardPath[3]);
-                        hazardSound.play();
-                    }
-                }
-
-                if (currentEnergy <= 0) {
-                    showMessage("Out of energy! 😴");
-                }
-            }
-      });
-});
-
-            draw();
-                        
-         // If returned to Home Cave and route has at least one node in between, validate
-                if (selectedNodes.length > 2 && name === "Home Cave") {
-                    const result = validateRoute();
-                    feedbackDiv.innerHTML = result;
-                    bgMusic.pause();
-                    bgMusic.currentTime = 0;
-                }
-
-        // Check if player returned home after visiting all nodes
-                    if (name === "Home Cave" && selectedNodes.length > 1) {
-                            feedbackDiv.textContent = validateRoute();
-                            }
-                    } else {
-                            feedbackDiv.innerHTML = `<span class="hazard-warning">Not enough energy to move!</span>`;
-                    }
-                    } else {
-                            feedbackDiv.innerHTML = `<span class="hazard-warning">Invalid move! Nodes not connected.</span>`;
-                            }
-                        }
-                    }
-                }
-                selectedNodes.push(name);
-                feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
-                draw();
-            }
-    });
-});
-
-document.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const result = validateRoute();
-        feedbackDiv.textContent = result;
-        feedbackDiv.style.color = result.startsWith("Success") ? "green" : "red";
-        
-        // Reset game
-        selectedNodes = [];
-        currentEnergy = 20;
-        startTime = Date.now();
-        energyDiv.textContent = `Energy: ${currentEnergy}`;
-        draw();
-    }
-});
-
-// Initialize high score
 highScoreSpan.textContent = highScore;
 draw();
-    
-// Start background music
-bgMusic.play();
 </script>
     
 <p>How to play:</p>
@@ -470,6 +357,7 @@ bgMusic.play();
     <li>Click nodes to build your route</li>
     <li>Press ENTER to validate</li>
     <li>Must visit all nodes and return to Home Cave!</li>
+    <li>Energy decreases with each move</li>
 </ul>
 </body>
 </html>
