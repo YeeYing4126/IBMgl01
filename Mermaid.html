@@ -11,9 +11,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: Arial, sans-serif;
+            font-family: "Segoe UI", sans-serif;
             background: #083358;
             color: white;
+            margin: 0;
+        }
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
         h1 {
             font-size: 2rem;
@@ -53,6 +67,60 @@
         }
         button:hover {
             background-color: #00897b;
+        }
+        .location {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #fff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .surface-post { top: 15%; left: 60%; }
+        .coral-reef { top: 45%; right: 25%; }
+        .sunken-ship { top: 40%; left: 20%; }
+        .home-cave { bottom: 10%; left: 30%; }
+        .mermaid {
+            position: absolute;
+            bottom: 12%;
+            left: 32%;
+            width: 40px;
+            height: 60px;
+            background: url('your-mermaid-image.png') no-repeat center;
+            background-size: contain;
+        }
+        .info-card {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            background: rgba(255, 250, 240, 0.95);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #000;
+        }
+        .info-card .hazard {
+            color: red;
+            font-weight: bold;
+        }
+        .validate-button {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            background: #00b4d8;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .energy-used {
+            position: absolute;
+            bottom: 20px;
+            right: 50px;
+            color: white;
+            font-size: 16px;
         }
     </style>
 </head>
