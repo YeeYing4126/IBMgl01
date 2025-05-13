@@ -5,9 +5,17 @@
     <title>Mermaid’s Marina Delivery Dive</title>
     <style>
         canvas {
-            border: 2px solid #1a5c7a;
-            background: #0a2f4e;
-        }
+    border: 2px solid #1a5c7a;
+    background: transparent;
+    position: relative; 
+}
+
+.particle {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    z-index: 10;
+}
         
 body {
     display: flex;
@@ -115,8 +123,12 @@ class Particle {
             this.element.style.color = '#00B7EB';
         }
         
-        document.body.appendChild(this.element);
-    }
+    const canvasRect = canvas.getBoundingClientRect();
+    const gameContainer = canvas.parentElement;
+    gameContainer.style.position = 'relative';
+    this.element.style.left = (this.x - canvasRect.left) + 'px';
+    this.element.style.top = (this.y - canvasRect.top) + 'px';
+    gameContainer.appendChild(this.element);
 
     update() {
         this.life -= 0.02;
