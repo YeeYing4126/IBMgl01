@@ -122,14 +122,15 @@ class Particle {
             this.element.textContent = this.type === 'dark' ? '✨' : '💧';
             this.element.style.color = '#00B7EB';
         }
-        
-    const canvasRect = canvas.getBoundingClientRect();
-    const gameContainer = canvas.parentElement;
-    gameContainer.style.position = 'relative';
-    this.element.style.left = (this.x - canvasRect.left) + 'px';
-    this.element.style.top = (this.y - canvasRect.top) + 'px';
-    gameContainer.appendChild(this.element);
 
+        const canvasRect = canvas.getBoundingClientRect();
+        const gameContainer = canvas.parentElement;
+        gameContainer.style.position = 'relative';
+        this.element.style.left = (this.x - canvasRect.left) + 'px';
+        this.element.style.top = (this.y - canvasRect.top) + 'px';
+        gameContainer.appendChild(this.element);
+    }
+    
     update() {
         this.life -= 0.02;
         this.x += this.vx;
