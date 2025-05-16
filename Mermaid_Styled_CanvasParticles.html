@@ -194,6 +194,27 @@ function drawSelectedRoute() {
     ctx.setLineDash([]);
 }
 
+function drawEdges() {
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#444';
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+
+    graph.edges.forEach(edge => {
+        const from = edge.from;
+        const to = edge.to;
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        ctx.fillText(edge.distance.toString(), midX, midY - 5);
+    });
+}
+
 function validateRoute() {
     if (selectedNodes.length === 0) return "No route!";
     
@@ -243,6 +264,35 @@ function draw() {
         ctx.font = "24px Arial";
         ctx.fillText("🧜♀️", x - 15, y - 30);
     }
+    
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawEdges();
+    drawNodes();
+    updateParticles();
+    requestAnimationFrame(gameLoop);
+    }
+
+function createParticle(x, y, type) {
+    const canvasRect = canvas.getBoundingClientRect();
+    const offsetX = canvas.offsetLeft;
+    const offsetY = canvas.offsetTop;
+
+    const particle = new Particle(x - offsetX, y - offsetY, type);
+    particles.push(particle);
+}
+
+function clearParticles() {
+    particles.forEach(p => p.element.remove());
+    particles.length = 0;
+    }
+
+const homeCaveNode = graph.nodes.find(n => n.name === 'Home Cave');
+if (homeCaveNode) {
+    for (let i = 0; i < 20; i++) {
+        createParticle(homeCaveNode.x, homeCaveNode.y, 'dark');
+        }
+    }
 }
 
 canvas.addEventListener('click', (e) => {
@@ -282,6 +332,8 @@ canvas.addEventListener('click', (e) => {
                             setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
                             const [nx, ny] = nodes[name];
                             createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
+                        if (clickedNode.name === 'Home Cave') {
+                            clearParticles();
                         }
                     }
                 }
