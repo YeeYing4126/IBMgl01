@@ -97,7 +97,18 @@ const paths = [
     ["Abandoned Cave", "Home Cave", 6, "dark"]
 ];
 
+const edges = [
+    [0, 1],
+    [1, 2],
+    [0, 3],
+    [3, 4],
+    [2, 4],
+];
+
 let selectedNodes = [];
+let particles = [];
+let playerPath = [0];
+let currentNode = 0;
 let currentEnergy = 20;
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
@@ -344,6 +355,7 @@ canvas.addEventListener('click', (e) => {
         }
     });
 });
+    gameLoop();
 
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
