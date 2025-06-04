@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid's Marina Delivery Dive</title>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <title>Mermaid’s Marina Delivery Dive</title>
     <style>
         * {
             margin: 0;
@@ -28,6 +30,7 @@
             border-radius: 10px;
             background: rgba(0, 30, 60, 0.3);
             box-shadow: 0 0 20px rgba(0, 150, 255, 0.4);
+            z-index: 2;
         }
         
         .particle {
@@ -40,6 +43,7 @@
         .game-container {
             position: relative;
             margin: 20px 0;
+            z-index: 2;
         }
         
         .stats-container {
@@ -47,6 +51,7 @@
             justify-content: space-between;
             width: 800px;
             margin-bottom: 15px;
+            z-index: 2;
         }
         
         .stat-box {
@@ -65,6 +70,7 @@
             color: #00B7EB;
             text-shadow: 0 0 10px rgba(0, 183, 235, 0.7);
             letter-spacing: 2px;
+            z-index: 2;
         }
         
         .hazard-warning {
@@ -88,6 +94,7 @@
             border-radius: 10px;
             width: 800px;
             border: 1px solid #1a5c7a;
+            z-index: 2;
         }
         
         .instructions {
@@ -97,6 +104,7 @@
             margin-top: 20px;
             width: 800px;
             border: 1px solid #1a5c7a;
+            z-index: 2;
         }
         
         .instructions h2 {
@@ -115,12 +123,13 @@
         }
         
         .bubbles {
-            position: absolute;
-            bottom: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 100px;
-            z-index: -1;
-            overflow: hidden;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
         }
         
         .bubble {
@@ -151,6 +160,7 @@
             margin-top: 20px;
             display: flex;
             gap: 20px;
+            z-index: 2;
         }
         
         button {
@@ -178,13 +188,38 @@
         #resetBtn {
             background: linear-gradient(to bottom, #FF5252, #c50e29);
         }
+        
+        .path-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            z-index: 2;
+        }
+        
+        .path-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .path-color {
+            width: 30px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        
+        .safe-path { background: #FFFFFF; }
+        .hazard-path { background: #FF5252; }
+        .selected-path { background: #FFEB3B; }
     </style>
 </head>
 <body>
-    <h1>🐚 Mermaid’s Marina Delivery Dive 🐚</h1>
+    <h1>🐚 Mermaid's Marina Delivery Dive 🐚</h1>
     
     <div class="stats-container">
-        <div class="stat-box" id="energy">Energy: 20</div>
+        <div class="stat-box" id="energy">Energy: 30</div>
         <div class="stat-box" id="score">Score: 0 | High Score: 0</div>
     </div>
     
@@ -193,6 +228,21 @@
     </div>
     
     <div id="feedback">Start at Home Cave and visit all nodes before returning!</div>
+    
+    <div class="path-info">
+        <div class="path-type">
+            <div class="path-color safe-path"></div>
+            <span>Safe Path</span>
+        </div>
+        <div class="path-type">
+            <div class="path-color hazard-path"></div>
+            <span>Hazard Path</span>
+        </div>
+        <div class="path-type">
+            <div class="path-color selected-path"></div>
+            <span>Selected Route</span>
+        </div>
+    </div>
     
     <div class="controls">
         <button id="resetBtn">Reset Game</button>
@@ -208,6 +258,7 @@
             <li>Each path costs energy - avoid hazards!</li>
             <li>Press ENTER or the Validate button to complete your route</li>
             <li>Maximize your score by using less energy and time</li>
+            <li><strong>NEW:</strong> All locations are connected - choose your own path!</li>
         </ul>
     </div>
     
@@ -225,42 +276,55 @@ const validateBtn = document.getElementById('validateBtn');
 
 // Nodes (name: [x, y])
 const nodes = {
-    "Home Cave": [400, 500],
-    "Surface Trading Post": [200, 100],
-    "Sunken Ship": [600, 150],
-    "Coral Reef": [300, 300],
-    "Abandoned Cave": [500, 400]
+    "Home Cave": [400, 520],
+    "Surface Trading Post": [100, 80],
+    "Sunken Ship": [650, 80],
+    "Coral Reef": [350, 280],
+    "Abandoned Cave": [550, 380]
 };
 
 // Paths: [node1, node2, cost, hazard]
 const paths = [
+    // Home Cave connections
     ["Home Cave", "Coral Reef", 3, null],
-    ["Coral Reef", "Surface Trading Post", 4, null],
+    ["Home Cave", "Sunken Ship", 7, "shark"],
+    ["Home Cave", "Surface Trading Post", 8, null],
+    ["Home Cave", "Abandoned Cave", 6, "dark"],
+    
+    // Surface Trading Post connections
+    ["Surface Trading Post", "Coral Reef", 4, null],
     ["Surface Trading Post", "Sunken Ship", 5, "shark"],
+    ["Surface Trading Post", "Abandoned Cave", 5, "dark"],
+    
+    // Sunken Ship connections
+    ["Sunken Ship", "Coral Reef", 5, "shark"],
     ["Sunken Ship", "Abandoned Cave", 2, null],
-    ["Abandoned Cave", "Home Cave", 6, "dark"]
+    
+    // Coral Reef connections
+    ["Coral Reef", "Abandoned Cave", 4, null]
 ];
 
 // Game state
 let selectedNodes = [];
 let particles = [];
-let currentEnergy = 20;
+let currentEnergy = 30; // Increased energy for more paths
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 let startTime = Date.now();
 let gameActive = true;
 
-// Initialize bubbles
+// Initialize bubbles to cover entire background
 function initBubbles() {
     const bubblesContainer = document.getElementById('bubbles');
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         bubble.style.left = Math.random() * 100 + 'vw';
         bubble.style.width = (Math.random() * 30 + 10) + 'px';
         bubble.style.height = bubble.style.width;
-        bubble.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        bubble.style.animationDelay = Math.random() * 5 + 's';
+        bubble.style.animationDuration = (Math.random() * 20 + 15) + 's';
+        bubble.style.animationDelay = Math.random() * 10 + 's';
+        bubble.style.opacity = Math.random() * 0.5 + 0.2;
         bubblesContainer.appendChild(bubble);
     }
 }
@@ -462,7 +526,7 @@ function resetGame() {
     selectedNodes = [];
     particles.forEach(p => p.element.remove());
     particles = [];
-    currentEnergy = 20;
+    currentEnergy = 30;
     score = 0;
     startTime = Date.now();
     gameActive = true;
