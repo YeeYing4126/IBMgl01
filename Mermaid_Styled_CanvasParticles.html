@@ -264,6 +264,16 @@
     
     <div class="bubbles" id="bubbles"></div>
 
+    <audio id="bgMusic" loop>
+        <source src="Background Music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="hazardSound">
+        <source src="Hazard Sound.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="successSound">
+        <source src="Success Sound.mp3" type="audio/mpeg">
+    </audio>
+
 <script>
 // Canvas setup
 const canvas = document.getElementById('gameCanvas');
@@ -273,7 +283,10 @@ const energyDiv = document.getElementById('energy');
 const scoreDiv = document.getElementById('score');
 const resetBtn = document.getElementById('resetBtn');
 const validateBtn = document.getElementById('validateBtn');
-
+const bgMusic = document.getElementById('bgMusic');
+const hazardSound = document.getElementById('hazardSound');
+const successSound = document.getElementById('successSound');
+    
 // Nodes (name: [x, y])
 const nodes = {
     "Home Cave": [400, 520],
@@ -518,7 +531,8 @@ function validateRoute() {
     // Update score display
     scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
     gameActive = false;
-    
+
+    successSound.play();
     return `Success! 🎉 Score: ${score}`;
 }
 
@@ -617,6 +631,7 @@ function handleNodeSelection(name, x, y) {
         createHazardEffect(x, y, path[3]);
     } else {
         feedbackDiv.textContent = `Safe path taken. -${path[2]} energy`;
+        hazardSound.play();
     }
     
     // Check for game over
@@ -638,7 +653,8 @@ document.addEventListener('keypress', (e) => {
         const result = validateRoute();
         feedbackDiv.textContent = result;
     }
-});
+    if (bgMusic.paused) bgMusic.play();
+}, { once: true });
 
 // Initialize the game
 function init() {
