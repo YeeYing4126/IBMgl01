@@ -107,8 +107,6 @@ const edges = [
 
 let selectedNodes = [];
 let particles = [];
-let playerPath = [0];
-let currentNode = 0;
 let currentEnergy = 20;
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
@@ -125,15 +123,13 @@ class Particle {
         this.type = type;
         this.element = document.createElement('div');
         this.element.className = 'particle';
-        
-        if(this.type === 'shark') {
+        if (this.type === 'shark') {
             this.element.textContent = '🦈';
             this.element.style.fontSize = '24px';
         } else {
             this.element.textContent = this.type === 'dark' ? '✨' : '💧';
             this.element.style.color = '#00B7EB';
         }
-
         const canvasRect = canvas.getBoundingClientRect();
         const gameContainer = canvas.parentElement;
         gameContainer.style.position = 'relative';
@@ -148,19 +144,18 @@ class Particle {
         this.y += this.vy;
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
         this.element.style.opacity = this.life;
-        
-        if(this.life <= 0) {
+        if (this.life <= 0) {
             this.element.remove();
             return false;
         }
         return true;
     }
 }
-
+    
 let particles = [];
 
 function createHazardEffect(x, y, type) {
-    for(let i = 0; i < 15; i++) {
+    for (let i = 0; i < 15; i++) {
         particles.push(new Particle(x, y, type));
     }
 }
@@ -187,7 +182,7 @@ function drawPath(x1, y1, x2, y2, cost) {
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.fillStyle = "#FF5252";
-    ctx.fillText(cost, (x1 + x2)/2, (y1 + y2)/2);
+    ctx.fillText(cost, (x1 + x2) / 2, (y1 + y2) / 2);
 }
 
 function drawSelectedRoute() {
@@ -195,9 +190,9 @@ function drawSelectedRoute() {
     ctx.strokeStyle = "#FFEB3B";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    for(let i=0; i<selectedNodes.length-1; i++) {
+    for (let i = 0; i < selectedNodes.length - 1; i++) {
         const start = nodes[selectedNodes[i]];
-        const end = nodes[selectedNodes[i+1]];
+        const end = nodes[selectedNodes[i + 1]];
         ctx.moveTo(start[0], start[1]);
         ctx.lineTo(end[0], end[1]);
     }
@@ -205,6 +200,40 @@ function drawSelectedRoute() {
     ctx.setLineDash([]);
 }
 
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
+    if (selectedNodes.length >= 2) drawSelectedRoute();
+    Object.entries(nodes).forEach(([name, [x, y]]) => {
+        drawNode(name, x, y, selectedNodes.includes(name));
+    });
+    if (selectedNodes.length > 0) {
+        const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
+        ctx.fillStyle = "#FF69B4";
+        ctx.font = "24px Arial";
+        ctx.fillText("🧜‍♀️", x - 15, y - 30);
+    }
+    updateParticles();
+}
+
+function validateRoute() {
+    if (selectedNodes.length === 0) return "No route!";
+    const validStartEnd = selectedNodes[0] === "Home Cave" && selectedNodes[selectedNodes.length - 1] === "Home Cave";
+    const requiredNodes = Object.keys(nodes).filter(n => n !== "Home Cave");
+    const allVisited = requiredNodes.every(node => selectedNodes.includes(node));
+    if (!validStartEnd) return "Must start/end at Home Cave! 🏠";
+    if (!allVisited) return "Missed nodes!";
+    const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+    score = (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20);
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+    }
+    scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
+    successSound.play();
+    return "Success! 🎉 Score: " + score;
+}
+    
 function drawEdges() {
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#444';
@@ -225,57 +254,7 @@ function drawEdges() {
         ctx.fillText(edge.distance.toString(), midX, midY - 5);
     });
 }
-
-function validateRoute() {
-    if (selectedNodes.length === 0) return "No route!";
-    
-    // Check start/end at Home Cave
-    const validStartEnd = 
-        selectedNodes[0] === "Home Cave" && 
-        selectedNodes[selectedNodes.length-1] === "Home Cave";
-    
-    // Check all nodes visited (excluding duplicate Home Cave)
-    const requiredNodes = Object.keys(nodes).filter(n => n !== "Home Cave");
-    const allVisited = requiredNodes.every(node => selectedNodes.includes(node));
-    
-    if (!validStartEnd) return "Must start/end at Home Cave! 🏠";
-    if (!allVisited) return "Missed nodes!";
-    
-    // Calculate score
-    const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
-    score = (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20);
-    if (score > highScore) {
-        highScore = score;
-        localStorage.setItem('highScore', highScore);
-    }
-    scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
-    successSound.play();
-    return "Success! 🎉 Score: " + score;
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Update particles
-    updateParticles();
-    
-    // Draw paths
-    paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
-    
-    // Draw selected route
-    if (selectedNodes.length >= 2) drawSelectedRoute();
-    
-    // Draw nodes
-    Object.entries(nodes).forEach(([name, [x, y]]) => drawNode(name, x, y, selectedNodes.includes(name)));
-    
-    // Draw mermaid
-    if (selectedNodes.length > 0) {
-        const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
-        ctx.fillStyle = "#FF69B4";
-        ctx.font = "24px Arial";
-        ctx.fillText("🧜♀️", x - 15, y - 30);
-    }
-    
+      
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawEdges();
@@ -304,7 +283,6 @@ if (homeCaveNode) {
         createParticle(homeCaveNode.x, homeCaveNode.y, 'dark');
         }
     }
-}
 
 canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -351,9 +329,8 @@ canvas.addEventListener('click', (e) => {
                 selectedNodes.push(name);
                 feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
                 draw();
-            }
+              }
         }
-    });
 });
     gameLoop();
 
