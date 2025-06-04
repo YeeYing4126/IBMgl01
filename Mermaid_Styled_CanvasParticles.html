@@ -315,9 +315,9 @@ canvas.addEventListener('click', (e) => {
         const distance = Math.hypot(mouseX - x, mouseY - y);
         
         // Allow clicking Home Cave again ONLY if it's the last node
-        if (distance < 20) {
-            const isHomeCave = (name === "Home Cave");
-            const isFirstNode = (selectedNodes.length === 0);
+        if (distance < 20) { // Node radius
+            if (selectedNodes.length === 0 || (name !== "Home Cave" || (name === "Home Cave" && selectedNodes.length > 1))) {
+                selectedNodes.push(name);
             
             if (isHomeCave && !isFirstNode && selectedNodes.includes(name)) {
                 // Allow selecting Home Cave to complete the loop
