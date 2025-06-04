@@ -250,8 +250,8 @@ function drawEdges() {
         const midX = (from[0] + to[0]) / 2;
         const midY = (from[1] + to[1]) / 2;
         ctx.fillText(cost.toString(), midX, midY - 5);
-    });
-}
+    }
+});
       
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -287,33 +287,60 @@ canvas.addEventListener('click', (e) => {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    Object.entries(nodes).forEach(([name, [x, y]]) => {
-        const distance = Math.hypot(mouseX - x, mouseY - y);
-        if (distance < 20) {
-            const isHomeCave = name === "Home Cave";
-            const isFirst = selectedNodes.length === 0;
-            const isLast = selectedNodes[selectedNodes.length - 1] === "Home Cave";
-            
             // Allow selecting Home Cave only if it's first or to close the route
-            if (isFirst || (!isFirst && isHomeCave && !isLast) || (!isHomeCave && !isLast)) {
+            if (isHomeCave && (isFirst || (selectedNodes.length > 2 && !isFirst))) {
                 selectedNodes.push(name);
-                const path = paths.find(p => (p[0] === selectedNodes[selectedNodes.length - 2] && p[1] === name) || (p[1] === selectedNodes[selectedNodes.length - 2] && p[0] === name));
+                feedbackDiv.textContent = validateRoute();
+                return;
+            }
+
+            // Allow other nodes only if Home Cave is selected first and not re-selecting a visited node
+            if (!isFirst && !selectedNodes.includes(name)) {
+                selectedNodes.push(name);
+
+                // Update energy based on path cost and hazard
+                const lastNode = selectedNodes[selectedNodes.length - 2];
+                const path = paths.find(([n1, n2]) =>
+                    (n1 === lastNode && n2 === name) || (n2 === lastNode && n1 === name)
+                );
+
                 if (path) {
                     currentEnergy -= path[2];
-                    energyDiv.textContent = `Energy: ${currentEnergy}`;
                     if (path[3]) {
-                        createHazardEffect(x, y, path[3]);
                         hazardSound.play();
+                        createHazardEffect(x, y, path[3]);
+                        feedbackDiv.innerHTML = `<span class="hazard-warning">Hazard: ${path[3]}! ⚠️</span>`;
+                    } else {
+                        feedbackDiv.textContent = "Safe route.";
                     }
                 }
-                if (name === "Home Cave" && selectedNodes.length > 1) {
-                    feedbackDiv.innerHTML = validateRoute();
+
+                if (currentEnergy <= 0) {
+                    feedbackDiv.innerHTML = "<span class='hazard-warning'>Out of energy! Game Over. 💀</span>";
+                    bgMusic.pause();
                 }
+
+                energyDiv.textContent = `Energy: ${currentEnergy}`;
             }
         }
     });
-    draw();
-});
+
+    bgMusic.play();
+    function drawNodes() {
+        Object.entries(nodes).forEach(([name, [x, y]]) => {
+            drawNode(name, x, y, selectedNodes.includes(name));
+        });
+
+        // Draw mermaid at last selected node
+        if (selectedNodes.length > 0) {
+            const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
+            ctx.fillStyle = "#FF69B4";
+            ctx.font = "24px Arial";
+            ctx.fillText("🧜‍♀️", x - 15, y - 30);
+        }
+    }
+
+    gameLoop();
     
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
