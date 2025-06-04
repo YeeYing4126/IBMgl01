@@ -151,8 +151,6 @@ class Particle {
         return true;
     }
 }
-    
-let particles = [];
 
 function createHazardEffect(x, y, type) {
     for (let i = 0; i < 15; i++) {
@@ -241,17 +239,17 @@ function drawEdges() {
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
 
-    graph.edges.forEach(edge => {
-        const from = edge.from;
-        const to = edge.to;
+    paths.forEach(([n1, n2, cost]) => {
+        const from = nodes[n1];
+        const to = nodes[n2];
         ctx.beginPath();
-        ctx.moveTo(from.x, from.y);
-        ctx.lineTo(to.x, to.y);
+        ctx.moveTo(from[0], from[1]);
+        ctx.lineTo(to[0], to[1]);
         ctx.stroke();
 
-        const midX = (from.x + to.x) / 2;
-        const midY = (from.y + to.y) / 2;
-        ctx.fillText(edge.distance.toString(), midX, midY - 5);
+        const midX = (from[0] + to[0]) / 2;
+        const midY = (from[1] + to[1]) / 2;
+        ctx.fillText(cost.toString(), midX, midY - 5);
     });
 }
       
@@ -291,49 +289,32 @@ canvas.addEventListener('click', (e) => {
 
     Object.entries(nodes).forEach(([name, [x, y]]) => {
         const distance = Math.hypot(mouseX - x, mouseY - y);
-        
-        // Allow clicking Home Cave again ONLY if it's the last node
-        if (distance < 20) { // Node radius
-            if (selectedNodes.length === 0 || (name !== "Home Cave" || (name === "Home Cave" && selectedNodes.length > 1))) {
-                selectedNodes.push(name);
+        if (distance < 20) {
+            const isHomeCave = name === "Home Cave";
+            const isFirst = selectedNodes.length === 0;
+            const isLast = selectedNodes[selectedNodes.length - 1] === "Home Cave";
             
-            if (isHomeCave && !isFirstNode && selectedNodes.includes(name)) {
-                // Allow selecting Home Cave to complete the loop
+            // Allow selecting Home Cave only if it's first or to close the route
+            if (isFirst || (!isFirst && isHomeCave && !isLast) || (!isHomeCave && !isLast)) {
                 selectedNodes.push(name);
-                feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
-                draw();
-            } 
-            else if (!selectedNodes.includes(name)) {
-                // For other nodes: proceed as before
-                if (selectedNodes.length >= 1) {
-                    const lastNode = selectedNodes[selectedNodes.length - 1];
-                    const path = paths.find(p => 
-                        (p[0] === lastNode && p[1] === name) || 
-                        (p[1] === lastNode && p[0] === name)
-                    );
-                    if (path) {
-                        currentEnergy -= path[2];
-                        energyDiv.textContent = `Energy: ${currentEnergy}`;
-                        if (path[3]) {
-                            feedbackDiv.textContent = `Hazard: ${path[3]}! Energy -${path[2]}`;
-                            feedbackDiv.classList.add('hazard-warning');
-                            hazardSound.play();
-                            setTimeout(() => feedbackDiv.classList.remove('hazard-warning'), 1000);
-                            const [nx, ny] = nodes[name];
-                            createHazardEffect(nx + rect.left, ny + rect.top, path[3]);
-                        if (clickedNode.name === 'Home Cave') {
-                            clearParticles();
-                        }
+                const path = paths.find(p => (p[0] === selectedNodes[selectedNodes.length - 2] && p[1] === name) || (p[1] === selectedNodes[selectedNodes.length - 2] && p[0] === name));
+                if (path) {
+                    currentEnergy -= path[2];
+                    energyDiv.textContent = `Energy: ${currentEnergy}`;
+                    if (path[3]) {
+                        createHazardEffect(x, y, path[3]);
+                        hazardSound.play();
                     }
                 }
-                selectedNodes.push(name);
-                feedbackDiv.textContent = `Route: ${selectedNodes.join(" → ")}`;
-                draw();
-              }
+                if (name === "Home Cave" && selectedNodes.length > 1) {
+                    feedbackDiv.innerHTML = validateRoute();
+                }
+            }
         }
+    });
+    draw();
 });
-    gameLoop();
-
+    
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const result = validateRoute();
@@ -349,12 +330,7 @@ document.addEventListener('keypress', (e) => {
     }
 });
 
-// Initial draw
-draw();
-
-document.addEventListener('click', () => {
-    if (bgMusic.paused) bgMusic.play();
-}, { once: true });
+bgMusic.play();
 
 </script>
 
