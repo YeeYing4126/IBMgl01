@@ -4,80 +4,224 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <title>Mermaid’s Marina Delivery Dive</title>
     <style>
-        canvas {
-    border: 2px solid #1a5c7a;
-    background: transparent;
-    position: relative; 
-}
-
-.particle {
-    position: absolute;
-    pointer-events: none;
-    user-select: none;
-    z-index: 10;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: 'Pacifico', cursive;
-    background: linear-gradient(to bottom, #083358, #0a2f4e);
-    color: white;
-    animation: waveBackground 10s ease-in-out infinite alternate;
-}
-
-@keyframes waveBackground {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 20px; }
-}
-
-        .hazard-warning {
-            animation: flash 0.5s infinite;
-            color: red;
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Pacifico', cursive;
+            background: linear-gradient(to bottom, #083358, #0a2f4e);
+            color: white;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
         }
-        @keyframes flash {
-            from { opacity: 1; }
-            to { opacity: 0; }
+        
+        canvas {
+            border: 3px solid #1a5c7a;
+            border-radius: 10px;
+            background: rgba(0, 30, 60, 0.3);
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.4);
         }
+        
         .particle {
             position: absolute;
             pointer-events: none;
             user-select: none;
+            z-index: 10;
         }
-        #score {
+        
+        .game-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-box {
+            background: rgba(0, 40, 80, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            border: 1px solid #1a5c7a;
+            box-shadow: 0 0 10px rgba(0, 150, 255, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #00B7EB;
+            text-shadow: 0 0 10px rgba(0, 183, 235, 0.7);
+            letter-spacing: 2px;
+        }
+        
+        .hazard-warning {
+            animation: flash 0.5s infinite;
+            color: #ff5252;
+            font-weight: bold;
+        }
+        
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.3; }
+        }
+        
+        #feedback {
+            margin: 20px 0;
+            min-height: 40px;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 40, 80, 0.5);
+            border-radius: 10px;
+            width: 800px;
+            border: 1px solid #1a5c7a;
+        }
+        
+        .instructions {
+            background: rgba(0, 40, 80, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 800px;
+            border: 1px solid #1a5c7a;
+        }
+        
+        .instructions h2 {
+            color: #00B7EB;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instructions ul {
+            padding-left: 30px;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .bubbles {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 183, 235, 0.3);
+            border-radius: 50%;
+            animation: bubble-rise 15s infinite ease-in;
+        }
+        
+        @keyframes bubble-rise {
+            0% {
+                bottom: -50px;
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(100px);
+            }
+            100% {
+                bottom: 100%;
+                transform: translateX(0);
+            }
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #00B7EB, #0088cc);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Pacifico', cursive;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #resetBtn {
+            background: linear-gradient(to bottom, #FF5252, #c50e29);
         }
     </style>
 </head>
 <body>
     <h1>🐚 Mermaid’s Marina Delivery Dive 🐚</h1>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="feedback" style="margin-top: 20px;"></div>
-    <div id="energy">Energy: 20</div>
-    <div id="score">Score: 0 | High Score: 0</div>
-
-    <audio id="bgMusic" loop>
-        <source src="Background Music.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="hazardSound">
-        <source src="Hazard Sound.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="successSound">
-        <source src="Success Sound.mp3" type="audio/mpeg">
-    </audio>
+    
+    <div class="stats-container">
+        <div class="stat-box" id="energy">Energy: 20</div>
+        <div class="stat-box" id="score">Score: 0 | High Score: 0</div>
+    </div>
+    
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    <div id="feedback">Start at Home Cave and visit all nodes before returning!</div>
+    
+    <div class="controls">
+        <button id="resetBtn">Reset Game</button>
+        <button id="validateBtn">Validate Route (ENTER)</button>
+    </div>
+    
+    <div class="instructions">
+        <h2>How to Play</h2>
+        <ul>
+            <li>Click nodes to build your delivery route</li>
+            <li>You must start and end at Home Cave</li>
+            <li>Visit all locations before returning to Home Cave</li>
+            <li>Each path costs energy - avoid hazards!</li>
+            <li>Press ENTER or the Validate button to complete your route</li>
+            <li>Maximize your score by using less energy and time</li>
+        </ul>
+    </div>
+    
+    <div class="bubbles" id="bubbles"></div>
 
 <script>
+// Canvas setup
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const feedbackDiv = document.getElementById('feedback');
 const energyDiv = document.getElementById('energy');
 const scoreDiv = document.getElementById('score');
-const bgMusic = document.getElementById('bgMusic');
-const hazardSound = document.getElementById('hazardSound');
-const successSound = document.getElementById('successSound');
+const resetBtn = document.getElementById('resetBtn');
+const validateBtn = document.getElementById('validateBtn');
 
 // Nodes (name: [x, y])
 const nodes = {
@@ -97,20 +241,29 @@ const paths = [
     ["Abandoned Cave", "Home Cave", 6, "dark"]
 ];
 
-const edges = [
-    [0, 1],
-    [1, 2],
-    [0, 3],
-    [3, 4],
-    [2, 4],
-];
-
+// Game state
 let selectedNodes = [];
 let particles = [];
 let currentEnergy = 20;
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 let startTime = Date.now();
+let gameActive = true;
+
+// Initialize bubbles
+function initBubbles() {
+    const bubblesContainer = document.getElementById('bubbles');
+    for (let i = 0; i < 20; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.style.left = Math.random() * 100 + 'vw';
+        bubble.style.width = (Math.random() * 30 + 10) + 'px';
+        bubble.style.height = bubble.style.width;
+        bubble.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        bubble.style.animationDelay = Math.random() * 5 + 's';
+        bubblesContainer.appendChild(bubble);
+    }
+}
 
 // Particle System
 class Particle {
@@ -131,11 +284,9 @@ class Particle {
             this.element.style.color = '#00B7EB';
         }
         const canvasRect = canvas.getBoundingClientRect();
-        const gameContainer = canvas.parentElement;
-        gameContainer.style.position = 'relative';
-        this.element.style.left = (this.x - canvasRect.left) + 'px';
-        this.element.style.top = (this.y - canvasRect.top) + 'px';
-        gameContainer.appendChild(this.element);
+        this.element.style.left = (x - canvasRect.left) + 'px';
+        this.element.style.top = (y - canvasRect.top) + 'px';
+        document.querySelector('.game-container').appendChild(this.element);
     }
     
     update() {
@@ -162,210 +313,285 @@ function updateParticles() {
     particles = particles.filter(p => p.update());
 }
 
+// Drawing functions
 function drawNode(name, x, y, isSelected) {
+    // Draw glow for selected nodes
+    if (isSelected) {
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(x, y, 5, x, y, 25);
+        gradient.addColorStop(0, 'rgba(76, 175, 80, 0.8)');
+        gradient.addColorStop(1, 'rgba(76, 175, 80, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+    }
+    
+    // Draw node circle
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, Math.PI * 2);
     ctx.fillStyle = isSelected ? "#4CAF50" : "#2196F3";
     ctx.fill();
+    ctx.strokeStyle = "#0D47A1";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Draw node name
     ctx.fillStyle = "white";
-    ctx.font = "14px Arial";
-    ctx.fillText(name, x - 40, y + 35);
+    ctx.font = "14px 'Pacifico', cursive";
+    ctx.textAlign = "center";
+    ctx.fillText(name, x, y + 40);
 }
 
-function drawPath(x1, y1, x2, y2, cost) {
+function drawPath(x1, y1, x2, y2, cost, hazard) {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.strokeStyle = "#FFFFFF";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = hazard ? "#FF5252" : "#FFFFFF";
+    ctx.lineWidth = hazard ? 3 : 2;
     ctx.stroke();
-    ctx.fillStyle = "#FF5252";
+    
+    // Draw path cost
+    ctx.fillStyle = "#FFEB3B";
+    ctx.font = "bold 16px Arial";
     ctx.fillText(cost, (x1 + x2) / 2, (y1 + y2) / 2);
+    
+    // Draw hazard indicator
+    if (hazard) {
+        ctx.font = "20px Arial";
+        ctx.fillText(hazard === "shark" ? "🦈" : "🌑", (x1 + x2) / 2, (y1 + y2) / 2 - 20);
+    }
 }
 
 function drawSelectedRoute() {
+    if (selectedNodes.length < 2) return;
+    
     ctx.setLineDash([5, 5]);
     ctx.strokeStyle = "#FFEB3B";
     ctx.lineWidth = 3;
     ctx.beginPath();
+    
     for (let i = 0; i < selectedNodes.length - 1; i++) {
         const start = nodes[selectedNodes[i]];
         const end = nodes[selectedNodes[i + 1]];
         ctx.moveTo(start[0], start[1]);
         ctx.lineTo(end[0], end[1]);
     }
+    
     ctx.stroke();
     ctx.setLineDash([]);
 }
 
 function draw() {
+    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    paths.forEach(([n1, n2, cost]) => drawPath(...nodes[n1], ...nodes[n2], cost));
-    if (selectedNodes.length >= 2) drawSelectedRoute();
+    
+    // Draw paths
+    paths.forEach(([n1, n2, cost, hazard]) => {
+        drawPath(...nodes[n1], ...nodes[n2], cost, hazard);
+    });
+    
+    // Draw selected route
+    drawSelectedRoute();
+    
+    // Draw nodes
     Object.entries(nodes).forEach(([name, [x, y]]) => {
         drawNode(name, x, y, selectedNodes.includes(name));
     });
+    
+    // Draw mermaid at last selected node
     if (selectedNodes.length > 0) {
         const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
-        ctx.fillStyle = "#FF69B4";
-        ctx.font = "24px Arial";
-        ctx.fillText("🧜‍♀️", x - 15, y - 30);
+        ctx.font = "32px Arial";
+        ctx.fillText("🧜‍♀️", x - 16, y - 10);
+        
+        // Draw trail behind mermaid
+        if (selectedNodes.length > 1) {
+            ctx.strokeStyle = "rgba(255, 105, 180, 0.5)";
+            ctx.lineWidth = 3;
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            const prevNode = nodes[selectedNodes[selectedNodes.length - 2]];
+            ctx.moveTo(prevNode[0], prevNode[1]);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
     }
+    
+    // Update particles
     updateParticles();
 }
 
+// Game logic
 function validateRoute() {
-    if (selectedNodes.length === 0) return "No route!";
-    const validStartEnd = selectedNodes[0] === "Home Cave" && selectedNodes[selectedNodes.length - 1] === "Home Cave";
+    if (!gameActive) return "Game over - reset to play again!";
+    if (selectedNodes.length === 0) return "No route selected!";
+    
+    // Check if route starts and ends at Home Cave
+    const validStartEnd = selectedNodes[0] === "Home Cave" && 
+                         selectedNodes[selectedNodes.length - 1] === "Home Cave";
+    
+    // Check if all nodes are visited
     const requiredNodes = Object.keys(nodes).filter(n => n !== "Home Cave");
     const allVisited = requiredNodes.every(node => selectedNodes.includes(node));
-    if (!validStartEnd) return "Must start/end at Home Cave! 🏠";
-    if (!allVisited) return "Missed nodes!";
+    
+    if (!validStartEnd) return "Route must start and end at Home Cave! 🏠";
+    if (!allVisited) return "You missed some locations!";
+    
+    // Calculate score
     const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
     score = (1000 - (currentEnergy * 10)) + (500 - timeElapsed * 20);
+    if (score < 0) score = 0;
+    
+    // Update high score
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
+        feedbackDiv.style.color = "gold";
+    } else {
+        feedbackDiv.style.color = "#4CAF50";
     }
-    scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
-    successSound.play();
-    return "Success! 🎉 Score: " + score;
-}
     
-function drawEdges() {
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#444';
-    ctx.font = '14px Arial';
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-
-    paths.forEach(([n1, n2, cost]) => {
-        const from = nodes[n1];
-        const to = nodes[n2];
-        ctx.beginPath();
-        ctx.moveTo(from[0], from[1]);
-        ctx.lineTo(to[0], to[1]);
-        ctx.stroke();
-
-        const midX = (from[0] + to[0]) / 2;
-        const midY = (from[1] + to[1]) / 2;
-        ctx.fillText(cost.toString(), midX, midY - 5);
-    }
-});
-      
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawEdges();
-    drawNodes();
-    updateParticles();
-    requestAnimationFrame(gameLoop);
-    }
-
-function createParticle(x, y, type) {
-    const canvasRect = canvas.getBoundingClientRect();
-    const offsetX = canvas.offsetLeft;
-    const offsetY = canvas.offsetTop;
-
-    const particle = new Particle(x - offsetX, y - offsetY, type);
-    particles.push(particle);
+    // Update score display
+    scoreDiv.textContent = `Score: ${score} | High Score: ${highScore}`;
+    gameActive = false;
+    
+    return `Success! 🎉 Score: ${score}`;
 }
 
-function clearParticles() {
+function resetGame() {
+    selectedNodes = [];
     particles.forEach(p => p.element.remove());
-    particles.length = 0;
-    }
-
-const homeCaveNode = graph.nodes.find(n => n.name === 'Home Cave');
-if (homeCaveNode) {
+    particles = [];
+    currentEnergy = 20;
+    score = 0;
+    startTime = Date.now();
+    gameActive = true;
+    energyDiv.textContent = `Energy: ${currentEnergy}`;
+    feedbackDiv.textContent = "Game reset! Start at Home Cave.";
+    feedbackDiv.style.color = "white";
+    
+    // Create initial particles at Home Cave
     for (let i = 0; i < 20; i++) {
-        createParticle(homeCaveNode.x, homeCaveNode.y, 'dark');
-        }
+        createHazardEffect(nodes["Home Cave"][0], nodes["Home Cave"][1], 'dark');
     }
+}
 
+// Event listeners
 canvas.addEventListener('click', (e) => {
+    if (!gameActive) return;
+    
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-
-            // Allow selecting Home Cave only if it's first or to close the route
-            if (isHomeCave && (isFirst || (selectedNodes.length > 2 && !isFirst))) {
-                selectedNodes.push(name);
-                feedbackDiv.textContent = validateRoute();
-                return;
-            }
-
-            // Allow other nodes only if Home Cave is selected first and not re-selecting a visited node
-            if (!isFirst && !selectedNodes.includes(name)) {
-                selectedNodes.push(name);
-
-                // Update energy based on path cost and hazard
-                const lastNode = selectedNodes[selectedNodes.length - 2];
-                const path = paths.find(([n1, n2]) =>
-                    (n1 === lastNode && n2 === name) || (n2 === lastNode && n1 === name)
-                );
-
-                if (path) {
-                    currentEnergy -= path[2];
-                    if (path[3]) {
-                        hazardSound.play();
-                        createHazardEffect(x, y, path[3]);
-                        feedbackDiv.innerHTML = `<span class="hazard-warning">Hazard: ${path[3]}! ⚠️</span>`;
-                    } else {
-                        feedbackDiv.textContent = "Safe route.";
-                    }
-                }
-
-                if (currentEnergy <= 0) {
-                    feedbackDiv.innerHTML = "<span class='hazard-warning'>Out of energy! Game Over. 💀</span>";
-                    bgMusic.pause();
-                }
-
-                energyDiv.textContent = `Energy: ${currentEnergy}`;
-            }
-        }
-    });
-
-    bgMusic.play();
-    function drawNodes() {
-        Object.entries(nodes).forEach(([name, [x, y]]) => {
-            drawNode(name, x, y, selectedNodes.includes(name));
-        });
-
-        // Draw mermaid at last selected node
-        if (selectedNodes.length > 0) {
-            const [x, y] = nodes[selectedNodes[selectedNodes.length - 1]];
-            ctx.fillStyle = "#FF69B4";
-            ctx.font = "24px Arial";
-            ctx.fillText("🧜‍♀️", x - 15, y - 30);
+    
+    // Find clicked node
+    for (const [name, [x, y]] of Object.entries(nodes)) {
+        const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+        
+        if (distance <= 25) {
+            handleNodeSelection(name, x, y);
+            break;
         }
     }
+});
 
-    gameLoop();
+function handleNodeSelection(name, x, y) {
+    const isHomeCave = name === "Home Cave";
+    const isFirst = selectedNodes.length === 0;
+    const lastSelected = selectedNodes[selectedNodes.length - 1];
     
+    // First node must be Home Cave
+    if (isFirst) {
+        if (isHomeCave) {
+            selectedNodes = [name];
+            feedbackDiv.textContent = "Route started at Home Cave.";
+        } else {
+            feedbackDiv.textContent = "You must start at Home Cave!";
+        }
+        return;
+    }
+    
+    // Prevent reselecting the same node
+    if (lastSelected === name) {
+        return;
+    }
+    
+    // Check for valid path from last selected node to clicked node
+    const path = paths.find(([n1, n2]) => 
+        (n1 === lastSelected && n2 === name) || 
+        (n2 === lastSelected && n1 === name)
+    );
+    
+    if (!path) {
+        feedbackDiv.textContent = "No direct path between these locations!";
+        return;
+    }
+    
+    // Check if we're returning to Home Cave to complete the route
+    if (isHomeCave && selectedNodes.length > 1) {
+        selectedNodes.push(name);
+        feedbackDiv.textContent = "Route completed! Press ENTER to validate.";
+        return;
+    }
+    
+    // Prevent revisiting nodes (except Home Cave at the end)
+    if (selectedNodes.includes(name)) {
+        feedbackDiv.textContent = "You've already visited this location!";
+        return;
+    }
+    
+    // Add node to route
+    selectedNodes.push(name);
+    
+    // Deduct energy
+    currentEnergy -= path[2];
+    energyDiv.textContent = `Energy: ${currentEnergy}`;
+    
+    // Handle hazards
+    if (path[3]) {
+        feedbackDiv.innerHTML = `<span class="hazard-warning">Hazard encountered: ${path[3]}! -${path[2]} energy ⚠️</span>`;
+        createHazardEffect(x, y, path[3]);
+    } else {
+        feedbackDiv.textContent = `Safe path taken. -${path[2]} energy`;
+    }
+    
+    // Check for game over
+    if (currentEnergy <= 0) {
+        feedbackDiv.innerHTML = "<span class='hazard-warning'>Out of energy! Game Over. 💀</span>";
+        gameActive = false;
+    }
+}
+
+// Button and keyboard events
+resetBtn.addEventListener('click', resetGame);
+validateBtn.addEventListener('click', () => {
+    const result = validateRoute();
+    feedbackDiv.textContent = result;
+});
+
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const result = validateRoute();
         feedbackDiv.textContent = result;
-        feedbackDiv.style.color = result.startsWith("Success") ? "green" : "red";
-        
-        // Reset game
-        selectedNodes = [];
-        currentEnergy = 20;
-        startTime = Date.now();
-        energyDiv.textContent = `Energy: ${currentEnergy}`;
-        draw();
     }
 });
 
-bgMusic.play();
+// Initialize the game
+function init() {
+    initBubbles();
+    resetGame();
+    
+    // Set up game loop
+    function gameLoop() {
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+    
+    gameLoop();
+}
 
+// Start the game
+init();
 </script>
-
-<p>How to play:</p>
-<ul>
-    <li>Click nodes to build your route</li>
-    <li>Press ENTER to validate</li>
-    <li>Must visit all nodes and return to Home Cave!</li>
-</ul>
 </body>
 </html>
