@@ -629,6 +629,7 @@ function handleNodeSelection(name, x, y) {
     if (path[3]) {
         feedbackDiv.innerHTML = `<span class="hazard-warning">Hazard encountered: ${path[3]}! -${path[2]} energy ⚠️</span>`;
         createHazardEffect(x, y, path[3]);
+        hazardSound.play();
     } else {
         feedbackDiv.textContent = `Safe path taken. -${path[2]} energy`;
     }
