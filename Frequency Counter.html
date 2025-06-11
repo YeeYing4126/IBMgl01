@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Frequency Counter</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input { margin: 5px; width: 100px; }
+    textarea { width: 300px; height: 100px; display: block; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h1>Frequency Counter for a Grid</h1>
+
+  <label>Number of Rows: <input type="number" id="rows" min="1"></label><br>
+  <label>Number of Columns: <input type="number" id="cols" min="1"></label><br>
+  <button onclick="createGridInputs()">Create Grid Inputs</button>
+
+  <div id="gridInputs"></div>
+
+  <button onclick="calculateFrequency()">Calculate Frequency</button>
+
+  <h2>Result:</h2>
+  <pre id="result"></pre>
+
+  <script>
+    function createGridInputs() {
+      const rows = parseInt(document.getElementById('rows').value);
+      const cols = parseInt(document.getElementById('cols').value);
+      const gridInputs = document.getElementById('gridInputs');
+      gridInputs.innerHTML = '';
+
+      for (let i = 0; i < rows; i++) {
+        const input = document.createElement('input');
+        input.placeholder = `Row ${i+1} (space-separated)`;
+        input.size = 40;
+        gridInputs.appendChild(input);
+        gridInputs.appendChild(document.createElement('br'));
+      }
+    }
+
+    function calculateFrequency() {
+      const rows = parseInt(document.getElementById('rows').value);
+      const cols = parseInt(document.getElementById('cols').value);
+      const inputs = document.getElementById('gridInputs').querySelectorAll('input');
+      const frequency = {};
+      let valid = true;
+
+      for (let i = 0; i < rows; i++) {
+        const values = inputs[i].value.trim().split(/\s+/).map(Number);
+        if (values.length !== cols) {
+          document.getElementById('result').textContent = `Error: Row ${i+1} does not have ${cols} numbers.`;
+          valid = false;
+          break;
+        }
+        for (const num of values) {
+          frequency[num] = (frequency[num] || 0) + 1;
+        }
+      }
+
+      if (valid) {
+        let output = 'Frequency of each number:\n';
+        for (const [num, count] of Object.entries(frequency)) {
+          output += `${num}: ${count} time(s)\n`;
+        }
+        document.getElementById('result').textContent = output;
+      }
+    }
+  </script>
+</body>
+</html>
