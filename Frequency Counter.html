@@ -1,19 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Frequency Counter</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    input { margin: 5px; width: 100px; }
-    textarea { width: 300px; height: 100px; display: block; margin: 10px 0; }
-  </style>
+<meta charset="UTF-8">
+<title>Frequency Counter</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f9f9f9;
+    color: #333;
+  }
+  h1, h2 {
+    color: #2b5d8c;
+  }
+  label {
+    display: block;
+    margin: 10px 0;
+  }
+  input[type=number], input[type=text] {
+    padding: 5px;
+    width: 150px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  input[type=number]:focus, input[type=text]:focus {
+    border-color: #2b5d8c;
+  }
+  button {
+    margin: 10px 0;
+    padding: 8px 16px;
+    background: #2b5d8c;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #1c3e5d;
+  }
+  #gridInputs {
+    margin: 10px 0;
+  }
+  pre {
+    background: #e3effa;
+    padding: 10px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+  }
+  .how-to {
+    background: #fff3cd;
+    padding: 10px;
+    border: 1px solid #ffeeba;
+    border-radius: 4px;
+    margin: 15px 0;
+  }
+</style>
 </head>
 <body>
   <h1>Frequency Counter for a Grid</h1>
 
-  <label>Number of Rows: <input type="number" id="rows" min="1"></label><br>
-  <label>Number of Columns: <input type="number" id="cols" min="1"></label><br>
+  <div class="how-to">
+    <h2>How to Use</h2>
+    <ol>
+      <li>Enter the number of rows and columns for your grid.</li>
+      <li>Click <strong>Create Grid Inputs</strong> to generate input boxes for each row.</li>
+      <li>Enter numbers for each row, separated by spaces.</li>
+      <li>Click <strong>Calculate Frequency</strong> to see how many times each number appears!</li>
+    </ol>
+  </div>
+
+  <label>Number of Rows:
+    <input type="number" id="rows" min="1" placeholder="e.g., 2">
+  </label>
+
+  <label>Number of Columns:
+    <input type="number" id="cols" min="1" placeholder="e.g., 3">
+  </label>
+
   <button onclick="createGridInputs()">Create Grid Inputs</button>
 
   <div id="gridInputs"></div>
@@ -21,7 +84,7 @@
   <button onclick="calculateFrequency()">Calculate Frequency</button>
 
   <h2>Result:</h2>
-  <pre id="result"></pre>
+  <pre id="result">No result yet.</pre>
 
   <script>
     function createGridInputs() {
@@ -30,10 +93,16 @@
       const gridInputs = document.getElementById('gridInputs');
       gridInputs.innerHTML = '';
 
+      if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
+        alert('Please enter valid numbers for rows and columns.');
+        return;
+      }
+
       for (let i = 0; i < rows; i++) {
         const input = document.createElement('input');
         input.placeholder = `Row ${i+1} (space-separated)`;
         input.size = 40;
+        input.type = 'text';
         gridInputs.appendChild(input);
         gridInputs.appendChild(document.createElement('br'));
       }
@@ -49,7 +118,7 @@
       for (let i = 0; i < rows; i++) {
         const values = inputs[i].value.trim().split(/\s+/).map(Number);
         if (values.length !== cols) {
-          document.getElementById('result').textContent = `Error: Row ${i+1} does not have ${cols} numbers.`;
+          document.getElementById('result').textContent = `❌ Error: Row ${i+1} does not have ${cols} numbers.`;
           valid = false;
           break;
         }
@@ -59,9 +128,9 @@
       }
 
       if (valid) {
-        let output = 'Frequency of each number:\n';
+        let output = '✅ Frequency of each number:\n';
         for (const [num, count] of Object.entries(frequency)) {
-          output += `${num}: ${count} time(s)\n`;
+          output += `🔢 ${num}: ${count} time(s)\n`;
         }
         document.getElementById('result').textContent = output;
       }
